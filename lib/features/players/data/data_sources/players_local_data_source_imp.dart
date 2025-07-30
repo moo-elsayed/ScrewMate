@@ -9,7 +9,7 @@ class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
   PlayerLocalDataSourceImp({required this.appDatabase});
 
   @override
-  Future<void> deletePlayer(int id) async {
+  Future<void> deletePlayer({required int id}) async {
     final db = await appDatabase;
     await db.delete(
       DatabaseConstants.playersTable,
@@ -26,7 +26,7 @@ class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
   }
 
   @override
-  Future<PlayerModel?> getPlayerById(int id) async {
+  Future<PlayerModel?> getPlayerById({required int id}) async {
     final db = await appDatabase;
     final result = await db.query(
       DatabaseConstants.playersTable,
@@ -37,7 +37,7 @@ class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
   }
 
   @override
-  Future<void> insertPlayer(PlayerModel player) async {
+  Future<void> insertPlayer({required PlayerModel player}) async {
     final db = await appDatabase;
     await db.insert(
       DatabaseConstants.playersTable,
@@ -47,7 +47,7 @@ class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
   }
 
   @override
-  Future<void> updatePlayerStats(PlayerModel player) async {
+  Future<void> updatePlayerStats({required PlayerModel player}) async {
     final db = await appDatabase;
     await db.update(
       DatabaseConstants.playersTable,

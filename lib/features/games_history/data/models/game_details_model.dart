@@ -1,7 +1,7 @@
-import 'package:skru_mate/features/games_history/data/models/round_model.dart';
-import 'package:skru_mate/features/games_history/data/models/round_score_model.dart';
-import 'game_model.dart';
-import 'game_player_model.dart';
+import 'package:skru_mate/core/database/shared_models/round_model.dart';
+import 'package:skru_mate/core/database/shared_models/round_score_model.dart';
+import '../../../../core/database/shared_models/game_model.dart';
+import '../../../../core/database/shared_models/game_player_model.dart';
 
 class GameDetailsModel {
   final GameModel game;

@@ -17,6 +17,7 @@ class SkruMate extends StatelessWidget {
       child: MaterialApp(
         title: 'SkruMate',
         debugShowCheckedModeBanner: false,
+        theme: ThemeData.dark(),
         initialRoute: Routes.homeView,
         onGenerateRoute: appRouter.generateRoute,
       ),

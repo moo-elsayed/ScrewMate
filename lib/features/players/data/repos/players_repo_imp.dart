@@ -10,9 +10,9 @@ class PlayersRepoImp implements PlayersRepo {
   PlayersRepoImp({required this.playerLocalDataSource});
 
   @override
-  Future<Either<Failure, void>> deletePlayer(int id) async {
+  Future<Either<Failure, void>> deletePlayer({required int id}) async {
     try {
-      await playerLocalDataSource.deletePlayer(id);
+      await playerLocalDataSource.deletePlayer(id: id);
       return const Right(null);
     } catch (e) {
       return Left(DatabaseFailure(errorMessage: 'Failed to delete player'));
@@ -30,9 +30,9 @@ class PlayersRepoImp implements PlayersRepo {
   }
 
   @override
-  Future<Either<Failure, PlayerModel?>> getPlayerById(int id) async {
+  Future<Either<Failure, PlayerModel?>> getPlayerById({required int id}) async {
     try {
-      final result = await playerLocalDataSource.getPlayerById(id);
+      final result = await playerLocalDataSource.getPlayerById(id: id);
       return Right(result);
     } catch (e) {
       return Left(DatabaseFailure(errorMessage: 'Failed to load the player'));
@@ -40,9 +40,11 @@ class PlayersRepoImp implements PlayersRepo {
   }
 
   @override
-  Future<Either<Failure, void>> insertPlayer(PlayerModel player) async {
+  Future<Either<Failure, void>> insertPlayer({
+    required PlayerModel player,
+  }) async {
     try {
-      await playerLocalDataSource.insertPlayer(player);
+      await playerLocalDataSource.insertPlayer(player: player);
       return const Right(null);
     } catch (e) {
       return Left(DatabaseFailure(errorMessage: 'Failed to add player'));
@@ -50,9 +52,11 @@ class PlayersRepoImp implements PlayersRepo {
   }
 
   @override
-  Future<Either<Failure, void>> updatePlayerStats(PlayerModel player) async {
+  Future<Either<Failure, void>> updatePlayerStats({
+    required PlayerModel player,
+  }) async {
     try {
-      await playerLocalDataSource.updatePlayerStats(player);
+      await playerLocalDataSource.updatePlayerStats(player: player);
       return const Right(null);
     } catch (e) {
       return Left(DatabaseFailure(errorMessage: 'Failed to update player'));

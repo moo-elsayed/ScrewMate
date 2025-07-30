@@ -1,3 +1,4 @@
+import 'package:skru_mate/core/database/database_constants.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -24,9 +25,8 @@ class AppDatabase {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-
     await db.execute('''
-      CREATE TABLE players (
+      CREATE TABLE ${DatabaseConstants.playersTable} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         total_score INTEGER DEFAULT 0,
@@ -38,7 +38,7 @@ class AppDatabase {
     ''');
 
     await db.execute('''
-      CREATE TABLE games (
+      CREATE TABLE ${DatabaseConstants.gamesTable} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL,
         rounds_count INTEGER NOT NULL,
@@ -48,7 +48,7 @@ class AppDatabase {
     ''');
 
     await db.execute('''
-      CREATE TABLE game_players (
+      CREATE TABLE ${DatabaseConstants.gamePlayersTable} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         game_id INTEGER NOT NULL,
         player_id INTEGER NOT NULL,
@@ -60,7 +60,7 @@ class AppDatabase {
     ''');
 
     await db.execute('''
-      CREATE TABLE rounds (
+      CREATE TABLE ${DatabaseConstants.roundsTable} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         game_id INTEGER NOT NULL,
         round_number INTEGER NOT NULL,
@@ -69,7 +69,7 @@ class AppDatabase {
     ''');
 
     await db.execute('''
-      CREATE TABLE round_scores (
+      CREATE TABLE ${DatabaseConstants.roundScoresTable} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         round_id INTEGER NOT NULL,
         player_id INTEGER NOT NULL,
