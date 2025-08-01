@@ -5,7 +5,9 @@ import '../../../../core/theming/colors.dart';
 import '../../../../core/theming/styles.dart';
 
 class SelectNumberOfPlayers extends StatefulWidget {
-  const SelectNumberOfPlayers({super.key});
+  const SelectNumberOfPlayers({super.key, required this.onSelected});
+
+  final Function(int) onSelected;
 
   @override
   State<SelectNumberOfPlayers> createState() => _SelectNumberOfPlayersState();
@@ -41,7 +43,10 @@ class _SelectNumberOfPlayersState extends State<SelectNumberOfPlayers> {
                 style: TextStyles.font14WhiteRegular,
               ),
               selected: selectedPlayersIndex == index,
-              onSelected: (_) => setPlayersIndex(index),
+              onSelected: (_) {
+                widget.onSelected(players[index]);
+                setPlayersIndex(index);
+              },
               selectedColor: ColorsManager.purple,
             );
           }),

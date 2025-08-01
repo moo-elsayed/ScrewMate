@@ -26,57 +26,56 @@ class AppDatabase {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE ${DatabaseConstants.playersTable} (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL UNIQUE,
-        total_score INTEGER DEFAULT 0,
-        wins INTEGER DEFAULT 0,
-        round_wins INTEGER DEFAULT 0,
-        min_score INTEGER DEFAULT NULL,
-        max_score INTEGER DEFAULT NULL
-      );
-    ''');
+    CREATE TABLE ${DatabaseConstants.playersTable} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      games_played INTEGER DEFAULT 0,
+      wins INTEGER DEFAULT 0,
+      round_wins INTEGER DEFAULT 0,
+      win_rate REAL DEFAULT 0.0
+    );
+  ''');
 
     await db.execute('''
-      CREATE TABLE ${DatabaseConstants.gamesTable} (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date TEXT NOT NULL,
-        rounds_count INTEGER NOT NULL,
-        winner_id INTEGER,
-        FOREIGN KEY (winner_id) REFERENCES players(id)
-      );
-    ''');
+    CREATE TABLE ${DatabaseConstants.gamesTable} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL,
+      rounds_count INTEGER NOT NULL,
+      winner_id INTEGER,
+      FOREIGN KEY (winner_id) REFERENCES ${DatabaseConstants.playersTable}(id)
+    );
+  ''');
 
     await db.execute('''
-      CREATE TABLE ${DatabaseConstants.gamePlayersTable} (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        game_id INTEGER NOT NULL,
-        player_id INTEGER NOT NULL,
-        total_score INTEGER DEFAULT 0,
-        rounds_won INTEGER DEFAULT 0,
-        FOREIGN KEY (game_id) REFERENCES games(id),
-        FOREIGN KEY (player_id) REFERENCES players(id)
-      );
-    ''');
+    CREATE TABLE ${DatabaseConstants.gamePlayersTable} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      game_id INTEGER NOT NULL,
+      player_id INTEGER NOT NULL,
+      total_score INTEGER DEFAULT 0,
+      rounds_won INTEGER DEFAULT 0,
+      FOREIGN KEY (game_id) REFERENCES ${DatabaseConstants.gamesTable}(id),
+      FOREIGN KEY (player_id) REFERENCES ${DatabaseConstants.playersTable}(id)
+    );
+  ''');
 
     await db.execute('''
-      CREATE TABLE ${DatabaseConstants.roundsTable} (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        game_id INTEGER NOT NULL,
-        round_number INTEGER NOT NULL,
-        FOREIGN KEY (game_id) REFERENCES games(id)
-      );
-    ''');
+    CREATE TABLE ${DatabaseConstants.roundsTable} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      game_id INTEGER NOT NULL,
+      round_number INTEGER NOT NULL,
+      FOREIGN KEY (game_id) REFERENCES ${DatabaseConstants.gamesTable}(id)
+    );
+  ''');
 
     await db.execute('''
-      CREATE TABLE ${DatabaseConstants.roundScoresTable} (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        round_id INTEGER NOT NULL,
-        player_id INTEGER NOT NULL,
-        score INTEGER NOT NULL,
-        FOREIGN KEY (round_id) REFERENCES rounds(id),
-        FOREIGN KEY (player_id) REFERENCES players(id)
-      );
-    ''');
+    CREATE TABLE ${DatabaseConstants.roundScoresTable} (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      round_id INTEGER NOT NULL,
+      player_id INTEGER NOT NULL,
+      score INTEGER NOT NULL,
+      FOREIGN KEY (round_id) REFERENCES ${DatabaseConstants.roundsTable}(id),
+      FOREIGN KEY (player_id) REFERENCES ${DatabaseConstants.playersTable}(id)
+    );
+  ''');
   }
 }

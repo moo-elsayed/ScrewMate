@@ -1,4 +1,4 @@
-import '../models/player_model.dart';
+import '../../../../core/database/shared_models/player_model.dart';
 
 abstract class PlayerLocalDataSource {
   Future<void> insertPlayer({required PlayerModel player});

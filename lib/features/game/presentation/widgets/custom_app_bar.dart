@@ -15,6 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text('ScrewMate', style: TextStyles.font22WhiteSemiRegular),
       centerTitle: true,
       backgroundColor: ColorsManager.appbarColor,
+      surfaceTintColor: ColorsManager.appbarColor,
     );
   }
 }

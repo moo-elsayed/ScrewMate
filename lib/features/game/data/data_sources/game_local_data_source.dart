@@ -3,7 +3,7 @@ import '../../../../core/database/shared_models/game_player_model.dart';
 import '../../../../core/database/shared_models/round_model.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
 
-abstract class HomeLocalDataSource {
+abstract class GameLocalDataSource {
   Future<int> insertGame({required GameModel game});
 
   Future<void> insertGamePlayers({required List<GamePlayerModel> players});

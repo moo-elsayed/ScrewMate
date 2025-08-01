@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/routing/app_router.dart';
 import 'core/routing/routes.dart';
 
-class SkruMate extends StatelessWidget {
-  const SkruMate({super.key, required this.appRouter});
+class ScrewMate extends StatelessWidget {
+  const ScrewMate({super.key, required this.appRouter});
 
   final AppRouter appRouter;
 
@@ -15,7 +15,7 @@ class SkruMate extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       child: MaterialApp(
-        title: 'SkruMate',
+        title: 'ScrewMate',
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark(),
         initialRoute: Routes.homeView,

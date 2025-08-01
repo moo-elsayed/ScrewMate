@@ -1,7 +1,7 @@
 import 'package:skru_mate/features/players/data/data_sources/players_local_data_source.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../../core/database/database_constants.dart';
-import '../models/player_model.dart';
+import '../../../../core/database/shared_models/player_model.dart';
 
 class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
   final Future<Database> appDatabase;

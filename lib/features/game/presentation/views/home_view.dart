@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:skru_mate/features/home/presentation/widgets/custom_app_bar.dart';
-import 'package:skru_mate/features/home/presentation/widgets/drawer_body.dart';
-import 'package:skru_mate/features/home/presentation/widgets/home_view_body.dart';
+
+import '../widgets/custom_app_bar.dart';
+import '../widgets/drawer_body.dart';
+import '../widgets/home_view_body.dart';
+
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});

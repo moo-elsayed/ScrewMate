@@ -2,14 +2,14 @@ import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import 'package:skru_mate/core/database/shared_models/game_player_model.dart';
 import 'package:skru_mate/core/database/shared_models/round_model.dart';
 import 'package:skru_mate/core/database/shared_models/round_score_model.dart';
-import 'package:skru_mate/features/home/data/data_sources/home_local_data_source.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../../core/database/database_constants.dart';
+import 'game_local_data_source.dart';
 
-class HomeLocalDataSourceImp implements HomeLocalDataSource {
+class GameLocalDataSourceImp implements GameLocalDataSource {
   final Future<Database> appDatabase;
 
-  HomeLocalDataSourceImp({required this.appDatabase});
+  GameLocalDataSourceImp({required this.appDatabase});
 
   @override
   Future<int> insertGame({required GameModel game}) async {

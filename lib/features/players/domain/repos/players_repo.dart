@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failures.dart';
-import '../../data/models/player_model.dart';
+import '../../../../core/database/shared_models/player_model.dart';
 
 abstract class PlayersRepo {
   Future<Either<Failure, void>> insertPlayer({required PlayerModel player});

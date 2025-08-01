@@ -4,18 +4,18 @@ import 'package:skru_mate/core/database/shared_models/game_player_model.dart';
 import 'package:skru_mate/core/database/shared_models/round_model.dart';
 import 'package:skru_mate/core/database/shared_models/round_score_model.dart';
 import 'package:skru_mate/core/errors/failures.dart';
-import 'package:skru_mate/features/home/data/data_sources/home_local_data_source.dart';
-import 'package:skru_mate/features/home/domain/repos/home_repo.dart';
+import 'package:skru_mate/features/game/data/data_sources/game_local_data_source.dart';
+import 'package:skru_mate/features/game/domain/repos/game_repo.dart';
 
-class HomeRepoImp implements HomeRepo {
-  final HomeLocalDataSource homeLocalDataSource;
+class GameRepoImp implements GameRepo {
+  final GameLocalDataSource gameLocalDataSource;
 
-  HomeRepoImp({required this.homeLocalDataSource});
+  GameRepoImp({required this.gameLocalDataSource});
 
   @override
   Future<Either<Failure, int>> insertGame({required GameModel game}) async {
     try {
-      final gameId = await homeLocalDataSource.insertGame(game: game);
+      final gameId = await gameLocalDataSource.insertGame(game: game);
       return Right(gameId);
     } catch (e) {
       return Left(DatabaseFailure(errorMessage: 'Failed to insert game'));
@@ -27,7 +27,7 @@ class HomeRepoImp implements HomeRepo {
     required List<GamePlayerModel> players,
   }) async {
     try {
-      await homeLocalDataSource.insertGamePlayers(players: players);
+      await gameLocalDataSource.insertGamePlayers(players: players);
       return const Right(null);
     } catch (e) {
       return Left(
@@ -41,7 +41,7 @@ class HomeRepoImp implements HomeRepo {
     required List<RoundModel> rounds,
   }) async {
     try {
-      await homeLocalDataSource.insertRounds(rounds: rounds);
+      await gameLocalDataSource.insertRounds(rounds: rounds);
       return const Right(null);
     } catch (e) {
       return Left(DatabaseFailure(errorMessage: 'Failed to insert rounds'));
@@ -53,7 +53,7 @@ class HomeRepoImp implements HomeRepo {
     required List<RoundScoreModel> scores,
   }) async {
     try {
-      await homeLocalDataSource.insertRoundScores(scores: scores);
+      await gameLocalDataSource.insertRoundScores(scores: scores);
       return const Right(null);
     } catch (e) {
       return Left(
