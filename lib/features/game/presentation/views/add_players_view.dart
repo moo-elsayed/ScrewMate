@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/add_players_view_body.dart';
-import '../widgets/custom_app_bar.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 
 
 class AddPlayersView extends StatelessWidget {

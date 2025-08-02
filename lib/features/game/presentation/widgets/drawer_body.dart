@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:skru_mate/core/helpers/extentions.dart';
+import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/styles.dart';
 import 'drawer_item.dart';
 
@@ -26,7 +28,12 @@ class DrawerBody extends StatelessWidget {
           Gap(24.h),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: DrawerItem(title: 'Top Players', onTap: () {}),
+            child: DrawerItem(
+              title: 'Top Players',
+              onTap: () {
+                context.pushNamed(Routes.topPlayersView);
+              },
+            ),
           ),
         ],
       ),

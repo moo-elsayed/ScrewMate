@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/routing/routes.dart';
-
+import 'package:skru_mate/features/players/presentation/views/player_view.dart';
+import 'package:skru_mate/features/players/presentation/views/top_players_view.dart';
 
 import '../../features/game/data/models/add_players_args.dart';
 import '../../features/game/presentation/views/add_players_view.dart';
@@ -21,6 +23,13 @@ class AppRouter {
             roundsCount: args.roundsCount,
             playersCount: args.playersCount,
           ),
+        );
+      case Routes.topPlayersView:
+        return MaterialPageRoute(builder: (context) => const TopPlayersView());
+      case Routes.playerView:
+        final args = arguments as PlayerModel;
+        return MaterialPageRoute(
+          builder: (context) => PlayerView(playerModel: args),
         );
       default:
         return MaterialPageRoute(

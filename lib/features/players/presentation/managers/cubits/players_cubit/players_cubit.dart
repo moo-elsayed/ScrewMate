@@ -56,4 +56,16 @@ class PlayersCubit extends Cubit<PlayersStates> {
       (_) => emit(DeletePlayerSuccess()),
     );
   }
+
+  Future getPlayerGameStats(int playerId) async {
+    emit(GetPlayerGamesStatesLoading());
+    var result = await playersRepo.getPlayerGameStats(playerId);
+    result.fold(
+      (failure) =>
+          emit(GetPlayerGamesStatesFailure(errorMessage: failure.errorMessage)),
+      (playerGameStatsList) => emit(
+        GetPlayerGamesStatesSuccess(playerGameStatsList: playerGameStatsList),
+      ),
+    );
+  }
 }

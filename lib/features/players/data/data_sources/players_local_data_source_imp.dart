@@ -1,4 +1,5 @@
 import 'package:skru_mate/features/players/data/data_sources/players_local_data_source.dart';
+import 'package:skru_mate/features/players/data/models/player_games_states_model.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../../core/database/database_constants.dart';
 import '../../../../core/database/shared_models/player_model.dart';
@@ -55,5 +56,32 @@ class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
       where: 'id = ?',
       whereArgs: [player.id],
     );
+  }
+
+  @override
+  Future<List<PlayerGameStatsModel>> getPlayerGameStats(int playerId) async {
+    final db = await appDatabase;
+
+    final result = await db.rawQuery(
+      '''
+      SELECT
+        g.id AS game_id,
+        g.date,
+        g.rounds_count,
+        gp.total_score,
+        (
+          SELECT COUNT(*) + 1
+          FROM game_players gp2
+          WHERE gp2.game_id = gp.game_id AND gp2.total_score > gp.total_score
+        ) AS rank
+      FROM game_players gp
+      JOIN games g ON g.id = gp.game_id
+      WHERE gp.player_id = ?
+      ORDER BY g.date DESC;
+    ''',
+      [playerId],
+    );
+
+    return result.map((map) => PlayerGameStatsModel.fromMap(map)).toList();
   }
 }

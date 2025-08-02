@@ -5,6 +5,7 @@ class PlayerModel {
   final int wins;
   final int roundWins;
   final double winRate;
+  final int losses;
 
   PlayerModel({
     this.id,
@@ -13,6 +14,7 @@ class PlayerModel {
     required this.wins,
     required this.roundWins,
     required this.winRate,
+    required this.losses,
   });
 
   factory PlayerModel.fromMap(Map<String, dynamic> map) {
@@ -23,6 +25,7 @@ class PlayerModel {
       wins: map['wins'] as int,
       roundWins: map['round_wins'] as int,
       winRate: (map['win_rate'] as num).toDouble(),
+      losses: map['losses'] as int,
     );
   }
 
@@ -34,6 +37,7 @@ class PlayerModel {
       'wins': wins,
       'round_wins': roundWins,
       'win_rate': winRate,
+      'losses': losses,
     };
   }
 }

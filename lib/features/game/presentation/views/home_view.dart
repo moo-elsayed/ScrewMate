@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../widgets/custom_app_bar.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
 import '../widgets/drawer_body.dart';
 import '../widgets/home_view_body.dart';
 

@@ -26,15 +26,16 @@ class AppDatabase {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE ${DatabaseConstants.playersTable} (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL UNIQUE,
-      games_played INTEGER DEFAULT 0,
-      wins INTEGER DEFAULT 0,
-      round_wins INTEGER DEFAULT 0,
-      win_rate REAL DEFAULT 0.0
-    );
-  ''');
+  CREATE TABLE ${DatabaseConstants.playersTable} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    games_played INTEGER DEFAULT 0,
+    wins INTEGER DEFAULT 0,
+    round_wins INTEGER DEFAULT 0,
+    win_rate REAL DEFAULT 0.0,
+    losses INTEGER DEFAULT 0
+  );
+''');
 
     await db.execute('''
     CREATE TABLE ${DatabaseConstants.gamesTable} (

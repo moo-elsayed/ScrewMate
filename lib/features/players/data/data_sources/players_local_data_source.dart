@@ -1,4 +1,5 @@
 import '../../../../core/database/shared_models/player_model.dart';
+import '../models/player_games_states_model.dart';
 
 abstract class PlayerLocalDataSource {
   Future<void> insertPlayer({required PlayerModel player});
@@ -10,4 +11,6 @@ abstract class PlayerLocalDataSource {
   Future<PlayerModel?> getPlayerById({required int id});
 
   Future<void> deletePlayer({required int id});
+
+  Future<List<PlayerGameStatsModel>> getPlayerGameStats(int playerId);
 }

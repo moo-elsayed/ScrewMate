@@ -1,4 +1,5 @@
 import '../../../../../../core/database/shared_models/player_model.dart';
+import '../../../../data/models/player_games_states_model.dart';
 
 abstract class PlayersStates {}
 
@@ -70,4 +71,20 @@ class DeletePlayerFailure extends PlayersStates {
   final String errorMessage;
 
   DeletePlayerFailure({required this.errorMessage});
+}
+
+// getPlayerGamesStates
+
+class GetPlayerGamesStatesLoading extends PlayersStates {}
+
+class GetPlayerGamesStatesSuccess extends PlayersStates {
+  final List<PlayerGameStatsModel> playerGameStatsList;
+
+  GetPlayerGamesStatesSuccess({required this.playerGameStatsList});
+}
+
+class GetPlayerGamesStatesFailure extends PlayersStates {
+  final String errorMessage;
+
+  GetPlayerGamesStatesFailure({required this.errorMessage});
 }

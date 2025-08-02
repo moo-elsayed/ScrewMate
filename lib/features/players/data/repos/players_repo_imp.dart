@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:skru_mate/core/errors/failures.dart';
 import 'package:skru_mate/features/players/data/data_sources/players_local_data_source.dart';
 import 'package:skru_mate/core/database/shared_models/player_model.dart';
+import 'package:skru_mate/features/players/data/models/player_games_states_model.dart';
 import '../../domain/repos/players_repo.dart';
 
 class PlayersRepoImp implements PlayersRepo {
@@ -60,6 +61,20 @@ class PlayersRepoImp implements PlayersRepo {
       return const Right(null);
     } catch (e) {
       return Left(DatabaseFailure(errorMessage: 'Failed to update player'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PlayerGameStatsModel>>> getPlayerGameStats(
+    int playerId,
+  ) async {
+    try {
+      final result = await playerLocalDataSource.getPlayerGameStats(playerId);
+      return Right(result);
+    } catch (e) {
+      return Left(
+        DatabaseFailure(errorMessage: 'Failed to get player games states'),
+      );
     }
   }
 }
