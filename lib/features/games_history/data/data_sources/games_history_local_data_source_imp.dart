@@ -15,10 +15,19 @@ class GamesHistoryLocalDataSourceImpl implements GamesHistoryLocalDataSource {
   @override
   Future<List<GameModel>> getAllGames() async {
     final db = await appDatabase;
-    final result = await db.query(
-      DatabaseConstants.gamesTable,
-      orderBy: 'date DESC',
-    );
+    final result = await db.rawQuery('''
+    SELECT 
+      games.id, 
+      games.date, 
+      games.rounds_count, 
+      games.winner_id, 
+      players.name AS winner_name
+    FROM ${DatabaseConstants.gamesTable} AS games
+    LEFT JOIN ${DatabaseConstants.playersTable} AS players
+      ON games.winner_id = players.id
+    ORDER BY games.date ASC
+  ''');
+
     return result.map((e) => GameModel.fromMap(e)).toList();
   }
 

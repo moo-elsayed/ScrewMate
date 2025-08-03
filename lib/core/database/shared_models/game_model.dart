@@ -3,12 +3,14 @@ class GameModel {
   final String date;
   final int roundsCount;
   final int? winnerId;
+  final String? winnerName;
 
   GameModel({
     this.id,
     required this.date,
     required this.roundsCount,
     this.winnerId,
+    this.winnerName,
   });
 
   factory GameModel.fromMap(Map<String, dynamic> map) {
@@ -17,6 +19,7 @@ class GameModel {
       date: map['date'] as String,
       roundsCount: map['rounds_count'] as int,
       winnerId: map['winner_id'] as int?,
+      winnerName: map['winner_name'],
     );
   }
 
@@ -26,6 +29,7 @@ class GameModel {
       'date': date,
       'rounds_count': roundsCount,
       'winner_id': winnerId,
+      'winner_name': winnerName,
     };
   }
 }

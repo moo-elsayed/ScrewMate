@@ -23,7 +23,12 @@ class DrawerBody extends StatelessWidget {
           Divider(height: 64.h, indent: 10.w, endIndent: 10.w),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: DrawerItem(title: 'Previous Games', onTap: () {}),
+            child: DrawerItem(
+              title: 'Previous Games',
+              onTap: () {
+                context.pushNamed(Routes.previousGamesView);
+              },
+            ),
           ),
           Gap(24.h),
           Padding(

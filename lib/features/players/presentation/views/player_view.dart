@@ -1,20 +1,20 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/theming/styles.dart';
 import 'package:skru_mate/core/widgets/custom_app_bar.dart';
 import 'package:skru_mate/features/players/presentation/widgets/player_view_body.dart';
+import '../../data/models/player_details_args.dart';
 
 class PlayerView extends StatelessWidget {
-  const PlayerView({super.key, required this.playerModel});
+  const PlayerView({super.key, required this.playerDetailsArgs});
 
-  final PlayerModel playerModel;
+  final PlayerDetailsArgs playerDetailsArgs;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        text: playerModel.name,
+        text: playerDetailsArgs.player.name,
         centerTitle: false,
         actions: [
           PopupMenuButton<String>(
@@ -36,14 +36,16 @@ class PlayerView extends StatelessWidget {
                 value: 'delete',
                 child: Text(
                   'Delete',
-                  style: TextStyles.font14WhiteRegular.copyWith(color: Colors.red),
+                  style: TextStyles.font14WhiteRegular.copyWith(
+                    color: Colors.red,
+                  ),
                 ),
               ),
             ],
           ),
         ],
       ),
-      body: PlayerViewBody(playerModel: playerModel),
+      body: PlayerViewBody(playerDetailsArgs: playerDetailsArgs),
     );
   }
 }
