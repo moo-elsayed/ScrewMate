@@ -7,16 +7,6 @@ class PlayersCubit extends Cubit<PlayersStates> {
   PlayersCubit({required this.playersRepo}) : super(StripeInitial());
   final PlayersRepo playersRepo;
 
-  Future insertPlayer({required PlayerModel player}) async {
-    emit(InsertPlayerLoading());
-    var result = await playersRepo.insertPlayer(player: player);
-    result.fold(
-      (failure) =>
-          emit(InsertPlayerFailure(errorMessage: failure.errorMessage)),
-      (_) => emit(InsertPlayerSuccess()),
-    );
-  }
-
   Future getAllPlayers() async {
     emit(GetAllPlayersLoading());
     var result = await playersRepo.getAllPlayers();
@@ -48,7 +38,6 @@ class PlayersCubit extends Cubit<PlayersStates> {
   }
 
   Future deletePlayer({required int id}) async {
-    emit(DeletePlayerLoading());
     var result = await playersRepo.deletePlayer(id: id);
     result.fold(
       (failure) =>

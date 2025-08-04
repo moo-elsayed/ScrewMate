@@ -4,7 +4,7 @@ import '../../../../core/database/shared_models/player_model.dart';
 import '../../data/models/player_games_states_model.dart';
 
 abstract class PlayersRepo {
-  Future<Either<Failure, void>> insertPlayer({required PlayerModel player});
+
 
   Future<Either<Failure, List<PlayerModel>>> getAllPlayers();
 

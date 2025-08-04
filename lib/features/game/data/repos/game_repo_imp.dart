@@ -7,6 +7,8 @@ import 'package:skru_mate/core/errors/failures.dart';
 import 'package:skru_mate/features/game/data/data_sources/game_local_data_source.dart';
 import 'package:skru_mate/features/game/domain/repos/game_repo.dart';
 
+import '../../../../core/database/shared_models/player_model.dart';
+
 class GameRepoImp implements GameRepo {
   final GameLocalDataSource gameLocalDataSource;
 
@@ -21,6 +23,19 @@ class GameRepoImp implements GameRepo {
       return Left(DatabaseFailure(errorMessage: 'Failed to insert game'));
     }
   }
+
+  @override
+  Future<Either<Failure, int>> insertPlayer({
+    required PlayerModel player,
+  }) async {
+    try {
+      final playerId = await gameLocalDataSource.insertPlayer(player: player);
+      return Right(playerId);
+    } catch (e) {
+      return Left(DatabaseFailure(errorMessage: 'Failed to add player'));
+    }
+  }
+
 
   @override
   Future<Either<Failure, void>> insertGamePlayers({

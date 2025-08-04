@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/routing/routes.dart';
+import 'package:skru_mate/features/game/presentation/views/game_view.dart';
 import 'package:skru_mate/features/games_history/presentation/views/previous_games_view.dart';
 import 'package:skru_mate/features/players/presentation/views/player_view.dart';
 import 'package:skru_mate/features/players/presentation/views/top_players_view.dart';
@@ -35,6 +37,9 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (context) => const PreviousGamesView(),
         );
+      case Routes.gameView:
+        final args = arguments as List<PlayerModel>;
+        return MaterialPageRoute(builder: (context) => GameView(players: args));
       default:
         return MaterialPageRoute(
           builder: (context) => Scaffold(

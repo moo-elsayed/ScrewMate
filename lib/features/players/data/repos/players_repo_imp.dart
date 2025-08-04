@@ -40,17 +40,6 @@ class PlayersRepoImp implements PlayersRepo {
     }
   }
 
-  @override
-  Future<Either<Failure, void>> insertPlayer({
-    required PlayerModel player,
-  }) async {
-    try {
-      await playerLocalDataSource.insertPlayer(player: player);
-      return const Right(null);
-    } catch (e) {
-      return Left(DatabaseFailure(errorMessage: 'Failed to add player'));
-    }
-  }
 
   @override
   Future<Either<Failure, void>> updatePlayerStats({

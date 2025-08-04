@@ -37,15 +37,7 @@ class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
     return PlayerModel.fromMap(result.first);
   }
 
-  @override
-  Future<void> insertPlayer({required PlayerModel player}) async {
-    final db = await appDatabase;
-    await db.insert(
-      DatabaseConstants.playersTable,
-      player.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
-  }
+
 
   @override
   Future<void> updatePlayerStats({required PlayerModel player}) async {

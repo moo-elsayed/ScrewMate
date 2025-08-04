@@ -3,16 +3,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import '../../../../core/database/shared_models/player_model.dart';
 import '../../../../core/theming/styles.dart';
+import '../../../../core/widgets/custom_toast.dart';
 
 class SelectPlayersBottomSheet extends StatefulWidget {
   const SelectPlayersBottomSheet({
     super.key,
     required this.players,
     required this.controllers,
+    required this.selectedPlayers,
   });
 
   final List<PlayerModel> players;
   final List<TextEditingController> controllers;
+  final List<PlayerModel> selectedPlayers;
 
   @override
   State<SelectPlayersBottomSheet> createState() =>
@@ -21,6 +24,12 @@ class SelectPlayersBottomSheet extends StatefulWidget {
 
 class _SelectPlayersBottomSheetState extends State<SelectPlayersBottomSheet> {
   final selectedPlayerIds = <int>{};
+
+  @override
+  void initState() {
+    super.initState();
+    selectedPlayerIds.addAll(widget.selectedPlayers.map((p) => p.id!).toList());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,11 +71,29 @@ class _SelectPlayersBottomSheetState extends State<SelectPlayersBottomSheet> {
                   ),
                   onChanged: (value) {
                     if (value == true) {
-                      selectedPlayerIds.add(player.id!);
+                      bool isFull = true;
+
                       for (var controller in widget.controllers) {
-                        if (controller.text == '') {
-                          controller.text = player.name;
+                        if (controller.text.isEmpty) {
+                          isFull = false;
                           break;
+                        }
+                      }
+
+                      if (isFull) {
+                        showCustomToast(
+                          context: context,
+                          message: 'Maximum players selected.',
+                          contentType: ContentType.warning,
+                        );
+                        return;
+                      } else {
+                        selectedPlayerIds.add(player.id!);
+                        for (var controller in widget.controllers) {
+                          if (controller.text == '') {
+                            controller.text = player.name;
+                            break;
+                          }
                         }
                       }
                     } else {

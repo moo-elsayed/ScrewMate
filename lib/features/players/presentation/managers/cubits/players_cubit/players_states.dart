@@ -5,18 +5,6 @@ abstract class PlayersStates {}
 
 class StripeInitial extends PlayersStates {}
 
-// insertPlayer
-
-class InsertPlayerLoading extends PlayersStates {}
-
-class InsertPlayerSuccess extends PlayersStates {}
-
-class InsertPlayerFailure extends PlayersStates {
-  final String errorMessage;
-
-  InsertPlayerFailure({required this.errorMessage});
-}
-
 // getAllPlayers
 
 class GetAllPlayersLoading extends PlayersStates {}

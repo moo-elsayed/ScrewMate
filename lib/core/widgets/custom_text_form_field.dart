@@ -18,6 +18,7 @@ class CustomTextFormField extends StatelessWidget {
     this.contentPadding,
     this.isObscureText,
     this.label,
+    this.focusNode,
   });
 
   final TextEditingController controller;
@@ -31,6 +32,7 @@ class CustomTextFormField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final EdgeInsetsGeometry? contentPadding;
   final bool? isObscureText;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,7 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: isObscureText ?? false,
       keyboardType: keyboardType,
       style: GoogleFonts.lato(),
+      focusNode: focusNode,
       decoration: InputDecoration(
         isDense: true,
         contentPadding:

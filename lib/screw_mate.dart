@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'core/helpers/dependency_injection.dart';
 import 'core/routing/app_router.dart';
 import 'core/routing/routes.dart';
+import 'features/players/domain/repos/players_repo.dart';
+import 'features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
 
 class ScrewMate extends StatelessWidget {
   const ScrewMate({super.key, required this.appRouter});
@@ -14,12 +18,16 @@ class ScrewMate extends StatelessWidget {
       designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
-      child: MaterialApp(
-        title: 'ScrewMate',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark(),
-        initialRoute: Routes.homeView,
-        onGenerateRoute: appRouter.generateRoute,
+      child: BlocProvider(
+        create: (context) =>
+            PlayersCubit(playersRepo: getIt.get<PlayersRepo>()),
+        child: MaterialApp(
+          title: 'ScrewMate',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData.dark(),
+          initialRoute: Routes.homeView,
+          onGenerateRoute: appRouter.generateRoute,
+        ),
       ),
     );
   }

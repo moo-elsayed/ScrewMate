@@ -4,6 +4,7 @@ import 'package:skru_mate/core/database/shared_models/round_model.dart';
 import 'package:skru_mate/core/database/shared_models/round_score_model.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../../core/database/database_constants.dart';
+import '../../../../core/database/shared_models/player_model.dart';
 import 'game_local_data_source.dart';
 
 class GameLocalDataSourceImp implements GameLocalDataSource {
@@ -18,6 +19,16 @@ class GameLocalDataSourceImp implements GameLocalDataSource {
       DatabaseConstants.gamesTable,
       game.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  @override
+  Future<int> insertPlayer({required PlayerModel player}) async {
+    final db = await appDatabase;
+    return await db.insert(
+      DatabaseConstants.playersTable,
+      player.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.ignore,
     );
   }
 
