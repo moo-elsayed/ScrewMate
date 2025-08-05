@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
@@ -17,7 +18,8 @@ class HomeViewBody extends StatefulWidget {
 
 class _HomeViewBodyState extends State<HomeViewBody> {
   int selectedPlayers = 4;
-  int selectedRounds = 4;
+  int selectedRounds = 5;
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,7 @@ class _HomeViewBodyState extends State<HomeViewBody> {
                 arguments: AddPlayersArgs(
                   playersCount: selectedPlayers,
                   roundsCount: selectedRounds,
+                  scaffoldKey: scaffoldKey,
                 ),
               );
             },

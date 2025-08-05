@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/routing/routes.dart';
+import 'package:skru_mate/features/game/data/models/game_args.dart';
 import 'package:skru_mate/features/game/presentation/views/game_view.dart';
 import 'package:skru_mate/features/games_history/presentation/views/previous_games_view.dart';
 import 'package:skru_mate/features/players/presentation/views/player_view.dart';
@@ -17,31 +19,32 @@ class AppRouter {
 
     switch (settings.name) {
       case Routes.homeView:
-        return MaterialPageRoute(builder: (context) => const HomeView());
+        return CupertinoPageRoute(builder: (context) => const HomeView());
       case Routes.addPlayersView:
         final args = arguments as AddPlayersArgs;
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
           builder: (context) => AddPlayersView(
             roundsCount: args.roundsCount,
             playersCount: args.playersCount,
+            scaffoldKey: args.scaffoldKey,
           ),
         );
       case Routes.topPlayersView:
-        return MaterialPageRoute(builder: (context) => const TopPlayersView());
+        return CupertinoPageRoute(builder: (context) => const TopPlayersView());
       case Routes.playerView:
         final args = arguments as PlayerDetailsArgs;
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
           builder: (context) => PlayerView(playerDetailsArgs: args),
         );
       case Routes.previousGamesView:
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
           builder: (context) => const PreviousGamesView(),
         );
       case Routes.gameView:
-        final args = arguments as List<PlayerModel>;
-        return MaterialPageRoute(builder: (context) => GameView(players: args));
+        final args = arguments as GameArgs;
+        return CupertinoPageRoute(builder: (context) => GameView(gameArgs: args));
       default:
-        return MaterialPageRoute(
+        return CupertinoPageRoute(
           builder: (context) => Scaffold(
             body: Center(
               child: Text('No route defined for this ${settings.name}'),

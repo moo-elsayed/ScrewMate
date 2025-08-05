@@ -20,7 +20,7 @@ class GameRepoImp implements GameRepo {
       final gameId = await gameLocalDataSource.insertGame(game: game);
       return Right(gameId);
     } catch (e) {
-      return Left(DatabaseFailure(errorMessage: 'Failed to insert game'));
+      return Left(DatabaseFailure(errorMessage: e.toString()));
     }
   }
 
@@ -52,12 +52,14 @@ class GameRepoImp implements GameRepo {
   }
 
   @override
-  Future<Either<Failure, void>> insertRounds({
+  Future<Either<Failure, List<int>>> insertRounds({
     required List<RoundModel> rounds,
   }) async {
     try {
-      await gameLocalDataSource.insertRounds(rounds: rounds);
-      return const Right(null);
+      List<int> roundsIds = await gameLocalDataSource.insertRounds(
+        rounds: rounds,
+      );
+      return Right(roundsIds);
     } catch (e) {
       return Left(DatabaseFailure(errorMessage: 'Failed to insert rounds'));
     }

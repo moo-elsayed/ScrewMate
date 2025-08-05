@@ -62,10 +62,26 @@ class InsertGamePlayersFailure extends GameStates {
   InsertGamePlayersFailure({required this.errorMessage});
 }
 
+// updatePlayerStats
+
+class UpdatePlayerStatsLoading extends GameStates {}
+
+class UpdatePlayerStatsSuccess extends GameStates {}
+
+class UpdatePlayerStatsFailure extends GameStates {
+  final String errorMessage;
+
+  UpdatePlayerStatsFailure({required this.errorMessage});
+}
+
 // Insert Rounds
 class InsertRoundsLoading extends GameStates {}
 
-class InsertRoundsSuccess extends GameStates {}
+class InsertRoundsSuccess extends GameStates {
+  final List<int> roundsIds;
+
+  InsertRoundsSuccess({required this.roundsIds});
+}
 
 class InsertRoundsFailure extends GameStates {
   final String errorMessage;
