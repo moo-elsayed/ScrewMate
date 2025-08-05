@@ -15,7 +15,7 @@ abstract class GameRepo {
     required List<GamePlayerModel> players,
   });
 
-  Future<Either<Failure, void>> insertRounds({
+  Future<Either<Failure, List<int>>> insertRounds({
     required List<RoundModel> rounds,
   });
 

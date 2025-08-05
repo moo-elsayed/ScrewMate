@@ -9,9 +9,10 @@ abstract class GameLocalDataSource {
 
   Future<int> insertPlayer({required PlayerModel player});
 
+
   Future<void> insertGamePlayers({required List<GamePlayerModel> players});
 
-  Future<void> insertRounds({required List<RoundModel> rounds});
+  Future<List<int>> insertRounds({required List<RoundModel> rounds});
 
   Future<void> insertRoundScores({required List<RoundScoreModel> scores});
 }

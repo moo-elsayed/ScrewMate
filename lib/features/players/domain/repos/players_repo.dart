@@ -5,7 +5,6 @@ import '../../data/models/player_games_states_model.dart';
 
 abstract class PlayersRepo {
 
-
   Future<Either<Failure, List<PlayerModel>>> getAllPlayers();
 
   Future<Either<Failure, void>> updatePlayerStats({required PlayerModel player});

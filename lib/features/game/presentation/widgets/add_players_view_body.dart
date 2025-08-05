@@ -8,6 +8,7 @@ import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_text_form_field.dart';
 import 'package:skru_mate/core/widgets/custom_toast.dart';
+import 'package:skru_mate/features/game/data/models/game_args.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_cubit.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
 import 'package:skru_mate/features/game/presentation/widgets/select_players_bottom_sheet.dart';
@@ -19,10 +20,12 @@ class AddPlayersViewBody extends StatefulWidget {
     super.key,
     required this.playersCount,
     required this.roundsCount,
+    required this.scaffoldKey,
   });
 
   final int playersCount;
   final int roundsCount;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
   @override
   State<AddPlayersViewBody> createState() => _AddPlayersViewBodyState();
@@ -161,8 +164,6 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
               Gap(16.h),
               CustomButton(
                 onTap: () async {
-
-
                   if (_formKey.currentState!.validate()) {
                     final names = _controllers
                         .map((controller) => controller.text.trim())
@@ -223,7 +224,11 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
 
                     context.pushNamed(
                       Routes.gameView,
-                      arguments: selectedPlayers,
+                      arguments: GameArgs(
+                        players: selectedPlayers,
+                        roundsCount: widget.roundsCount,
+                        scaffoldKey: widget.scaffoldKey,
+                      ),
                     );
                   }
                 },

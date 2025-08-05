@@ -21,7 +21,7 @@ class AppDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(path, version: 2, onCreate: _onCreate);
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -43,6 +43,7 @@ class AppDatabase {
       date TEXT NOT NULL,
       rounds_count INTEGER NOT NULL,
       winner_id INTEGER,
+      winner_name TEXT NOT NULL,
       FOREIGN KEY (winner_id) REFERENCES ${DatabaseConstants.playersTable}(id)
     );
   ''');

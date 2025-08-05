@@ -32,6 +32,7 @@ class GameLocalDataSourceImp implements GameLocalDataSource {
     );
   }
 
+
   @override
   Future<void> insertGamePlayers({
     required List<GamePlayerModel> players,
@@ -51,7 +52,7 @@ class GameLocalDataSourceImp implements GameLocalDataSource {
   }
 
   @override
-  Future<void> insertRounds({required List<RoundModel> rounds}) async {
+  Future<List<int>> insertRounds({required List<RoundModel> rounds}) async {
     final db = await appDatabase;
     final batch = db.batch();
 
@@ -63,7 +64,9 @@ class GameLocalDataSourceImp implements GameLocalDataSource {
       );
     }
 
-    await batch.commit(noResult: true);
+    final results = await batch.commit(noResult: false);
+
+    return results.map((e) => e as int).toList();
   }
 
   @override

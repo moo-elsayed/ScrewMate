@@ -40,7 +40,7 @@ class GameCubit extends Cubit<GameStates> {
     result.fold(
       (failure) =>
           emit(InsertRoundsFailure(errorMessage: failure.errorMessage)),
-      (_) => emit(InsertRoundsSuccess()),
+      (roundsIds) => emit(InsertRoundsSuccess(roundsIds: roundsIds)),
     );
   }
 
@@ -74,5 +74,16 @@ class GameCubit extends Cubit<GameStates> {
           emit(GetAllPlayersFailure(errorMessage: failure.errorMessage)),
       (players) => emit(GetAllPlayersSuccess(players: players)),
     );
+  }
+
+  Future updatePlayerStats({required PlayerModel player}) async {
+    // emit(UpdatePlayerStatsLoading());
+    //  var result =
+    await playersRepo.updatePlayerStats(player: player);
+    // result.fold(
+    //   (failure) =>
+    //       emit(UpdatePlayerStatsFailure(errorMessage: failure.errorMessage)),
+    //   (_) => emit(UpdatePlayerStatsSuccess()),
+    // );
   }
 }
