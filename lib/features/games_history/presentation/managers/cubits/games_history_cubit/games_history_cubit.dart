@@ -26,4 +26,12 @@ class GamesHistoryCubit extends Cubit<GamesHistoryStates> {
       (details) => emit(GetGameDetailsSuccess(gameDetails: details)),
     );
   }
+
+  Future<void> deleteGame({required int gameId}) async {
+    await gamesHistoryRepo.deleteGame(gameId: gameId);
+  }
+
+  reverseList() {
+    emit(ReverseListSuccess());
+  }
 }

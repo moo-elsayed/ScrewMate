@@ -39,4 +39,14 @@ class GamesHistoryRepoImp implements GamesHistoryRepo {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deleteGame({required int gameId}) async {
+    try {
+      await gamesLocalDataSource.deleteGame(gameId: gameId);
+      return const Right(null);
+    } catch (e) {
+      return Left(DatabaseFailure(errorMessage: 'Failed to delete game'));
+    }
+  }
 }

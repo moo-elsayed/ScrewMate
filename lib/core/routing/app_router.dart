@@ -26,7 +26,6 @@ class AppRouter {
           builder: (context) => AddPlayersView(
             roundsCount: args.roundsCount,
             playersCount: args.playersCount,
-            scaffoldKey: args.scaffoldKey,
           ),
         );
       case Routes.topPlayersView:

@@ -76,3 +76,5 @@ class GetPlayerGamesStatesFailure extends PlayersStates {
 
   GetPlayerGamesStatesFailure({required this.errorMessage});
 }
+
+class ReverseListSuccess extends PlayersStates {}

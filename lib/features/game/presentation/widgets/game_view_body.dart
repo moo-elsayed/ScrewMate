@@ -1,24 +1,26 @@
 import 'dart:developer';
-import 'dart:math' hide log;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
-import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/colors.dart';
+import 'package:skru_mate/core/theming/styles.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
+import 'package:skru_mate/core/widgets/custom_header.dart';
 import 'package:skru_mate/core/widgets/custom_toast.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_cubit.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
 import '../../../../core/database/shared_models/game_player_model.dart';
 import '../../../../core/database/shared_models/round_model.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
+import '../../../../core/widgets/custom_score_dialog.dart';
 import '../../data/models/game_args.dart';
+import 'custom_score_button.dart';
 
 class GameViewBody extends StatefulWidget {
   const GameViewBody({super.key, required this.gameArgs});
@@ -37,6 +39,7 @@ class _GameViewBodyState extends State<GameViewBody> {
   late List<int> insertedRoundIds;
   late int winnerIndex;
   late int loserIndex;
+  bool isDoubleRound = false;
 
   int getTotalScore(int playerIndex) {
     return roundScores[playerIndex].fold(0, (a, b) => a + b);
@@ -71,8 +74,6 @@ class _GameViewBodyState extends State<GameViewBody> {
       f = true;
     }
 
-    log(roundsWon.toString());
-
     return roundsWon;
   }
 
@@ -84,7 +85,7 @@ class _GameViewBodyState extends State<GameViewBody> {
       (_) => List.generate(widget.gameArgs.roundsCount, (__) => 0),
     );
     setAreWeAddScoreToPlayerToFalse();
-    log(widget.gameArgs.roundsCount.toString());
+    if (round == widget.gameArgs.roundsCount) isDoubleRound = true;
   }
 
   void setAreWeAddScoreToPlayerToFalse() {
@@ -102,7 +103,6 @@ class _GameViewBodyState extends State<GameViewBody> {
         if (state is InsertGameSuccess) {
           gameId = state.gameId;
 
-          // Step 2: Insert GamePlayers
           int index = 0;
           final List<GamePlayerModel> gamePlayers = widget.gameArgs.players.map(
             (player) {
@@ -116,7 +116,6 @@ class _GameViewBodyState extends State<GameViewBody> {
           ).toList();
           gameCubit.insertGamePlayers(players: gamePlayers);
         } else if (state is InsertGamePlayersSuccess) {
-          // Step 3: Insert Rounds
           final List<RoundModel> rounds = List.generate(
             widget.gameArgs.roundsCount,
             (index) {
@@ -128,7 +127,6 @@ class _GameViewBodyState extends State<GameViewBody> {
         } else if (state is InsertRoundsSuccess) {
           insertedRoundIds = state.roundsIds;
 
-          // Step 4: Insert RoundScores
           final List<RoundScoreModel> roundScoreModels = [];
 
           for (
@@ -182,31 +180,10 @@ class _GameViewBodyState extends State<GameViewBody> {
             await gameCubit.updatePlayerStats(player: updatedPlayer);
           }
 
+          await Future.delayed(const Duration(milliseconds: 500));
+
           context.pop();
           context.pop();
-
-          // Future.delayed(
-          //   const Duration(seconds: 4),
-          //   () => showCustomToast(
-          //     context: widget.gameArgs.scaffoldKey.currentContext!,
-          //     message: 'Players stats updated successfully!',
-          //     contentType: ContentType.success,
-          //   ),
-          // );
-
-//           showCustomToast(
-//             context: widget.gameArgs.scaffoldKey.currentContext!,
-//             message: 'Players stats updated successfully!',
-//             contentType: ContentType.success,
-//           );
-//
-// // انتظر 500ms قبل ما تعمل pop مرتين علشان الـ Scaffold لسه عايش
-//           Future.delayed(const Duration(milliseconds: 500), () {
-//             context.pop(); // Pop GameView
-//             context.pop(); // Pop AddPlayerView
-//           });
-
-
         } else if (state is InsertGameFailure) {
           log(state.errorMessage);
         } else if (state is InsertGamePlayersFailure) {
@@ -222,27 +199,40 @@ class _GameViewBodyState extends State<GameViewBody> {
         child: Column(
           children: [
             Gap(12.h),
-            // Round Title
-            Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Round $round',
-                  style: GoogleFonts.lato(
-                    color: ColorsManager.purple.withValues(alpha: 0.9),
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Gap(6.h),
-                Container(
-                  height: 1.h,
-                  width: 60.w,
-                  color: ColorsManager.purple.withValues(alpha: 0.5),
+                CustomHeader(title: 'Round $round'),
+                Row(
+                  children: [
+                    Text(
+                      'Double Round',
+                      style: TextStyle(fontSize: 14.sp, color: Colors.white),
+                    ),
+                    SizedBox(width: 8.w),
+                    Switch(
+                      value: isDoubleRound,
+                      onChanged: (value) {
+                        isDoubleRound = value;
+                        setState(() {});
+                        showCustomToast(
+                          context: context,
+                          message: isDoubleRound
+                              ? 'Double round activated'
+                              : 'Double round deactivated',
+                          contentType: ContentType.success,
+                        );
+                      },
+                      activeColor: ColorsManager.purple,
+                      inactiveThumbColor: Colors.grey[600],
+                      inactiveTrackColor: Colors.grey[800],
+                    ),
+                  ],
                 ),
               ],
             ),
+
             Gap(12.h),
-            // Players List
             Expanded(
               child: ListView.builder(
                 itemCount: widget.gameArgs.players.length,
@@ -267,10 +257,14 @@ class _GameViewBodyState extends State<GameViewBody> {
                       padding: EdgeInsets.all(16.r),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16.r),
-                        border: isRank1
+                        border: !areWeAddScoreToAllPlayers()
+                            ? null
+                            : areWeAddScoreToAllPlayers() && isRank1
                             ? null
                             : Border.all(color: Colors.white54, width: 0.5),
-                        color: isRank1
+                        color: !areWeAddScoreToAllPlayers()
+                            ? ColorsManager.purple.withValues(alpha: 0.9)
+                            : areWeAddScoreToAllPlayers() && isRank1
                             ? ColorsManager.purple.withValues(alpha: 0.9)
                             : Theme.of(context).scaffoldBackgroundColor,
                       ),
@@ -283,19 +277,11 @@ class _GameViewBodyState extends State<GameViewBody> {
                             children: [
                               Text(
                                 player.name,
-                                style: GoogleFonts.lato(
-                                  color: Colors.white,
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: TextStyles.font18WhiteBold,
                               ),
                               Text(
                                 'Rank #$playerRank',
-                                style: GoogleFonts.lato(
-                                  color: Colors.white,
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.w400,
-                                ),
+                                style: TextStyles.font18WhiteRegular,
                               ),
                             ],
                           ),
@@ -323,38 +309,63 @@ class _GameViewBodyState extends State<GameViewBody> {
                                 ),
                               ),
                               if (!areWeAddScoreToPlayer[index])
-                                GestureDetector(
+                                CustomScoreButton(
                                   onTap: () {
-                                    var random = Random();
-                                    int randomNumber = random.nextInt(100);
-                                    roundScores[index][round - 1] =
-                                        randomNumber;
-                                    areWeAddScoreToPlayer[index] = true;
-                                    setState(() {});
+                                    showCupertinoDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return GestureDetector(
+                                          onTap: () => context.pop(),
+                                          child: CustomScoreDialog(
+                                            onSave: (int score) {
+                                              roundScores[index][round - 1] =
+                                                  score;
+                                              areWeAddScoreToPlayer[index] =
+                                                  true;
+                                              setState(() {});
+                                            },
+                                            player: player,
+                                            round: round,
+                                            isDoubleRound: isDoubleRound,
+                                          ),
+                                        );
+                                      },
+                                    );
                                   },
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    margin: EdgeInsets.only(left: 4.w),
-                                    child: Icon(
-                                      Icons.add,
-                                      color: ColorsManager.purple.withValues(
-                                        alpha: 0.9,
-                                      ),
-                                      size: 22,
-                                    ),
-                                  ),
+                                ),
+
+                              if (areWeAddScoreToPlayer[index])
+                                CustomScoreButton(
+                                  icon: Icons.edit,
+                                  onTap: () {
+                                    showCupertinoDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return GestureDetector(
+                                          onTap: () => context.pop(),
+                                          child: CustomScoreDialog(
+                                            onSave: (int score) {
+                                              roundScores[index][round - 1] =
+                                                  score;
+                                              areWeAddScoreToPlayer[index] =
+                                                  true;
+                                              setState(() {});
+                                            },
+                                            player: player,
+                                            round: round,
+                                            isDoubleRound: isDoubleRound,
+                                            scoreOfPlayer:
+                                                roundScores[index][round - 1],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
                                 ),
                               const Spacer(),
                               Text(
                                 '= ${getTotalScore(index)}',
-                                style: GoogleFonts.lato(
-                                  color: Colors.white,
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: TextStyles.font20WhiteBold,
                               ),
                             ],
                           ),
@@ -365,18 +376,69 @@ class _GameViewBodyState extends State<GameViewBody> {
                 },
               ),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 12.h),
+            bottomButtons(gameCubit, context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding bottomButtons(GameCubit gameCubit, BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 12.h),
+      child: Row(
+        spacing: 8.w,
+        children: [
+          if (areWeAddScoreToAllPlayers() ||
+              (round > 1 && !areWeAddScoreToAnyPlayer()))
+            Expanded(
               child: CustomButton(
                 onTap: () {
-                  bool temp = true;
-
-                  for (bool y in areWeAddScoreToPlayer) {
-                    if (y == false) {
-                      temp = y;
-                      break;
-                    }
+                  int numberOfPlayedRounds = !areWeAddScoreToAnyPlayer()
+                      ? round - 1
+                      : round;
+                  if (numberOfPlayedRounds != widget.gameArgs.roundsCount) {
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (context) => ConfirmationDialog(
+                        fullText:
+                            'Are you sure you want to finish the game after round $numberOfPlayedRounds?',
+                        delete: false,
+                        textOkButton: 'Finish',
+                        onDelete: () {
+                          final game = GameModel(
+                            date: DateTime.now().toIso8601String(),
+                            roundsCount: numberOfPlayedRounds,
+                            winnerId: widget.gameArgs.players[winnerIndex].id,
+                            winnerName:
+                                widget.gameArgs.players[winnerIndex].name,
+                          );
+                          log('numberOfPlayedRounds = $numberOfPlayedRounds');
+                          gameCubit.insertGame(game: game);
+                          context.pop();
+                        },
+                      ),
+                    );
+                  } else {
+                    final game = GameModel(
+                      date: DateTime.now().toIso8601String(),
+                      roundsCount: numberOfPlayedRounds,
+                      winnerId: widget.gameArgs.players[winnerIndex].id,
+                      winnerName: widget.gameArgs.players[winnerIndex].name,
+                    );
+                    log('numberOfPlayedRounds = $numberOfPlayedRounds');
+                    gameCubit.insertGame(game: game);
                   }
+                },
+                label: 'Finish Game',
+              ),
+            ),
+
+          if (round < widget.gameArgs.roundsCount)
+            Expanded(
+              child: CustomButton(
+                onTap: () {
+                  bool temp = areWeAddScoreToAllPlayers();
 
                   if (!temp) {
                     showCustomToast(
@@ -385,31 +447,46 @@ class _GameViewBodyState extends State<GameViewBody> {
                       contentType: ContentType.failure,
                     );
                   } else {
-                    if (round < widget.gameArgs.roundsCount) {
-                      round++;
-                      setAreWeAddScoreToPlayerToFalse();
-                      setState(() {});
-                    } else {
-                      // Step 1: Insert Game
-                      final game = GameModel(
-                        date: DateTime.now().toIso8601String(),
-                        roundsCount: widget.gameArgs.roundsCount,
-                        winnerId: widget.gameArgs.players[winnerIndex].id,
-                        winnerName: widget.gameArgs.players[winnerIndex].name,
-                      );
-
-                      gameCubit.insertGame(game: game);
+                    round++;
+                    if (round == widget.gameArgs.roundsCount) {
+                      isDoubleRound = true;
                     }
+                    setAreWeAddScoreToPlayerToFalse();
+                    setState(() {});
                   }
                 },
-                label: round < widget.gameArgs.roundsCount
-                    ? 'Next Round'
-                    : 'Finish Game',
+                notActiveColor: !areWeAddScoreToAllPlayers()
+                    ? ColorsManager.appbarColor
+                    : null,
+                label: 'Next Round',
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
+  }
+
+  bool areWeAddScoreToAllPlayers() {
+    bool temp = true;
+
+    for (bool y in areWeAddScoreToPlayer) {
+      if (y == false) {
+        temp = y;
+        break;
+      }
+    }
+    return temp;
+  }
+
+  bool areWeAddScoreToAnyPlayer() {
+    bool temp = false;
+
+    for (bool y in areWeAddScoreToPlayer) {
+      if (y == true) {
+        temp = y;
+        break;
+      }
+    }
+    return temp;
   }
 }

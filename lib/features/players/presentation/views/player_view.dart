@@ -10,7 +10,7 @@ import 'package:skru_mate/features/players/presentation/managers/cubits/players_
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_states.dart';
 import 'package:skru_mate/features/players/presentation/widgets/player_view_body.dart';
 import '../../data/models/player_details_args.dart';
-import '../../../../core/widgets/delete_confirmation_dialog.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 
 class PlayerView extends StatelessWidget {
   const PlayerView({super.key, required this.playerDetailsArgs});
@@ -44,7 +44,7 @@ class PlayerView extends StatelessWidget {
                 } else if (value == 'delete') {
                   showCupertinoDialog(
                     context: context,
-                    builder: (context) => DeleteConfirmationDialog(
+                    builder: (context) => ConfirmationDialog(
                       name: playerDetailsArgs.player.name,
                       onDelete: () {
                         context.read<PlayersCubit>().deletePlayer(id: playerDetailsArgs.player.id!);

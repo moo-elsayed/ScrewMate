@@ -36,3 +36,17 @@ class GetGameDetailsFailure extends GamesHistoryStates {
 
   GetGameDetailsFailure({required this.errorMessage});
 }
+
+// delete game
+
+class DeleteGameLoading extends GamesHistoryStates {}
+
+class DeleteGameSuccess extends GamesHistoryStates {}
+
+class DeleteGameFailure extends GamesHistoryStates {
+  final String errorMessage;
+
+  DeleteGameFailure({required this.errorMessage});
+}
+
+class ReverseListSuccess extends GamesHistoryStates {}

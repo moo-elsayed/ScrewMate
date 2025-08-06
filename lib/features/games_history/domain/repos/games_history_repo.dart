@@ -6,5 +6,9 @@ import '../../../../core/database/shared_models/game_model.dart';
 abstract class GamesHistoryRepo {
   Future<Either<Failure, List<GameModel>>> getAllGames();
 
-  Future<Either<Failure, GameDetailsModel>> getGameDetails({required int gameId});
+  Future<Either<Failure, GameDetailsModel>> getGameDetails({
+    required int gameId,
+  });
+
+  Future<Either<Failure, void>> deleteGame({required int gameId});
 }

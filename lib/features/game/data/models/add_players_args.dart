@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
 
 class AddPlayersArgs {
   final int playersCount;
   final int roundsCount;
-  final GlobalKey<ScaffoldState> scaffoldKey;
 
   AddPlayersArgs({
     required this.playersCount,
     required this.roundsCount,
-    required this.scaffoldKey,
+
   });
 }

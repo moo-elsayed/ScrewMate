@@ -19,6 +19,8 @@ class CustomTextFormField extends StatelessWidget {
     this.isObscureText,
     this.label,
     this.focusNode,
+    this.fillColor,
+    this.cursorColor,
   });
 
   final TextEditingController controller;
@@ -33,6 +35,8 @@ class CustomTextFormField extends StatelessWidget {
   final EdgeInsetsGeometry? contentPadding;
   final bool? isObscureText;
   final FocusNode? focusNode;
+  final Color? fillColor;
+  final Color? cursorColor;
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +46,10 @@ class CustomTextFormField extends StatelessWidget {
       inputFormatters: inputFormatters,
       maxLength: maxLength,
       obscureText: isObscureText ?? false,
+      cursorColor: cursorColor ?? ColorsManager.purple,
       keyboardType: keyboardType,
       style: GoogleFonts.lato(),
+      cursorErrorColor: cursorColor ?? ColorsManager.purple,
       focusNode: focusNode,
       decoration: InputDecoration(
         isDense: true,
@@ -61,7 +67,7 @@ class CustomTextFormField extends StatelessWidget {
         focusedErrorBorder: buildOutlineInputBorder(),
         errorBorder: buildOutlineInputBorder(Colors.red),
         filled: true,
-        //fillColor: ColorsManager.colorFDFDFF,
+        fillColor: fillColor,
       ),
     );
   }

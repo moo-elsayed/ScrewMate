@@ -7,12 +7,10 @@ class AddPlayersView extends StatelessWidget {
     super.key,
     required this.playersCount,
     required this.roundsCount,
-    required this.scaffoldKey,
   });
 
   final int playersCount;
   final int roundsCount;
-  final GlobalKey<ScaffoldState> scaffoldKey;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +19,6 @@ class AddPlayersView extends StatelessWidget {
       body: AddPlayersViewBody(
         playersCount: playersCount,
         roundsCount: roundsCount,
-        scaffoldKey: scaffoldKey,
       ),
     );
   }

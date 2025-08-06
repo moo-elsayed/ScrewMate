@@ -84,4 +84,49 @@ class GamesHistoryLocalDataSourceImpl implements GamesHistoryLocalDataSource {
       roundScoresByRoundId: roundScoresByRoundId,
     );
   }
+
+  @override
+  Future<void> deleteGame({required int gameId}) async {
+    final db = await appDatabase;
+
+    // 1. Get round IDs related to this game
+    final roundResults = await db.query(
+      DatabaseConstants.roundsTable,
+      columns: ['id'],
+      where: 'game_id = ?',
+      whereArgs: [gameId],
+    );
+
+    final roundIds = roundResults.map((e) => e['id'] as int).toList();
+
+    // 2. Delete round scores
+    for (final roundId in roundIds) {
+      await db.delete(
+        DatabaseConstants.roundScoresTable,
+        where: 'round_id = ?',
+        whereArgs: [roundId],
+      );
+    }
+
+    // 3. Delete rounds
+    await db.delete(
+      DatabaseConstants.roundsTable,
+      where: 'game_id = ?',
+      whereArgs: [gameId],
+    );
+
+    // 4. Delete game players
+    await db.delete(
+      DatabaseConstants.gamePlayersTable,
+      where: 'game_id = ?',
+      whereArgs: [gameId],
+    );
+
+    // 5. Delete the game itself
+    await db.delete(
+      DatabaseConstants.gamesTable,
+      where: 'id = ?',
+      whereArgs: [gameId],
+    );
+  }
 }

@@ -8,6 +8,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.text,
     this.centerTitle = true,
     this.actions,
+    this.leading,
   });
 
   @override
@@ -17,14 +18,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? text;
   final bool centerTitle;
   final List<Widget>? actions;
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(
-        text ?? 'ScrewMate',
-        style: TextStyles.font22WhiteSemiRegular,
-      ),
+      title: Text(text ?? 'ScrewMate', style: TextStyles.font22WhiteRegular),
+      leading: leading,
       centerTitle: centerTitle,
       backgroundColor: ColorsManager.appbarColor,
       surfaceTintColor: ColorsManager.appbarColor,

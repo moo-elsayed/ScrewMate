@@ -5,4 +5,6 @@ abstract class GamesHistoryLocalDataSource {
   Future<List<GameModel>> getAllGames();
 
   Future<GameDetailsModel?> getGameDetails({required int gameId});
+
+  Future<void> deleteGame({required int gameId});
 }

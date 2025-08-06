@@ -20,12 +20,10 @@ class AddPlayersViewBody extends StatefulWidget {
     super.key,
     required this.playersCount,
     required this.roundsCount,
-    required this.scaffoldKey,
   });
 
   final int playersCount;
   final int roundsCount;
-  final GlobalKey<ScaffoldState> scaffoldKey;
 
   @override
   State<AddPlayersViewBody> createState() => _AddPlayersViewBodyState();
@@ -34,7 +32,6 @@ class AddPlayersViewBody extends StatefulWidget {
 class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
   late List<TextEditingController> _controllers;
   final _formKey = GlobalKey<FormState>();
-
   late final List<PlayerModel> playersList;
 
   @override
@@ -81,16 +78,6 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                   Text('Add players:', style: TextStyles.font18WhiteBold),
                   GestureDetector(
                     onTap: () {
-                      // final isFull = isAllPlayersSelected();
-                      // if (isFull) {
-                      //   showCustomToast(
-                      //     context: context,
-                      //     message: 'Maximum players selected.',
-                      //     contentType: ContentType.warning,
-                      //   );
-                      //   return;
-                      // }
-
                       _showPlayerSelectionSheet(
                         context: context,
                         selectedPlayers: getSelectedPlayersList(),
@@ -147,15 +134,6 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                           }
                           return null;
                         },
-                        // suffixIcon: _controllers[index].text.isNotEmpty
-                        //     ? GestureDetector(
-                        //         onTap: () {
-                        //           _controllers[index].text = '';
-                        //           setState(() {});
-                        //         },
-                        //         child: const Icon(Icons.cancel_outlined),
-                        //       )
-                        //     : null,
                       );
                     },
                   ),
@@ -179,8 +157,6 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                         )
                         .toList();
 
-                    final insertFutures = <Future<void>>[];
-
                     for (final name in newNames) {
                       PlayerModel newPlayer = PlayerModel(
                         name: name,
@@ -191,7 +167,7 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                         losses: 0,
                       );
 
-                      final future = context
+                      await context
                           .read<GameCubit>()
                           .insertPlayer(player: newPlayer)
                           .then((result) {
@@ -209,11 +185,7 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                               },
                             );
                           });
-
-                      insertFutures.add(future);
                     }
-
-                    await Future.wait(insertFutures);
 
                     final selectedPlayers = names.map((name) {
                       return playersList.firstWhere(
@@ -227,7 +199,6 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                       arguments: GameArgs(
                         players: selectedPlayers,
                         roundsCount: widget.roundsCount,
-                        scaffoldKey: widget.scaffoldKey,
                       ),
                     );
                   }

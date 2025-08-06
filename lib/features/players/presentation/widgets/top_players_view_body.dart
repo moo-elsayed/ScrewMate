@@ -120,10 +120,12 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
           sortedPlayers = List<PlayerModel>.from(topPlayersList);
           sortedPlayers.sort((a, b) => b.gamesPlayed.compareTo(a.gamesPlayed));
           calculateRanks();
+        } else if (state is ReverseListSuccess) {
+          sortedPlayers = sortedPlayers.reversed.toList();
         }
       },
       builder: (context, state) {
-        if (state is GetAllPlayersSuccess) {
+        if (state is GetAllPlayersSuccess || state is ReverseListSuccess) {
           return Column(
             children: [
               SingleChildScrollView(
