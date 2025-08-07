@@ -34,6 +34,12 @@ class TextStyles {
     color: Colors.white,
   );
 
+  static TextStyle font14BlackRegular = GoogleFonts.lato(
+    fontSize: 14.sp,
+    fontWeight: FontWeightHelper.regular,
+    color: Colors.black,
+  );
+
   static TextStyle font14White70Medium = GoogleFonts.lato(
     fontSize: 14.sp,
     fontWeight: FontWeightHelper.medium,

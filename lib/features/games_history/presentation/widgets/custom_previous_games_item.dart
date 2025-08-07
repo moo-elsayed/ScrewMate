@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/database/shared_models/game_model.dart';
+import '../../../../core/helpers/functions.dart';
 import '../../../../core/theming/styles.dart';
-import 'package:intl/intl.dart';
 
 class CustomPreviousGamesItem extends StatelessWidget {
   const CustomPreviousGamesItem({
@@ -30,7 +30,7 @@ class CustomPreviousGamesItem extends StatelessWidget {
                     : const Text('Winner: deleted player'),
                 subtitleTextStyle: TextStyles.font13White70Regular,
                 trailing: Text(
-                  _formatDate(game.date),
+                  formatDate(game.date),
                   style: TextStyles.font12White54Regular,
                 ),
               )
@@ -38,12 +38,5 @@ class CustomPreviousGamesItem extends StatelessWidget {
               .slideY(begin: 0.2, duration: 300.ms)
               .fadeIn(duration: 300.ms),
     );
-  }
-
-  String _formatDate(String rawDate) {
-    final date = DateTime.tryParse(rawDate);
-    if (date == null) return rawDate; // fallback
-
-    return DateFormat('d MMM, yyyy - h:mm a').format(date);
   }
 }

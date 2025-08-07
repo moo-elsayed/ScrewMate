@@ -5,8 +5,12 @@ import 'package:skru_mate/core/widgets/custom_app_bar.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
 import 'package:skru_mate/features/players/presentation/widgets/top_players_view_body.dart';
 
+import '../../../../core/database/shared_models/player_model.dart';
+
 class TopPlayersView extends StatelessWidget {
-  const TopPlayersView({super.key});
+  const TopPlayersView({super.key, required this.playersList});
+
+  final List<PlayerModel> playersList;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class TopPlayersView extends StatelessWidget {
           ),
         ],
       ),
-      body: const TopPlayersViewBody(),
+      body: TopPlayersViewBody(playersList: playersList),
     );
   }
 }

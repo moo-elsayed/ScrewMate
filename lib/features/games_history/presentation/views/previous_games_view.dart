@@ -5,8 +5,12 @@ import 'package:skru_mate/core/widgets/custom_app_bar.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'package:skru_mate/features/games_history/presentation/widgets/previous_games_view_body.dart';
 
+import '../../../../core/database/shared_models/player_model.dart';
+
 class PreviousGamesView extends StatelessWidget {
-  const PreviousGamesView({super.key});
+  const PreviousGamesView({super.key, required this.playersList});
+
+  final List<PlayerModel> playersList;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class PreviousGamesView extends StatelessWidget {
           ),
         ],
       ),
-      body: const PreviousGamesViewBody(),
+      body: PreviousGamesViewBody(playersList: playersList),
     );
   }
 }

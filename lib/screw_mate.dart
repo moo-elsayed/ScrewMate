@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:skru_mate/core/database/app_database.dart';
-import 'package:skru_mate/features/games_history/data/data_sources/games_history_local_data_source_imp.dart';
 import 'package:skru_mate/features/games_history/data/repos/games_history_repo_imp.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'core/helpers/dependency_injection.dart';
@@ -38,6 +36,7 @@ class ScrewMate extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => GamesHistoryCubit(
+              playersRepo: getIt.get<PlayersRepo>(),
               gamesHistoryRepo: getIt.get<GamesHistoryRepoImp>(),
             ),
           ),

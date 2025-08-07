@@ -6,9 +6,10 @@ import '../theming/colors.dart';
 import '../theming/styles.dart';
 
 class CustomHeader extends StatelessWidget {
-  const CustomHeader({super.key, required this.title});
+  const CustomHeader({super.key, required this.title, this.lineWidth});
 
   final String title;
+  final double? lineWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class CustomHeader extends StatelessWidget {
         Gap(6.h),
         Container(
           height: 1.h,
-          width: 60.w,
+          width: lineWidth ?? 60.w,
           color: ColorsManager.purple.withValues(alpha: 0.5),
         ),
       ],

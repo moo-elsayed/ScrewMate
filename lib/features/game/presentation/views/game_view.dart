@@ -17,24 +17,35 @@ class GameView extends StatelessWidget {
       appBar: CustomAppBar(
         leading: GestureDetector(
           onTap: () {
-            showCupertinoDialog(
-              context: context,
-              builder: (context) => ConfirmationDialog(
-                delete: false,
-                fullText: 'Are you want to leave the game?',
-                textOkButton: 'Yes',
-                onDelete: () {
-                  context.pop();
-                  context.pop();
-                },
-              ),
-            );
+            showLeaveTheGameConfirmation(context);
           },
           child: const Icon(Icons.arrow_back, color: Colors.white),
         ),
         text: 'Current Game',
       ),
-      body: GameViewBody(gameArgs: gameArgs),
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          showLeaveTheGameConfirmation(context);
+        },
+        child: GameViewBody(gameArgs: gameArgs),
+      ),
+    );
+  }
+
+  void showLeaveTheGameConfirmation(BuildContext context) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        delete: false,
+        fullText: 'Are you want to leave the game?',
+        textOkButton: 'Yes',
+        onDelete: () {
+          context.pop();
+          context.pop();
+        },
+      ),
     );
   }
 }

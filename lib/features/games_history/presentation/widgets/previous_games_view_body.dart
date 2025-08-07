@@ -1,20 +1,24 @@
-import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
+import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/colors.dart';
+import 'package:skru_mate/features/games_history/data/models/game_result_view_args.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_states.dart';
 import '../../../../core/database/shared_models/game_model.dart';
+import '../../../../core/database/shared_models/player_model.dart';
 import '../../../../core/widgets/custom_toast.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'custom_previous_games_item.dart';
 
 class PreviousGamesViewBody extends StatefulWidget {
-  const PreviousGamesViewBody({super.key});
+  const PreviousGamesViewBody({super.key, required this.playersList});
+
+  final List<PlayerModel> playersList;
 
   @override
   State<PreviousGamesViewBody> createState() => _PreviousGamesViewBodyState();
@@ -22,11 +26,13 @@ class PreviousGamesViewBody extends StatefulWidget {
 
 class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
   late List<GameModel> previousGames;
+  late List<PlayerModel> allPlayersList;
 
   @override
   void initState() {
     super.initState();
     context.read<GamesHistoryCubit>().getAllGames();
+    allPlayersList = widget.playersList;
   }
 
   @override
@@ -40,9 +46,8 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
         }
       },
       builder: (context, state) {
-        if (state is GetAllGamesSuccess || state is ReverseListSuccess) {
+        if (state is! GetAllGamesLoading) {
           return ListView.separated(
-            // padding: EdgeInsets.only(right: 12.w, left: 12.w),
             physics: const BouncingScrollPhysics(),
             itemCount: previousGames.length,
             separatorBuilder: (_, __) => Divider(
@@ -102,7 +107,13 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
                     game: game,
                     index: index,
                     onTap: () {
-                      log(game.date);
+                      context.pushNamed(
+                        Routes.gameResultView,
+                        arguments: GameResultViewArgs(
+                          gameId: game.id!,
+                          allPlayersList: allPlayersList,
+                        ),
+                      );
                     },
                   ),
                 ),

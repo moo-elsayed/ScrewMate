@@ -18,7 +18,7 @@ import '../../../../core/database/shared_models/game_player_model.dart';
 import '../../../../core/database/shared_models/round_model.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
-import '../../../../core/widgets/custom_score_dialog.dart';
+import 'custom_score_dialog.dart';
 import '../../data/models/game_args.dart';
 import 'custom_score_button.dart';
 
@@ -202,7 +202,7 @@ class _GameViewBodyState extends State<GameViewBody> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomHeader(title: 'Round $round'),
+                CustomHeader(title: 'Round $round', lineWidth: 65.w),
                 Row(
                   children: [
                     Text(
@@ -231,7 +231,6 @@ class _GameViewBodyState extends State<GameViewBody> {
                 ),
               ],
             ),
-
             Gap(12.h),
             Expanded(
               child: ListView.builder(
@@ -287,85 +286,71 @@ class _GameViewBodyState extends State<GameViewBody> {
                           ),
                           Row(
                             children: [
-                              SingleChildScrollView(
-                                child: Row(
-                                  children: List.generate(
-                                    areWeAddScoreToPlayer[index]
-                                        ? round
-                                        : round - 1,
-                                    (i) {
-                                      return Padding(
-                                        padding: EdgeInsets.only(right: 4.w),
-                                        child: Column(
-                                          spacing: 4.h,
-                                          children: [
-                                            Text('R${i + 1}'),
-                                            Text('${roundScores[index][i]}'),
-                                          ],
-                                        ),
-                                      );
-                                    },
+                              ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: 180.w),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: List.generate(
+                                      areWeAddScoreToPlayer[index] ? round : round - 1,
+                                          (i) {
+                                        return Padding(
+                                          padding: EdgeInsets.only(right: 4.w),
+                                          child: Column(
+                                            children: [
+                                              Text('R${i + 1}'),
+                                              Text('${roundScores[index][i]}'),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
-                              if (!areWeAddScoreToPlayer[index])
-                                CustomScoreButton(
-                                  onTap: () {
-                                    showCupertinoDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return GestureDetector(
-                                          onTap: () => context.pop(),
-                                          child: CustomScoreDialog(
-                                            onSave: (int score) {
-                                              roundScores[index][round - 1] =
-                                                  score;
-                                              areWeAddScoreToPlayer[index] =
-                                                  true;
-                                              setState(() {});
-                                            },
-                                            player: player,
-                                            round: round,
-                                            isDoubleRound: isDoubleRound,
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-
-                              if (areWeAddScoreToPlayer[index])
-                                CustomScoreButton(
-                                  icon: Icons.edit,
-                                  onTap: () {
-                                    showCupertinoDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return GestureDetector(
-                                          onTap: () => context.pop(),
-                                          child: CustomScoreDialog(
-                                            onSave: (int score) {
-                                              roundScores[index][round - 1] =
-                                                  score;
-                                              areWeAddScoreToPlayer[index] =
-                                                  true;
-                                              setState(() {});
-                                            },
-                                            player: player,
-                                            round: round,
-                                            isDoubleRound: isDoubleRound,
-                                            scoreOfPlayer:
-                                                roundScores[index][round - 1],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
+                              CustomScoreButton(
+                                icon: areWeAddScoreToPlayer[index]
+                                    ? Icons.edit
+                                    : null,
+                                onTap: () {
+                                  showCupertinoDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return GestureDetector(
+                                        onTap: () => context.pop(),
+                                        child: CustomScoreDialog(
+                                          onSave: (int score) {
+                                            roundScores[index][round - 1] =
+                                                score;
+                                            areWeAddScoreToPlayer[index] = true;
+                                            setState(() {});
+                                          },
+                                          player: player,
+                                          round: round,
+                                          isDoubleRound: isDoubleRound,
+                                          scoreOfPlayer:
+                                              areWeAddScoreToPlayer[index]
+                                              ? roundScores[index][round - 1]
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
                               const Spacer(),
-                              Text(
-                                '= ${getTotalScore(index)}',
-                                style: TextStyles.font20WhiteBold,
+                              Padding(
+                                padding: EdgeInsets.only(left: 8.w),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(maxWidth: 60.w),
+                                  child: Text(
+                                    '= ${getTotalScore(index)}',
+                                    style: TextStyles.font20WhiteBold,
+                                    textAlign: TextAlign.end,
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ),
                               ),
                             ],
                           ),

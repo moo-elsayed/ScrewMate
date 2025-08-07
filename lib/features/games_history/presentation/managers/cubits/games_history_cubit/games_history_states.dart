@@ -1,6 +1,8 @@
 import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import 'package:skru_mate/features/games_history/data/models/game_details_model.dart';
 
+import '../../../../../../core/database/shared_models/player_model.dart';
+
 abstract class GamesHistoryStates {}
 
 class GamesHistoryInitial extends GamesHistoryStates {}
@@ -50,3 +52,20 @@ class DeleteGameFailure extends GamesHistoryStates {
 }
 
 class ReverseListSuccess extends GamesHistoryStates {}
+
+
+// getAllPlayers
+
+class GetAllPlayersLoading extends GamesHistoryStates {}
+
+class GetAllPlayersSuccess extends GamesHistoryStates {
+  final List<PlayerModel> players;
+
+  GetAllPlayersSuccess({required this.players});
+}
+
+class GetAllPlayersFailure extends GamesHistoryStates {
+  final String errorMessage;
+
+  GetAllPlayersFailure({required this.errorMessage});
+}
