@@ -10,64 +10,41 @@ import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
 import 'drawer_item.dart';
 
-class DrawerBody extends StatefulWidget {
+class DrawerBody extends StatelessWidget {
   const DrawerBody({super.key});
 
   @override
-  State<DrawerBody> createState() => _DrawerBodyState();
-}
-
-class _DrawerBodyState extends State<DrawerBody> {
-  late List<PlayerModel> players;
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<GameCubit>().getAllPlayers();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocListener<GameCubit, GameStates>(
-      listener: (context, state) {
-        if (state is GetAllPlayersSuccess) {
-          players = state.players;
-        }
-      },
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 32.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text('ScrewMate', style: TextStyles.font24WhiteSemibold),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 32.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text('ScrewMate', style: TextStyles.font24WhiteSemibold),
+          ),
+          Divider(height: 64.h, indent: 10.w, endIndent: 10.w),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: DrawerItem(
+              title: 'Previous Games',
+              onTap: () {
+                context.pushNamed(Routes.previousGamesView);
+              },
             ),
-            Divider(height: 64.h, indent: 10.w, endIndent: 10.w),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: DrawerItem(
-                title: 'Previous Games',
-                onTap: () {
-                  context.pushNamed(
-                    Routes.previousGamesView,
-                    arguments: players,
-                  );
-                },
-              ),
+          ),
+          Gap(24.h),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: DrawerItem(
+              title: 'Top Players',
+              onTap: () {
+                context.pushNamed(Routes.topPlayersView);
+              },
             ),
-            Gap(24.h),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: DrawerItem(
-                title: 'Top Players',
-                onTap: () {
-                  context.pushNamed(Routes.topPlayersView, arguments: players);
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

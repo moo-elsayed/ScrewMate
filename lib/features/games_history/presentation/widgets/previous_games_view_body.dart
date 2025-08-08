@@ -16,9 +16,7 @@ import '../managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'custom_previous_games_item.dart';
 
 class PreviousGamesViewBody extends StatefulWidget {
-  const PreviousGamesViewBody({super.key, required this.playersList});
-
-  final List<PlayerModel> playersList;
+  const PreviousGamesViewBody({super.key});
 
   @override
   State<PreviousGamesViewBody> createState() => _PreviousGamesViewBodyState();
@@ -27,12 +25,20 @@ class PreviousGamesViewBody extends StatefulWidget {
 class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
   late List<GameModel> previousGames;
   late List<PlayerModel> allPlayersList;
+  final validStates = [
+    GetAllGamesSuccess,
+    GetAllPlayersSuccess,
+    GetGameDetailsSuccess,
+    GetGameDetailsFailure,
+    GetGameDetailsLoading,
+    ReverseListSuccess,
+  ];
 
   @override
   void initState() {
     super.initState();
     context.read<GamesHistoryCubit>().getAllGames();
-    allPlayersList = widget.playersList;
+    context.read<GamesHistoryCubit>().getAllPlayers();
   }
 
   @override
@@ -41,12 +47,14 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
       listener: (context, state) {
         if (state is GetAllGamesSuccess) {
           previousGames = state.games;
+        } else if (state is GetAllPlayersSuccess) {
+          allPlayersList = state.players;
         } else if (state is ReverseListSuccess) {
           previousGames = previousGames.reversed.toList();
         }
       },
       builder: (context, state) {
-        if (state is! GetAllGamesLoading) {
+        if (validStates.any((type) => state.runtimeType == type)) {
           return ListView.separated(
             physics: const BouncingScrollPhysics(),
             itemCount: previousGames.length,

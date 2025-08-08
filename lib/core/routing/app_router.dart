@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/features/game/data/models/game_args.dart';
 import 'package:skru_mate/features/game/presentation/views/game_view.dart';
@@ -31,9 +30,8 @@ class AppRouter {
           ),
         );
       case Routes.topPlayersView:
-        final args = arguments as List<PlayerModel>;
         return CupertinoPageRoute(
-          builder: (context) => TopPlayersView(playersList: args),
+          builder: (context) => const TopPlayersView(),
         );
       case Routes.playerView:
         final args = arguments as PlayerDetailsArgs;
@@ -41,9 +39,8 @@ class AppRouter {
           builder: (context) => PlayerView(playerDetailsArgs: args),
         );
       case Routes.previousGamesView:
-        final args = arguments as List<PlayerModel>;
         return CupertinoPageRoute(
-          builder: (context) => PreviousGamesView(playersList: args),
+          builder: (context) => PreviousGamesView(),
         );
       case Routes.gameView:
         final args = arguments as GameArgs;

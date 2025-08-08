@@ -13,9 +13,7 @@ import 'custom_player_item.dart';
 import 'custom_sort_item.dart';
 
 class TopPlayersViewBody extends StatefulWidget {
-  const TopPlayersViewBody({super.key, required this.playersList});
-
-  final List<PlayerModel> playersList;
+  const TopPlayersViewBody({super.key});
 
   @override
   State<TopPlayersViewBody> createState() => _TopPlayersViewBodyState();
@@ -110,10 +108,7 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
   @override
   void initState() {
     super.initState();
-    topPlayersList = widget.playersList;
-    sortedPlayers = List<PlayerModel>.from(topPlayersList);
-    sortedPlayers.sort((a, b) => b.gamesPlayed.compareTo(a.gamesPlayed));
-    calculateRanks();
+    context.read<PlayersCubit>().getAllPlayers();
   }
 
   @override
@@ -122,69 +117,80 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
       listener: (context, state) {
         if (state is ReverseListSuccess) {
           sortedPlayers = sortedPlayers.reversed.toList();
+        } else if (state is GetAllPlayersSuccess) {
+          topPlayersList = state.players;
+          sortedPlayers = List<PlayerModel>.from(topPlayersList);
+          sortedPlayers.sort((a, b) => b.gamesPlayed.compareTo(a.gamesPlayed));
+          calculateRanks();
         }
       },
-      builder: (context, state) => Column(
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(sortOptions.length, (index) {
-                final String sortOption = sortOptions[index];
-                final bool isSelected = selectedSortIndex == index;
-                return CustomSortItem(
-                  onTap: () {
-                    selectedSortIndex = index;
-                    sortPlayers();
-                  },
-                  isSelected: isSelected,
-                  sortOption: sortOption,
-                  marginToRight: index == sortOptions.length - 1,
-                );
-              }),
-            ),
-          ),
-          Gap(8.h),
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: List.generate(sortedPlayers.length, (index) {
-                  final PlayerModel player = sortedPlayers[index];
-                  final playerStatValue = getValueBySortIndex(
-                    player,
-                    selectedSortIndex,
-                  );
-                  final rank =
-                      ranksMap[sortOptions[selectedSortIndex]]?[playerStatValue] ??
-                      0;
-
-                  return CustomPlayerItem(
-                        player: player,
-                        index: index + 1,
-                        rank: rank,
-                        selectedSortIndex: selectedSortIndex,
-                        marginToBottom: index == sortedPlayers.length - 1,
-                        onTap: () {
-                          final statRanks = getStatRanks(player);
-                          context.pushNamed(
-                            Routes.playerView,
-                            arguments: PlayerDetailsArgs(
-                              player: player,
-                              statRanks: statRanks,
-                            ),
-                          );
-                        },
-                      )
-                      .animate(delay: Duration(milliseconds: 50 * index))
-                      .slideY(begin: 0.2, duration: 300.ms)
-                      .fadeIn(duration: 300.ms);
-                }),
+      builder: (context, state) {
+        if (state is GetAllPlayersSuccess || state is ReverseListSuccess) {
+          return Column(
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(sortOptions.length, (index) {
+                    final String sortOption = sortOptions[index];
+                    final bool isSelected = selectedSortIndex == index;
+                    return CustomSortItem(
+                      onTap: () {
+                        selectedSortIndex = index;
+                        sortPlayers();
+                      },
+                      isSelected: isSelected,
+                      sortOption: sortOption,
+                      marginToRight: index == sortOptions.length - 1,
+                    );
+                  }),
+                ),
               ),
-            ),
-          ),
-        ],
-      ),
+              Gap(8.h),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: List.generate(sortedPlayers.length, (index) {
+                      final PlayerModel player = sortedPlayers[index];
+                      final playerStatValue = getValueBySortIndex(
+                        player,
+                        selectedSortIndex,
+                      );
+                      final rank =
+                          ranksMap[sortOptions[selectedSortIndex]]?[playerStatValue] ??
+                          0;
+
+                      return CustomPlayerItem(
+                            player: player,
+                            index: index + 1,
+                            rank: rank,
+                            selectedSortIndex: selectedSortIndex,
+                            marginToBottom: index == sortedPlayers.length - 1,
+                            onTap: () {
+                              final statRanks = getStatRanks(player);
+                              context.pushNamed(
+                                Routes.playerView,
+                                arguments: PlayerDetailsArgs(
+                                  player: player,
+                                  statRanks: statRanks,
+                                ),
+                              );
+                            },
+                          )
+                          .animate(delay: Duration(milliseconds: 50 * index))
+                          .slideY(begin: 0.2, duration: 300.ms)
+                          .fadeIn(duration: 300.ms);
+                    }),
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
     );
   }
 

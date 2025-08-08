@@ -48,9 +48,8 @@ class _CustomScoreDialogState extends State<CustomScoreDialog> {
     _controller.addListener(() {
       final isNowEmpty = _controller.text.trim().isEmpty;
       if (isNowEmpty != isTextEmpty) {
-        setState(() {
-          isTextEmpty = isNowEmpty;
-        });
+        isTextEmpty = isNowEmpty;
+        setState(() {});
       }
     });
   }
