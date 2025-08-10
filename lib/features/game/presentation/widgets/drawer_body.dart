@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/styles.dart';
-import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_cubit.dart';
-import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
 import 'drawer_item.dart';
 
 class DrawerBody extends StatelessWidget {

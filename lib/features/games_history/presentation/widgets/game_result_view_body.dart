@@ -108,7 +108,9 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '${playerNamesById[player.playerId]}',
+                                    playerNamesById[player.playerId] != null
+                                        ? '${playerNamesById[player.playerId]}'
+                                        : 'Deleted player',
                                     style: TextStyles.font18WhiteBold,
                                   ),
                                   Text(

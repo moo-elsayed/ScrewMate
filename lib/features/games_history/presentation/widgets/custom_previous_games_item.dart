@@ -26,8 +26,10 @@ class CustomPreviousGamesItem extends StatelessWidget {
                 title: Text('Game #${game.id}'),
                 titleTextStyle: TextStyles.font17WhiteBold,
                 subtitle: game.winnerName != null
-                    ? Text('Winner: ${game.winnerName}')
-                    : const Text('Winner: deleted player'),
+                    ? game.winnerName!.contains(', ')
+                          ? Text('Winners: ${game.winnerName}')
+                          : Text('Winner: ${game.winnerName}')
+                    : const Text('Winner: Deleted player'),
                 subtitleTextStyle: TextStyles.font13White70Regular,
                 trailing: Text(
                   formatDate(game.date),

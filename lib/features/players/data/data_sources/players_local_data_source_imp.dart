@@ -37,8 +37,6 @@ class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
     return PlayerModel.fromMap(result.first);
   }
 
-
-
   @override
   Future<void> updatePlayerStats({required PlayerModel player}) async {
     final db = await appDatabase;
@@ -56,21 +54,22 @@ class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
 
     final result = await db.rawQuery(
       '''
-      SELECT
-        g.id AS game_id,
-        g.date,
-        g.rounds_count,
-        gp.total_score,
-        (
-          SELECT COUNT(*) + 1
-          FROM game_players gp2
-          WHERE gp2.game_id = gp.game_id AND gp2.total_score > gp.total_score
-        ) AS rank
-      FROM game_players gp
-      JOIN games g ON g.id = gp.game_id
-      WHERE gp.player_id = ?
-      ORDER BY g.date DESC;
-    ''',
+  SELECT
+    g.id AS game_id,
+    g.date,
+    g.rounds_count,
+    gp.total_score,
+    (
+      SELECT COUNT(*) + 1
+      FROM game_players gp2
+      WHERE gp2.game_id = gp.game_id 
+        AND gp2.total_score < gp.total_score
+    ) AS rank
+  FROM game_players gp
+  JOIN games g ON g.id = gp.game_id
+  WHERE gp.player_id = ?
+  ORDER BY g.date DESC;
+  ''',
       [playerId],
     );
 

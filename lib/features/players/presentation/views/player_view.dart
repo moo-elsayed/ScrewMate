@@ -111,7 +111,10 @@ class _PlayerViewState extends State<PlayerView> {
             ),
           ],
         ),
-        body: PlayerViewBody(playerDetailsArgs: widget.playerDetailsArgs),
+        body: PlayerViewBody(
+          playerDetailsArgs: widget.playerDetailsArgs,
+          playerName: playerName,
+        ),
       ),
     );
   }

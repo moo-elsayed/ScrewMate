@@ -2,14 +2,14 @@ class GameModel {
   final int? id;
   final String date;
   final int roundsCount;
-  final int? winnerId;
+  final String? winnersId;
   final String? winnerName;
 
   GameModel({
     this.id,
     required this.date,
     required this.roundsCount,
-    this.winnerId,
+    this.winnersId,
     this.winnerName,
   });
 
@@ -18,7 +18,7 @@ class GameModel {
       id: map['id'] as int?,
       date: map['date'] as String,
       roundsCount: map['rounds_count'] as int,
-      winnerId: map['winner_id'] as int?,
+      winnersId: map['winners_ids'] as String?,
       winnerName: map['winner_name'],
     );
   }
@@ -28,7 +28,7 @@ class GameModel {
       'id': id,
       'date': date,
       'rounds_count': roundsCount,
-      'winner_id': winnerId,
+      'winners_ids': winnersId,
       'winner_name': winnerName,
     };
   }

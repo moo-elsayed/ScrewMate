@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/routing/routes.dart';
+import 'package:skru_mate/core/theming/styles.dart';
 import 'package:skru_mate/features/players/data/models/player_details_args.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_states.dart';
@@ -28,6 +29,14 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
     'Round Wins',
     'Win Rate',
     'Losses',
+  ];
+
+  final validStates = [
+    GetAllPlayersSuccess,
+    ReverseListSuccess,
+    GetPlayerGamesStatesSuccess,
+    GetPlayerGamesStatesFailure,
+    GetPlayerGamesStatesLoading,
   ];
 
   int selectedSortIndex = 0;
@@ -125,7 +134,7 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
         }
       },
       builder: (context, state) {
-        if (state is GetAllPlayersSuccess || state is ReverseListSuccess) {
+        if (validStates.any((type) => state.runtimeType == type)) {
           return Column(
             children: [
               SingleChildScrollView(
@@ -147,44 +156,57 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
                 ),
               ),
               Gap(8.h),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    children: List.generate(sortedPlayers.length, (index) {
-                      final PlayerModel player = sortedPlayers[index];
-                      final playerStatValue = getValueBySortIndex(
-                        player,
-                        selectedSortIndex,
-                      );
-                      final rank =
-                          ranksMap[sortOptions[selectedSortIndex]]?[playerStatValue] ??
-                          0;
+              topPlayersList.isEmpty
+                  ? Expanded(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [Text('There are no players yet',style: TextStyles.font16WhiteRegular,)],
+                      ),
+                  )
+                  : Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          children: List.generate(sortedPlayers.length, (
+                            index,
+                          ) {
+                            final PlayerModel player = sortedPlayers[index];
+                            final playerStatValue = getValueBySortIndex(
+                              player,
+                              selectedSortIndex,
+                            );
+                            final rank =
+                                ranksMap[sortOptions[selectedSortIndex]]?[playerStatValue] ??
+                                0;
 
-                      return CustomPlayerItem(
-                            player: player,
-                            index: index + 1,
-                            rank: rank,
-                            selectedSortIndex: selectedSortIndex,
-                            marginToBottom: index == sortedPlayers.length - 1,
-                            onTap: () {
-                              final statRanks = getStatRanks(player);
-                              context.pushNamed(
-                                Routes.playerView,
-                                arguments: PlayerDetailsArgs(
+                            return CustomPlayerItem(
                                   player: player,
-                                  statRanks: statRanks,
-                                ),
-                              );
-                            },
-                          )
-                          .animate(delay: Duration(milliseconds: 50 * index))
-                          .slideY(begin: 0.2, duration: 300.ms)
-                          .fadeIn(duration: 300.ms);
-                    }),
-                  ),
-                ),
-              ),
+                                  index: index + 1,
+                                  rank: rank,
+                                  selectedSortIndex: selectedSortIndex,
+                                  marginToBottom:
+                                      index == sortedPlayers.length - 1,
+                                  onTap: () {
+                                    final statRanks = getStatRanks(player);
+                                    context.pushNamed(
+                                      Routes.playerView,
+                                      arguments: PlayerDetailsArgs(
+                                        player: player,
+                                        statRanks: statRanks,
+                                        playersList: topPlayersList,
+                                      ),
+                                    );
+                                  },
+                                )
+                                .animate(
+                                  delay: Duration(milliseconds: 50 * index),
+                                )
+                                .slideY(begin: 0.2, duration: 300.ms)
+                                .fadeIn(duration: 300.ms);
+                          }),
+                        ),
+                      ),
+                    ),
             ],
           );
         } else {

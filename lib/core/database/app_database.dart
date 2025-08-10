@@ -21,7 +21,7 @@ class AppDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
-    return await openDatabase(path, version: 2, onCreate: _onCreate);
+    return await openDatabase(path, version: 4, onCreate: _onCreate);
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -38,14 +38,13 @@ class AppDatabase {
 ''');
 
     await db.execute('''
-    CREATE TABLE ${DatabaseConstants.gamesTable} (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      date TEXT NOT NULL,
-      rounds_count INTEGER NOT NULL,
-      winner_id INTEGER,
-      winner_name TEXT NOT NULL,
-      FOREIGN KEY (winner_id) REFERENCES ${DatabaseConstants.playersTable}(id)
-    );
+   CREATE TABLE ${DatabaseConstants.gamesTable} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    rounds_count INTEGER NOT NULL,
+    winners_ids TEXT NOT NULL,
+    winner_name TEXT NOT NULL
+   );
   ''');
 
     await db.execute('''

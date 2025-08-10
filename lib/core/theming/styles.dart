@@ -58,6 +58,12 @@ class TextStyles {
     color: Colors.white,
   );
 
+  static TextStyle font15WhiteBold = GoogleFonts.lato(
+    fontSize: 15.sp,
+    fontWeight: FontWeightHelper.bold,
+    color: Colors.white,
+  );
+
   static TextStyle font16WhiteBold = GoogleFonts.lato(
     fontSize: 16.sp,
     fontWeight: FontWeightHelper.bold,

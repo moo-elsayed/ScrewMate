@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
+import '../../../../core/helpers/functions.dart';
 import '../../../../core/theming/colors.dart';
 import '../../../../core/theming/styles.dart';
 
@@ -59,15 +60,5 @@ class CustomPlayerStatItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Color getRankColor(int? rank) {
-    return rank == 1
-        ? ColorsManager.gold
-        : rank == 2
-        ? ColorsManager.sliver
-        : rank == 3
-        ? ColorsManager.bronze
-        : Colors.brown;
   }
 }

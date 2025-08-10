@@ -40,7 +40,7 @@ class AppRouter {
         );
       case Routes.previousGamesView:
         return CupertinoPageRoute(
-          builder: (context) => PreviousGamesView(),
+          builder: (context) => const PreviousGamesView(),
         );
       case Routes.gameView:
         final args = arguments as GameArgs;

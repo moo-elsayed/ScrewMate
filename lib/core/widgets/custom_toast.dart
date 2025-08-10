@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:skru_mate/core/theming/styles.dart';
 
 enum ContentType { success, failure, warning }
 
@@ -47,7 +48,7 @@ void showCustomToast({
           child: Text(
             message,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
+            style: TextStyles.font14WhiteRegular,
           ),
         ),
       ],

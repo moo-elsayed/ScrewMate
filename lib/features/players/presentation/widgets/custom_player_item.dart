@@ -63,7 +63,7 @@ class CustomPlayerItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('#$rank  ${player.name}', style: TextStyles.font14WhiteBold),
+            Expanded(child: Text('#$rank  ${player.name}',style: TextStyles.font14WhiteBold)),
             Text(trailingText, style: TextStyles.font12White70Medium),
           ],
         ),
