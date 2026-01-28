@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
-import 'package:skru_mate/core/theming/colors.dart';
-import 'package:skru_mate/core/theming/styles.dart';
+import 'package:skru_mate/core/theming/app_colors.dart';
+import 'package:skru_mate/core/theming/app_text_styles.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_text_form_field.dart';
 import '../../../../core/database/shared_models/player_model.dart';
@@ -62,7 +62,7 @@ class _CustomScoreDialogState extends State<CustomScoreDialog> {
 
   @override
   Widget build(BuildContext context) {
-    MediaQueryData mediaQueryData = MediaQuery.of(context);
+    final MediaQueryData mediaQueryData = MediaQuery.of(context);
     return Material(
       color: Colors.black38,
       child: Padding(
@@ -128,7 +128,7 @@ class _CustomScoreDialogState extends State<CustomScoreDialog> {
                             }
                           },
                           notActiveColor: tapOnScrew
-                              ? ColorsManager.appbarColor
+                              ? AppColors.appbarColor
                               : null,
                           label: 'Screw (0)',
                         ),
@@ -147,7 +147,7 @@ class _CustomScoreDialogState extends State<CustomScoreDialog> {
                                 },
                                 label: 'Score × 2',
                                 notActiveColor: tapOnScore2
-                                    ? ColorsManager.appbarColor
+                                    ? AppColors.appbarColor
                                     : null,
                               ),
                             ),
@@ -163,7 +163,7 @@ class _CustomScoreDialogState extends State<CustomScoreDialog> {
                                   },
                                   label: 'Score × 4',
                                   notActiveColor: tapOnScore4
-                                      ? ColorsManager.appbarColor
+                                      ? AppColors.appbarColor
                                       : null,
                                 ),
                               ),
@@ -180,7 +180,7 @@ class _CustomScoreDialogState extends State<CustomScoreDialog> {
                           },
                           label: 'Save Score',
                           notActiveColor: isTextEmpty
-                              ? ColorsManager.appbarColor
+                              ? AppColors.appbarColor
                               : null,
                         ),
                         Gap(8.h),
@@ -188,7 +188,7 @@ class _CustomScoreDialogState extends State<CustomScoreDialog> {
                           onTap: _resetScore,
                           child: Text(
                             'Reset',
-                            style: TextStyles.font14BlackRegular.copyWith(
+                            style: AppTextStyles.font14BlackRegular.copyWith(
                               height: 2,
                               decorationColor: Colors.black,
                               decoration: TextDecoration.underline,

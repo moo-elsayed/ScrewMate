@@ -9,8 +9,7 @@ class TopPlayersView extends StatelessWidget {
   const TopPlayersView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: CustomAppBar(
         text: 'Top Players',
         actions: [
@@ -27,5 +26,4 @@ class TopPlayersView extends StatelessWidget {
       ),
       body: const TopPlayersViewBody(),
     );
-  }
 }

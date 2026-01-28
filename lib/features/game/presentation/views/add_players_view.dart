@@ -13,13 +13,11 @@ class AddPlayersView extends StatelessWidget {
   final int roundsCount;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: const CustomAppBar(),
       body: AddPlayersViewBody(
         playersCount: playersCount,
         roundsCount: roundsCount,
       ),
     );
-  }
 }

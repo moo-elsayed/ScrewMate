@@ -24,52 +24,51 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   int selectedRounds = 5;
 
   @override
-  Widget build(BuildContext context) {
-    return BlocListener<GameCubit, GameStates>(
-      listener: (context, state) {
-        if (state is InsertRoundScoresSuccess) {
-          Future.delayed(
-            const Duration(seconds: 2,milliseconds: 500),
-            () => showCustomToast(
+  Widget build(BuildContext context) => BlocListener<GameCubit, GameStates>(
+    listener: (context, state) {
+      if (state is InsertRoundScoresSuccess) {
+        Future.delayed(const Duration(seconds: 2, milliseconds: 500), () {
+          if (context.mounted) {
+            showCustomToast(
               context: context,
               message: 'Players stats updated successfully!',
               contentType: ContentType.success,
-            ),
-          );
-        }
-      },
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SelectNumberOfPlayers(
-              onSelected: (int value) {
-                selectedPlayers = value;
-              },
-            ),
-            Divider(height: 48.h, indent: 40.w, endIndent: 40.w),
-            SelectNumberOfRounds(
-              onSelected: (int value) {
-                selectedRounds = value;
-              },
-            ),
-            Gap(48.h),
-            CustomButton(
-              onTap: () {
-                context.pushNamed(
-                  Routes.addPlayersView,
-                  arguments: AddPlayersArgs(
-                    playersCount: selectedPlayers,
-                    roundsCount: selectedRounds,
-                  ),
-                );
-              },
-              label: 'Next',
-            ),
-          ],
-        ),
+            );
+          }
+        });
+      }
+    },
+    child: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SelectNumberOfPlayers(
+            onSelected: (int value) {
+              selectedPlayers = value;
+            },
+          ),
+          Divider(height: 48.h, indent: 40.w, endIndent: 40.w),
+          SelectNumberOfRounds(
+            onSelected: (int value) {
+              selectedRounds = value;
+            },
+          ),
+          Gap(48.h),
+          CustomButton(
+            onTap: () {
+              context.pushNamed(
+                Routes.addPlayersView,
+                arguments: AddPlayersArgs(
+                  playersCount: selectedPlayers,
+                  roundsCount: selectedRounds,
+                ),
+              );
+            },
+            label: 'Next',
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

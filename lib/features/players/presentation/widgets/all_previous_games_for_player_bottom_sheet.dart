@@ -19,8 +19,7 @@ class AllPreviousGamesForPlayerBottomSheet extends StatelessWidget {
   final List<PlayerModel> players;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
+  Widget build(BuildContext context) => Padding(
       padding: EdgeInsets.only(top: 12.h,left: 8.w,right: 8.w),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -54,5 +53,4 @@ class AllPreviousGamesForPlayerBottomSheet extends StatelessWidget {
         ],
       ),
     );
-  }
 }

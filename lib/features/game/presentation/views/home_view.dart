@@ -8,8 +8,7 @@ class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       drawer: SafeArea(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 250.w),
@@ -19,5 +18,4 @@ class HomeView extends StatelessWidget {
       appBar: const CustomAppBar(),
       body: const SafeArea(child: HomeViewBody()),
     );
-  }
 }

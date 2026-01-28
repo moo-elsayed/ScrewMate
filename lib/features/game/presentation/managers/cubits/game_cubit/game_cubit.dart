@@ -56,7 +56,7 @@ class GameCubit extends Cubit<GameStates> {
 
   Future insertPlayer({required PlayerModel player}) async {
     //emit(InsertPlayerLoading());
-    var result = await gameRepo.insertPlayer(player: player);
+    final result = await gameRepo.insertPlayer(player: player);
     return result;
     // result.fold(
     //   (failure) =>
@@ -68,7 +68,7 @@ class GameCubit extends Cubit<GameStates> {
   /// from players feature
   Future getAllPlayers() async {
     emit(GetAllPlayersLoading());
-    var result = await playersRepo.getAllPlayers();
+    final result = await playersRepo.getAllPlayers();
     result.fold(
       (failure) =>
           emit(GetAllPlayersFailure(errorMessage: failure.errorMessage)),

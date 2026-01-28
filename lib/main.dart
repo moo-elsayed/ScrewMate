@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:skru_mate/core/routing/app_router.dart';
 import 'package:skru_mate/screw_mate.dart';
 import 'package:skru_mate/simple_bloc_onserver.dart';
-import 'core/helpers/dependency_injection.dart';
+import 'core/helpers/di.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

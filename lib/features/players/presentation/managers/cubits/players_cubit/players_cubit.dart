@@ -9,7 +9,7 @@ class PlayersCubit extends Cubit<PlayersStates> {
 
   Future getAllPlayers() async {
     emit(GetAllPlayersLoading());
-    var result = await playersRepo.getAllPlayers();
+    final result = await playersRepo.getAllPlayers();
     result.fold(
       (failure) =>
           emit(GetAllPlayersFailure(errorMessage: failure.errorMessage)),
@@ -19,7 +19,7 @@ class PlayersCubit extends Cubit<PlayersStates> {
 
   Future updatePlayerStats({required PlayerModel player}) async {
     emit(UpdatePlayerStatsLoading());
-    var result = await playersRepo.updatePlayerStats(player: player);
+    final result = await playersRepo.updatePlayerStats(player: player);
     result.fold(
       (failure) =>
           emit(UpdatePlayerStatsFailure(errorMessage: failure.errorMessage)),
@@ -29,7 +29,7 @@ class PlayersCubit extends Cubit<PlayersStates> {
 
   Future getPlayerById({required int id}) async {
     emit(GetPlayerByIdLoading());
-    var result = await playersRepo.getPlayerById(id: id);
+    final result = await playersRepo.getPlayerById(id: id);
     result.fold(
       (failure) =>
           emit(GetPlayerByIdFailure(errorMessage: failure.errorMessage)),
@@ -38,7 +38,7 @@ class PlayersCubit extends Cubit<PlayersStates> {
   }
 
   Future deletePlayer({required int id}) async {
-    var result = await playersRepo.deletePlayer(id: id);
+    final result = await playersRepo.deletePlayer(id: id);
     result.fold(
       (failure) =>
           emit(DeletePlayerFailure(errorMessage: failure.errorMessage)),
@@ -48,7 +48,7 @@ class PlayersCubit extends Cubit<PlayersStates> {
 
   Future getPlayerGameStats(int playerId) async {
     emit(GetPlayerGamesStatesLoading());
-    var result = await playersRepo.getPlayerGameStats(playerId);
+    final result = await playersRepo.getPlayerGameStats(playerId);
     result.fold(
       (failure) =>
           emit(GetPlayerGamesStatesFailure(errorMessage: failure.errorMessage)),

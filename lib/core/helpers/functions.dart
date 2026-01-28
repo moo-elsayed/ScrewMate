@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../theming/colors.dart';
+import '../theming/app_colors.dart';
 
 String formatDate(String rawDate) {
   final date = DateTime.tryParse(rawDate);
@@ -9,12 +9,10 @@ String formatDate(String rawDate) {
   return DateFormat('d MMM, yyyy - h:mm a').format(date);
 }
 
-Color getRankColor(int? rank) {
-  return rank == 1
-      ? ColorsManager.gold
+Color getRankColor(int? rank) => rank == 1
+      ? AppColors.gold
       : rank == 2
-      ? ColorsManager.sliver
+      ? AppColors.sliver
       : rank == 3
-      ? ColorsManager.bronze
+      ? AppColors.bronze
       : Colors.brown;
-}

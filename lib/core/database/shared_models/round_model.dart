@@ -1,7 +1,4 @@
 class RoundModel {
-  final int? id;
-  final int gameId;
-  final int roundNumber;
 
   RoundModel({
     this.id,
@@ -9,19 +6,18 @@ class RoundModel {
     required this.roundNumber,
   });
 
-  factory RoundModel.fromMap(Map<String, dynamic> map) {
-    return RoundModel(
+  factory RoundModel.fromMap(Map<String, dynamic> map) => RoundModel(
       id: map['id'],
       gameId: map['game_id'],
       roundNumber: map['round_number'],
     );
-  }
+  final int? id;
+  final int gameId;
+  final int roundNumber;
 
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toMap() => {
       'id': id,
       'game_id': gameId,
       'round_number': roundNumber,
     };
-  }
 }

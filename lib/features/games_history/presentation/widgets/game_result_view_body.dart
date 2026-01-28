@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,14 +7,14 @@ import 'package:gap/gap.dart';
 import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import 'package:skru_mate/core/database/shared_models/game_player_model.dart';
 import 'package:skru_mate/core/database/shared_models/round_model.dart';
-import 'package:skru_mate/core/widgets/custom_header.dart';
 import 'package:skru_mate/features/games_history/data/models/game_details_model.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_states.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
-import '../../../../core/theming/colors.dart';
-import '../../../../core/theming/styles.dart';
+import '../../../../core/theming/app_colors.dart';
+import '../../../../core/theming/app_text_styles.dart';
 import '../../data/models/game_result_view_args.dart';
+import 'custom_game_player_card.dart';
 
 class GameResultViewBody extends StatefulWidget {
   const GameResultViewBody({super.key, required this.gameResultViewArgs});
@@ -32,17 +33,10 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
   late Map<int, String> playerNamesById;
   List<int> playersScores = [];
 
-  void getPlayersTotalScore() {
-    for (GamePlayerModel player in players) {
-      playersScores.add(player.totalScore);
-    }
-    playersScores.sort();
-  }
-
   @override
   void initState() {
     super.initState();
-    GameResultViewArgs gameResultViewArgs = widget.gameResultViewArgs;
+    final GameResultViewArgs gameResultViewArgs = widget.gameResultViewArgs;
     context.read<GamesHistoryCubit>().getGameDetails(
       gameId: gameResultViewArgs.gameId,
     );
@@ -52,128 +46,161 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
-      listener: (context, state) {
-        if (state is GetGameDetailsSuccess) {
-          GameDetailsModel gameDetailsModel = state.gameDetails;
-          game = gameDetailsModel.game;
-          players = gameDetailsModel.players;
-          rounds = gameDetailsModel.rounds;
-          r = gameDetailsModel.roundScoresByRoundId;
-          getPlayersTotalScore();
-        } else if (state is GetGameDetailsFailure) {
-          log(state.errorMessage);
-        }
-      },
-      builder: (context, state) {
-        if (state is GetGameDetailsSuccess) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Column(
-              children: [
-                Gap(12.h),
-                CustomHeader(title: 'Final Scores', lineWidth: 95.w),
-                Gap(12.h),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: players.length,
-                    physics: const BouncingScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      GamePlayerModel player = players[index];
-                      int playerRank =
-                          playersScores.indexOf(player.totalScore) + 1;
-                      return Padding(
-                        padding: EdgeInsets.only(
-                          top: 12.h,
-                          bottom: index == players.length - 1 ? 12.h : 0,
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.all(16.r),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.r),
-                            border: playerRank == 1
-                                ? null
-                                : Border.all(color: Colors.white54, width: 0.5),
-                            color: playerRank == 1
-                                ? ColorsManager.purple.withValues(alpha: 0.9)
-                                : Theme.of(context).scaffoldBackgroundColor,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: 16.h,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    playerNamesById[player.playerId] != null
-                                        ? '${playerNamesById[player.playerId]}'
-                                        : 'Deleted player',
-                                    style: TextStyles.font18WhiteBold,
-                                  ),
-                                  Text(
-                                    'Rank #$playerRank',
-                                    style: TextStyles.font18WhiteRegular,
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  SingleChildScrollView(
-                                    child: Row(
-                                      children: List.generate(rounds.length, (
-                                        i,
-                                      ) {
-                                        final scoresInRound =
-                                            r[rounds[i].id] ?? [];
-                                        final scoreForThisPlayer = scoresInRound
-                                            .firstWhere(
-                                              (s) =>
-                                                  s.playerId == player.playerId,
-                                              orElse: () => RoundScoreModel(
-                                                roundId: rounds[i].id!,
-                                                playerId: player.playerId,
-                                                score: 0,
-                                              ),
-                                            );
-                                        return Padding(
-                                          padding: EdgeInsets.only(right: 4.w),
-                                          child: Column(
-                                            spacing: 4.h,
-                                            children: [
-                                              Text('R${i + 1}'),
-                                              Text(
-                                                '${scoreForThisPlayer.score}',
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Text(
-                                    '= ${player.totalScore}',
-                                    style: TextStyles.font20WhiteBold,
-                                  ),
-                                ],
-                              ),
-                            ],
+  Widget build(BuildContext context) =>
+      BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
+        listener: (context, state) {
+          if (state is GetGameDetailsSuccess) {
+            final GameDetailsModel gameDetailsModel = state.gameDetails;
+            game = gameDetailsModel.game;
+            players = List.from(gameDetailsModel.players);
+            players.sort((a, b) => a.totalScore.compareTo(b.totalScore));
+            rounds = gameDetailsModel.rounds;
+            r = gameDetailsModel.roundScoresByRoundId;
+            playersScores = players.map((e) => e.totalScore).toList();
+          } else if (state is GetGameDetailsFailure) {
+            log(state.errorMessage);
+          }
+        },
+        builder: (context, state) {
+          if (state is GetGameDetailsSuccess) {
+            final top3 = players.take(3).toList();
+            final restOfPlayers = players.skip(3).toList();
+
+            return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.h),
+                    child: Column(
+                      children: [
+                        Text(
+                          '🏆 GAME OVER 🏆',
+                          style: AppTextStyles.font22PurpleBold.copyWith(
+                            fontSize: 28.sp,
+                            color: AppColors.purple,
+                            letterSpacing: 2,
                           ),
                         ),
-                      );
-                    },
+                        Gap(24.h),
+                        if (top3.isNotEmpty)
+                          SizedBox(
+                            height: 220.h,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                if (top3.length > 1)
+                                  _buildPodiumPlayer(
+                                    player: top3[1],
+                                    rank: 2,
+                                    height: 140.h,
+                                    color: AppColors.sliver,
+                                  ),
+                                _buildPodiumPlayer(
+                                  player: top3[0],
+                                  rank: 1,
+                                  height: 180.h,
+                                  color: AppColors.gold,
+                                  isWinner: true,
+                                ),
+                                if (top3.length > 2)
+                                  _buildPodiumPlayer(
+                                    player: top3[2],
+                                    rank: 3,
+                                    height: 120.h,
+                                    color: AppColors.bronze,
+                                  ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
+                if (restOfPlayers.isNotEmpty)
+                  SliverPadding(
+                    padding: .symmetric(horizontal: 24.w, vertical: 12.h),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final GamePlayerModel player = restOfPlayers[index];
+                        final int realRank = index + 4;
+                        return Padding(
+                          padding: .only(bottom: 14.h),
+                          child: CustomGamePlayerCard(
+                            playerRank: realRank,
+                            playerNamesById: playerNamesById,
+                            player: player,
+                            rounds: rounds,
+                            r: r,
+                          ),
+                        );
+                      }, childCount: restOfPlayers.length),
+                    ),
+                  ),
+                SliverToBoxAdapter(child: Gap(30.h)),
+              ],
+            );
+          } else {
+            return const Center(child: CupertinoActivityIndicator());
+          }
+        },
+      );
+
+  Widget _buildPodiumPlayer({
+    required GamePlayerModel player,
+    required int rank,
+    required double height,
+    required Color color,
+    bool isWinner = false,
+  }) => Padding(
+    padding: .symmetric(horizontal: 8.w),
+    child: Column(
+      mainAxisAlignment: .end,
+      children: [
+        Text(
+          playerNamesById[player.playerId] ?? 'Unknown',
+          style: AppTextStyles.font14WhiteBold.copyWith(
+            color: isWinner ? Colors.amber : Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          '${player.totalScore} pts',
+          style: AppTextStyles.font12WhiteMedium.copyWith(
+            color: Colors.white70,
+          ),
+        ),
+        Gap(8.h),
+        Container(
+          width: isWinner ? 90.w : 75.w,
+          height: height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                color.withValues(alpha: 0.8),
+                color.withValues(alpha: 0.3),
               ],
             ),
-          );
-        } else {
-          return const SizedBox();
-        }
-      },
-    );
-  }
+            borderRadius: .only(
+              topLeft: .circular(12.r),
+              topRight: .circular(12.r),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isWinner)
+                Icon(Icons.emoji_events, color: Colors.white, size: 30.sp),
+              Text('$rank', style: AppTextStyles.font36WhiteBold),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }

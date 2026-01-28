@@ -9,8 +9,7 @@ class PreviousGamesView extends StatelessWidget {
   const PreviousGamesView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: CustomAppBar(
         text: 'Previous Games',
         actions: [
@@ -27,5 +26,4 @@ class PreviousGamesView extends StatelessWidget {
       ),
       body: const PreviousGamesViewBody(),
     );
-  }
 }

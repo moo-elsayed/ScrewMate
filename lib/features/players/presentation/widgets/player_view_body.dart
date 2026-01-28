@@ -42,7 +42,7 @@ class _PlayerViewBodyState extends State<PlayerViewBody> {
   void initState() {
     super.initState();
 
-    PlayerDetailsArgs playerDetailsArgs = widget.playerDetailsArgs;
+    final PlayerDetailsArgs playerDetailsArgs = widget.playerDetailsArgs;
 
     players = playerDetailsArgs.playersList;
     context.read<PlayersCubit>().getPlayerGameStats(
@@ -51,8 +51,7 @@ class _PlayerViewBodyState extends State<PlayerViewBody> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
+  Widget build(BuildContext context) => Padding(
       padding: EdgeInsets.only(top: 16.h, right: 12.w, left: 12.w),
       child: Column(
         children: [
@@ -122,7 +121,6 @@ class _PlayerViewBodyState extends State<PlayerViewBody> {
         ],
       ),
     );
-  }
 
   void showAllGames(BuildContext context) {
     showModalBottomSheet(
@@ -132,12 +130,10 @@ class _PlayerViewBodyState extends State<PlayerViewBody> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       isScrollControlled: true,
-      builder: (_) {
-        return AllPreviousGamesForPlayerBottomSheet(
+      builder: (_) => AllPreviousGamesForPlayerBottomSheet(
           playerGameStatsList: playerGameStatsList,
           players: players,
-        );
-      },
+        ),
     );
   }
 }

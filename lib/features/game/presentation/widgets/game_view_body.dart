@@ -7,20 +7,19 @@ import 'package:gap/gap.dart';
 import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
-import 'package:skru_mate/core/theming/colors.dart';
-import 'package:skru_mate/core/theming/styles.dart';
+import 'package:skru_mate/core/theming/app_colors.dart';
+import 'package:skru_mate/core/theming/app_text_styles.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_header.dart';
 import 'package:skru_mate/core/widgets/custom_toast.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_cubit.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
+import 'package:skru_mate/features/game/presentation/widgets/custom_player_card.dart';
 import '../../../../core/database/shared_models/game_player_model.dart';
 import '../../../../core/database/shared_models/round_model.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
-import 'custom_score_dialog.dart';
 import '../../data/models/game_args.dart';
-import 'custom_score_button.dart';
 
 class GameViewBody extends StatefulWidget {
   const GameViewBody({super.key, required this.gameArgs});
@@ -34,31 +33,50 @@ class GameViewBody extends StatefulWidget {
 class _GameViewBodyState extends State<GameViewBody> {
   int round = 1;
   late List<List<int>> roundScores;
-  late List<bool> areWeAddScoreToPlayer;
+  late ValueNotifier<List<bool>> areWeAddScoreToPlayer;
   late int gameId;
   late List<int> insertedRoundIds;
   bool isDoubleRound = false;
   late int minScore;
   late int maxScore;
 
-  int getTotalScore(int playerIndex) {
-    return roundScores[playerIndex].fold(0, (a, b) => a + b);
+  @override
+  void initState() {
+    super.initState();
+    areWeAddScoreToPlayer = ValueNotifier(
+      List.generate(widget.gameArgs.players.length, (_) => false),
+    );
+    roundScores = List.generate(
+      widget.gameArgs.players.length,
+      (_) => List.generate(widget.gameArgs.roundsCount, (__) => 0),
+    );
+    setAreWeAddScoreToPlayerToFalse();
+    if (round == widget.gameArgs.roundsCount) isDoubleRound = true;
   }
 
-  List<int> getPlayerRanks() {
-    List<int> totalScores = List.generate(
+  @override
+  void dispose() {
+    areWeAddScoreToPlayer.dispose();
+    super.dispose();
+  }
+
+  int getTotalScore(int playerIndex) =>
+      roundScores[playerIndex].fold(0, (a, b) => a + b);
+
+  int getPlayerRank(int index) {
+    final List<int> totalScores = List.generate(
       widget.gameArgs.players.length,
       (i) => getTotalScore(i),
     );
 
-    List<int> sorted = [...totalScores]..sort((b, a) => b.compareTo(a));
-    return totalScores.map((s) => sorted.indexOf(s) + 1).toList();
+    final List<int> sorted = [...totalScores]..sort((b, a) => b.compareTo(a));
+    return totalScores.map((s) => sorted.indexOf(s) + 1).toList()[index];
   }
 
   int getRoundsWonByPlayer(PlayerModel player) {
-    int playerIndex = widget.gameArgs.players.indexOf(player);
+    final int playerIndex = widget.gameArgs.players.indexOf(player);
     int roundsWon = 0;
-    List<int> playerScores = roundScores[playerIndex];
+    final List<int> playerScores = roundScores[playerIndex];
 
     for (int i = 0; i < widget.gameArgs.roundsCount; i++) {
       bool f = true;
@@ -77,50 +95,64 @@ class _GameViewBodyState extends State<GameViewBody> {
     return roundsWon;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    roundScores = List.generate(
-      widget.gameArgs.players.length,
-      (_) => List.generate(widget.gameArgs.roundsCount, (__) => 0),
-    );
-    setAreWeAddScoreToPlayerToFalse();
-    if (round == widget.gameArgs.roundsCount) isDoubleRound = true;
-  }
+  void setAreWeAddScoreToPlayerToFalse() => areWeAddScoreToPlayer.value =
+      List.generate(widget.gameArgs.players.length, (_) => false);
 
-  void setAreWeAddScoreToPlayerToFalse() {
-    areWeAddScoreToPlayer = List.generate(
-      widget.gameArgs.players.length,
-      (_) => false,
-    );
-  }
+  String getWinnersIds() => widget.gameArgs.players
+      .where(
+        (p) => getTotalScore(widget.gameArgs.players.indexOf(p)) == minScore,
+      )
+      .map((p) => p.id)
+      .join(',');
+
+  bool areWeAddScoreToAllPlayers() =>
+      areWeAddScoreToPlayer.value.every((element) => element == true);
+
+  bool areWeAddScoreToAnyPlayer() =>
+      areWeAddScoreToPlayer.value.any((element) => element == true);
 
   @override
   Widget build(BuildContext context) {
     final gameCubit = context.read<GameCubit>();
+    final List<int> sortedIndices = List.generate(
+      widget.gameArgs.players.length,
+      (i) => i,
+    );
+    sortedIndices.sort((a, b) {
+      final int scoreA = getTotalScore(a);
+      final int scoreB = getTotalScore(b);
+      return scoreA.compareTo(scoreB);
+    });
+    if (widget.gameArgs.players.isNotEmpty) {
+      minScore = getTotalScore(0);
+      maxScore = getTotalScore(0);
+      for (int i = 0; i < widget.gameArgs.players.length; i++) {
+        final int s = getTotalScore(i);
+        if (s < minScore) minScore = s;
+        if (s > maxScore) maxScore = s;
+      }
+    }
     return BlocListener<GameCubit, GameStates>(
       listener: (context, state) async {
         if (state is InsertGameSuccess) {
           gameId = state.gameId;
 
           int index = 0;
-          final List<GamePlayerModel> gamePlayers = widget.gameArgs.players.map(
-            (player) {
-              return GamePlayerModel(
-                gameId: gameId,
-                playerId: player.id!,
-                totalScore: getTotalScore(index++),
-                roundsWon: getRoundsWonByPlayer(player),
-              );
-            },
-          ).toList();
+          final List<GamePlayerModel> gamePlayers = widget.gameArgs.players
+              .map(
+                (player) => GamePlayerModel(
+                  gameId: gameId,
+                  playerId: player.id!,
+                  totalScore: getTotalScore(index++),
+                  roundsWon: getRoundsWonByPlayer(player),
+                ),
+              )
+              .toList();
           gameCubit.insertGamePlayers(players: gamePlayers);
         } else if (state is InsertGamePlayersSuccess) {
           final List<RoundModel> rounds = List.generate(
             widget.gameArgs.roundsCount,
-            (index) {
-              return RoundModel(gameId: gameId, roundNumber: round);
-            },
+            (index) => RoundModel(gameId: gameId, roundNumber: round),
           );
 
           gameCubit.insertRounds(rounds: rounds);
@@ -160,11 +192,13 @@ class _GameViewBodyState extends State<GameViewBody> {
           int x = 0;
 
           for (PlayerModel player in widget.gameArgs.players) {
-            bool winner = getTotalScore(x) == minScore;
-            bool loser = getTotalScore(x) == maxScore;
+            final bool winner = getTotalScore(x) == minScore;
+            final bool loser = getTotalScore(x) == maxScore;
 
-            int newWinsCount = winner ? player.wins + 1 : player.wins;
-            int newLossesCount = loser ? player.losses + 1 : player.losses;
+            final int newWinsCount = winner ? player.wins + 1 : player.wins;
+            final int newLossesCount = loser
+                ? player.losses + 1
+                : player.losses;
 
             final updatedPlayer = PlayerModel(
               id: player.id,
@@ -182,8 +216,10 @@ class _GameViewBodyState extends State<GameViewBody> {
 
           await Future.delayed(const Duration(milliseconds: 500));
 
-          context.pop();
-          context.pop();
+          if (context.mounted) {
+            context.pop();
+            context.pop();
+          }
         } else if (state is InsertGameFailure) {
           log(state.errorMessage);
         } else if (state is InsertGamePlayersFailure) {
@@ -194,18 +230,17 @@ class _GameViewBodyState extends State<GameViewBody> {
           log(state.errorMessage);
         }
       },
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          children: [
-            Gap(12.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 24.w),
+            child: Row(
+              mainAxisAlignment: .spaceBetween,
               children: [
                 CustomHeader(title: 'Round $round', lineWidth: 65.w),
                 Row(
                   children: [
-                    Text('Double Round', style: TextStyles.font14WhiteRegular),
+                    Text('Double Round', style: AppTextStyles.font14WhiteRegular),
                     SizedBox(width: 8.w),
                     Switch(
                       value: isDoubleRound,
@@ -217,10 +252,10 @@ class _GameViewBodyState extends State<GameViewBody> {
                           message: isDoubleRound
                               ? 'Double round activated'
                               : 'Double round deactivated',
-                          contentType: ContentType.success,
+                          contentType: .success,
                         );
                       },
-                      activeColor: ColorsManager.purple,
+                      activeThumbColor: AppColors.purple,
                       inactiveThumbColor: Colors.grey[600],
                       inactiveTrackColor: Colors.grey[800],
                     ),
@@ -228,281 +263,143 @@ class _GameViewBodyState extends State<GameViewBody> {
                 ),
               ],
             ),
-            Gap(12.h),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.gameArgs.players.length,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  PlayerModel player = widget.gameArgs.players[index];
-                  int playerRank = getPlayerRanks()[index];
-                  bool isRank1 = playerRank == 1;
-                  int playerScore = getTotalScore(index);
-                  if (index == 0) {
-                    minScore = playerScore;
-                    maxScore = playerScore;
-                  } else {
-                    if (playerScore < minScore) {
-                      minScore = playerScore;
-                    }
-                    if (playerScore > maxScore) {
-                      maxScore = playerScore;
-                    }
-                  }
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      top: 12.h,
-                      bottom: index == widget.gameArgs.players.length - 1
-                          ? 12.h
-                          : 0,
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.all(16.r),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.r),
-                        border: !areWeAddScoreToAllPlayers()
-                            ? null
-                            : areWeAddScoreToAllPlayers() && isRank1
-                            ? null
-                            : Border.all(color: Colors.white54, width: 0.5),
-                        color: !areWeAddScoreToAllPlayers()
-                            ? ColorsManager.purple.withValues(alpha: 0.9)
-                            : areWeAddScoreToAllPlayers() && isRank1
-                            ? ColorsManager.purple.withValues(alpha: 0.9)
-                            : Theme.of(context).scaffoldBackgroundColor,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 16.h,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                player.name,
-                                style: TextStyles.font18WhiteBold,
-                              ),
-                              Text(
-                                'Rank #$playerRank',
-                                style: TextStyles.font18WhiteRegular,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 180.w),
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: List.generate(
-                                      areWeAddScoreToPlayer[index]
-                                          ? round
-                                          : round - 1,
-                                      (i) {
-                                        return Padding(
-                                          padding: EdgeInsets.only(right: 4.w),
-                                          child: Column(
-                                            children: [
-                                              Text('R${i + 1}'),
-                                              Text('${roundScores[index][i]}'),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              CustomScoreButton(
-                                icon: areWeAddScoreToPlayer[index]
-                                    ? Icons.edit
-                                    : null,
-                                onTap: () {
-                                  showCupertinoDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return GestureDetector(
-                                        onTap: () => context.pop(),
-                                        child: CustomScoreDialog(
-                                          onSave: (int score) {
-                                            roundScores[index][round - 1] =
-                                                score;
-                                            areWeAddScoreToPlayer[index] = true;
-                                            setState(() {});
-                                          },
-                                          player: player,
-                                          round: round,
-                                          isDoubleRound: isDoubleRound,
-                                          scoreOfPlayer:
-                                              areWeAddScoreToPlayer[index]
-                                              ? roundScores[index][round - 1]
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                              const Spacer(),
-                              Padding(
-                                padding: EdgeInsets.only(left: 8.w),
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(maxWidth: 60.w),
-                                  child: Text(
-                                    '= $playerScore',
-                                    style: TextStyles.font20WhiteBold,
-                                    textAlign: TextAlign.end,
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+          ),
+          Expanded(
+            child: ListView.separated(
+              itemCount: widget.gameArgs.players.length,
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+              separatorBuilder: (context, index) => Gap(14.h),
+              itemBuilder: (context, index) {
+                final int originalIndex = sortedIndices[index];
+                final PlayerModel player =
+                    widget.gameArgs.players[originalIndex];
+                final int playerRank = getPlayerRank(originalIndex);
+                final bool isRank1 = playerRank == 1;
+                final int playerScore = getTotalScore(originalIndex);
+                return ValueListenableBuilder(
+                  valueListenable: areWeAddScoreToPlayer,
+                  builder: (context, value, child) => CustomPlayerCard(
+                    dialogOnSave: () {
+                      value[originalIndex] = true;
+                      setState(() {});
+                    },
+                    areWeAddScoreToAllPlayers: areWeAddScoreToAllPlayers(),
+                    isRank1: isRank1,
+                    player: player,
+                    playerRank: playerRank,
+                    areWeAddScoreToThisPlayer: value[originalIndex],
+                    round: round,
+                    roundScore: roundScores[originalIndex],
+                    isDoubleRound: isDoubleRound,
+                    playerScore: playerScore,
+                    areWeAddScoreToAnyPlayer: areWeAddScoreToAnyPlayer(),
+                  ),
+                );
+              },
             ),
+          ),
+          if (MediaQuery.of(context).viewInsets.bottom == 0)
             bottomButtons(gameCubit, context),
-          ],
-        ),
+        ],
       ),
     );
   }
 
-  Padding bottomButtons(GameCubit gameCubit, BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 12.h),
-      child: Row(
-        spacing: 8.w,
-        children: [
-          if (areWeAddScoreToAllPlayers() ||
-              (round > 1 && !areWeAddScoreToAnyPlayer()) ||
-              round == widget.gameArgs.roundsCount)
-            Expanded(
-              child: CustomButton(
-                notActiveColor:
-                    (!areWeAddScoreToAnyPlayer() && round != 1) ||
-                        areWeAddScoreToAllPlayers()
-                    ? null
-                    : ColorsManager.appbarColor,
-                onTap: () {
-                  int numberOfPlayedRounds = !areWeAddScoreToAnyPlayer()
-                      ? round - 1
-                      : round;
-                  if (numberOfPlayedRounds != widget.gameArgs.roundsCount &&
-                      numberOfPlayedRounds != 0) {
-                    showCupertinoDialog(
-                      context: context,
-                      builder: (context) => ConfirmationDialog(
-                        fullText:
-                            'Are you sure you want to finish the game after round $numberOfPlayedRounds?',
-                        delete: false,
-                        textOkButton: 'Finish',
-                        onDelete: () {
-                          final winnersIds = getWinnersIds();
-                          log(winnersIds);
-                          final game = GameModel(
-                            date: DateTime.now().toIso8601String(),
-                            roundsCount: numberOfPlayedRounds,
-                            winnersId: winnersIds,
-                            // because of NOT NULL condition in database
-                            winnerName: '',
-                          );
-                          gameCubit.insertGame(game: game);
-                          context.pop();
-                        },
-                      ),
-                    );
-                  } else {
-                    if (!areWeAddScoreToAllPlayers()) {
-                      showCustomToast(
-                        context: context,
-                        message: 'Add Score to all players first!',
-                        contentType: ContentType.failure,
-                      );
-                      return;
-                    }
-                    final winnersIds = getWinnersIds();
-                    log(winnersIds);
-                    final game = GameModel(
-                      date: DateTime.now().toIso8601String(),
-                      roundsCount: numberOfPlayedRounds,
-                      winnersId: winnersIds,
-                      // because of NOT NULL condition in database
-                      winnerName: '',
-                    );
-                    gameCubit.insertGame(game: game);
-                  }
-                },
-                label: 'Finish Game',
-              ),
-            ),
-
-          if (round < widget.gameArgs.roundsCount)
-            Expanded(
-              child: CustomButton(
-                onTap: () {
+  Padding bottomButtons(GameCubit gameCubit, BuildContext context) => Padding(
+    padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 24.w),
+    child: Row(
+      spacing: 8.w,
+      children: [
+        if (areWeAddScoreToAllPlayers() ||
+            (round > 1 && !areWeAddScoreToAnyPlayer()) ||
+            round == widget.gameArgs.roundsCount)
+          Expanded(
+            child: CustomButton(
+              notActiveColor:
+                  (!areWeAddScoreToAnyPlayer() && round != 1) ||
+                      areWeAddScoreToAllPlayers()
+                  ? null
+                  : AppColors.appbarColor,
+              onTap: () {
+                final int numberOfPlayedRounds = !areWeAddScoreToAnyPlayer()
+                    ? round - 1
+                    : round;
+                if (numberOfPlayedRounds != widget.gameArgs.roundsCount &&
+                    numberOfPlayedRounds != 0) {
+                  showCupertinoDialog(
+                    context: context,
+                    builder: (context) => ConfirmationDialog(
+                      fullText:
+                          'Are you sure you want to finish the game after round $numberOfPlayedRounds?',
+                      delete: false,
+                      textOkButton: 'Finish',
+                      onDelete: () {
+                        final winnersIds = getWinnersIds();
+                        log(winnersIds);
+                        final game = GameModel(
+                          date: DateTime.now().toIso8601String(),
+                          roundsCount: numberOfPlayedRounds,
+                          winnersId: winnersIds,
+                          // because of NOT NULL condition in database
+                          winnerName: '',
+                        );
+                        gameCubit.insertGame(game: game);
+                        context.pop();
+                      },
+                    ),
+                  );
+                } else {
                   if (!areWeAddScoreToAllPlayers()) {
                     showCustomToast(
                       context: context,
                       message: 'Add Score to all players first!',
                       contentType: ContentType.failure,
                     );
-                  } else {
-                    round++;
-                    if (round == widget.gameArgs.roundsCount) {
-                      isDoubleRound = true;
-                    }
-                    setAreWeAddScoreToPlayerToFalse();
-                    setState(() {});
+                    return;
                   }
-                },
-                notActiveColor: !areWeAddScoreToAllPlayers()
-                    ? ColorsManager.appbarColor
-                    : null,
-                label: 'Next Round',
-              ),
+                  final winnersIds = getWinnersIds();
+                  log(winnersIds);
+                  final game = GameModel(
+                    date: DateTime.now().toIso8601String(),
+                    roundsCount: numberOfPlayedRounds,
+                    winnersId: winnersIds,
+                    // because of NOT NULL condition in database
+                    winnerName: '',
+                  );
+                  gameCubit.insertGame(game: game);
+                }
+              },
+              label: 'Finish Game',
             ),
-        ],
-      ),
-    );
-  }
+          ),
 
-  String getWinnersIds() {
-    return widget.gameArgs.players
-        .where(
-          (p) => getTotalScore(widget.gameArgs.players.indexOf(p)) == minScore,
-        )
-        .map((p) => p.id)
-        .join(',');
-  }
-
-  bool areWeAddScoreToAllPlayers() {
-    bool temp = true;
-
-    for (bool y in areWeAddScoreToPlayer) {
-      if (y == false) {
-        temp = y;
-        break;
-      }
-    }
-    return temp;
-  }
-
-  bool areWeAddScoreToAnyPlayer() {
-    bool temp = false;
-
-    for (bool y in areWeAddScoreToPlayer) {
-      if (y == true) {
-        temp = y;
-        break;
-      }
-    }
-    return temp;
-  }
+        if (round < widget.gameArgs.roundsCount)
+          Expanded(
+            child: CustomButton(
+              onTap: () {
+                if (!areWeAddScoreToAllPlayers()) {
+                  showCustomToast(
+                    context: context,
+                    message: 'Add Score to all players first!',
+                    contentType: ContentType.failure,
+                  );
+                } else {
+                  round++;
+                  if (round == widget.gameArgs.roundsCount) {
+                    isDoubleRound = true;
+                  }
+                  setAreWeAddScoreToPlayerToFalse();
+                  setState(() {});
+                }
+              },
+              notActiveColor: !areWeAddScoreToAllPlayers()
+                  ? AppColors.appbarColor
+                  : null,
+              label: 'Next Round',
+            ),
+          ),
+      ],
+    ),
+  );
 }

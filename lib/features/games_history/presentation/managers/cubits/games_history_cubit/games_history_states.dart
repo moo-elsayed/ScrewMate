@@ -12,15 +12,15 @@ class GamesHistoryInitial extends GamesHistoryStates {}
 class GetAllGamesLoading extends GamesHistoryStates {}
 
 class GetAllGamesSuccess extends GamesHistoryStates {
-  final List<GameModel> games;
 
   GetAllGamesSuccess({required this.games});
+  final List<GameModel> games;
 }
 
 class GetAllGamesFailure extends GamesHistoryStates {
-  final String errorMessage;
 
   GetAllGamesFailure({required this.errorMessage});
+  final String errorMessage;
 }
 
 // getGameDetails
@@ -28,15 +28,15 @@ class GetAllGamesFailure extends GamesHistoryStates {
 class GetGameDetailsLoading extends GamesHistoryStates {}
 
 class GetGameDetailsSuccess extends GamesHistoryStates {
-  final GameDetailsModel gameDetails;
 
   GetGameDetailsSuccess({required this.gameDetails});
+  final GameDetailsModel gameDetails;
 }
 
 class GetGameDetailsFailure extends GamesHistoryStates {
-  final String errorMessage;
 
   GetGameDetailsFailure({required this.errorMessage});
+  final String errorMessage;
 }
 
 // delete game
@@ -46,9 +46,9 @@ class DeleteGameLoading extends GamesHistoryStates {}
 class DeleteGameSuccess extends GamesHistoryStates {}
 
 class DeleteGameFailure extends GamesHistoryStates {
-  final String errorMessage;
 
   DeleteGameFailure({required this.errorMessage});
+  final String errorMessage;
 }
 
 class ReverseListSuccess extends GamesHistoryStates {}
@@ -59,13 +59,13 @@ class ReverseListSuccess extends GamesHistoryStates {}
 class GetAllPlayersLoading extends GamesHistoryStates {}
 
 class GetAllPlayersSuccess extends GamesHistoryStates {
-  final List<PlayerModel> players;
 
   GetAllPlayersSuccess({required this.players});
+  final List<PlayerModel> players;
 }
 
 class GetAllPlayersFailure extends GamesHistoryStates {
-  final String errorMessage;
 
   GetAllPlayersFailure({required this.errorMessage});
+  final String errorMessage;
 }

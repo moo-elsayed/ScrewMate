@@ -29,9 +29,8 @@ class GamesHistoryCubit extends Cubit<GamesHistoryStates> {
     );
   }
 
-  Future<void> deleteGame({required int gameId}) async {
-    await gamesHistoryRepo.deleteGame(gameId: gameId);
-  }
+  Future<void> deleteGame({required int gameId}) async =>
+      await gamesHistoryRepo.deleteGame(gameId: gameId);
 
   reverseList() {
     emit(ReverseListSuccess());
@@ -40,7 +39,7 @@ class GamesHistoryCubit extends Cubit<GamesHistoryStates> {
   /// from players feature
   Future getAllPlayers() async {
     emit(GetAllPlayersLoading());
-    var result = await playersRepo.getAllPlayers();
+    final result = await playersRepo.getAllPlayers();
     result.fold(
       (failure) =>
           emit(GetAllPlayersFailure(errorMessage: failure.errorMessage)),

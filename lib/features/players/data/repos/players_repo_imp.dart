@@ -6,9 +6,9 @@ import 'package:skru_mate/features/players/data/models/player_games_states_model
 import '../../domain/repos/players_repo.dart';
 
 class PlayersRepoImp implements PlayersRepo {
-  final PlayerLocalDataSource playerLocalDataSource;
 
   PlayersRepoImp({required this.playerLocalDataSource});
+  final PlayerLocalDataSource playerLocalDataSource;
 
   @override
   Future<Either<Failure, void>> deletePlayer({required int id}) async {

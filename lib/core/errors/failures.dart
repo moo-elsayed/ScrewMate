@@ -1,7 +1,7 @@
 abstract class Failure {
-  final String errorMessage;
-
   Failure({required this.errorMessage});
+
+  final String errorMessage;
 }
 
 class DatabaseFailure extends Failure {

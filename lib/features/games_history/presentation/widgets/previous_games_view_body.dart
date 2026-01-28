@@ -7,12 +7,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/routing/routes.dart';
-import 'package:skru_mate/core/theming/colors.dart';
+import 'package:skru_mate/core/theming/app_colors.dart';
 import 'package:skru_mate/features/games_history/data/models/game_result_view_args.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_states.dart';
 import '../../../../core/database/shared_models/game_model.dart';
 import '../../../../core/database/shared_models/player_model.dart';
-import '../../../../core/theming/styles.dart';
+import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/custom_toast.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../managers/cubits/games_history_cubit/games_history_cubit.dart';
@@ -45,8 +45,7 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
+  Widget build(BuildContext context) => BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
       listener: (context, state) {
         if (state is GetAllGamesSuccess) {
           previousGames = state.games;
@@ -63,14 +62,14 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
               ? Center(
                   child: Text(
                     'No previous games yet',
-                    style: TextStyles.font16WhiteRegular,
+                    style: AppTextStyles.font16WhiteRegular,
                   ),
                 )
               : ListView.separated(
                   physics: const BouncingScrollPhysics(),
                   itemCount: previousGames.length,
                   separatorBuilder: (_, __) => Divider(
-                    color: ColorsManager.purple,
+                    color: AppColors.purple,
                     height: 0.h,
                     endIndent: 12.w,
                     indent: 12.w,
@@ -146,5 +145,4 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
         }
       },
     );
-  }
 }

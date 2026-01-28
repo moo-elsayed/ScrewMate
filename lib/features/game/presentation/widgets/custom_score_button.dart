@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/theming/colors.dart';
+import '../../../../core/theming/app_colors.dart';
 
 class CustomScoreButton extends StatelessWidget {
   const CustomScoreButton({super.key, this.onTap, this.icon});
@@ -9,8 +9,7 @@ class CustomScoreButton extends StatelessWidget {
   final IconData? icon;
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: const BoxDecoration(
@@ -21,10 +20,9 @@ class CustomScoreButton extends StatelessWidget {
         padding: EdgeInsets.all(icon != null ? 4.r : 0),
         child: Icon(
           icon ?? Icons.add,
-          color: ColorsManager.purple.withValues(alpha: 0.9),
+          color: AppColors.purple.withValues(alpha: 0.9),
           size: icon != null ? 16 : 22,
         ),
       ),
     );
-  }
 }

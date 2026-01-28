@@ -8,9 +8,9 @@ import '../../../../core/database/shared_models/player_model.dart';
 import 'game_local_data_source.dart';
 
 class GameLocalDataSourceImp implements GameLocalDataSource {
-  final Future<Database> appDatabase;
 
   GameLocalDataSourceImp({required this.appDatabase});
+  final Future<Database> appDatabase;
 
   @override
   Future<int> insertGame({required GameModel game}) async {

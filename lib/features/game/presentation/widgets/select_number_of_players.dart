@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import '../../../../core/theming/colors.dart';
-import '../../../../core/theming/styles.dart';
+import '../../../../core/theming/app_colors.dart';
+import '../../../../core/theming/app_text_styles.dart';
 
 class SelectNumberOfPlayers extends StatefulWidget {
   const SelectNumberOfPlayers({super.key, required this.onSelected});
@@ -22,36 +22,32 @@ class _SelectNumberOfPlayersState extends State<SelectNumberOfPlayers> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       children: [
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: Text(
             'Select the number of players:',
-            style: TextStyles.font18WhiteBold,
+            style: AppTextStyles.font18WhiteBold,
           ),
         ),
         Gap(16.h),
         Wrap(
           spacing: 8.h,
           runSpacing: 4.h,
-          children: List.generate(players.length, (index) {
-            return ChoiceChip(
+          children: List.generate(players.length, (index) => ChoiceChip(
               label: Text(
                 players[index].toString(),
-                style: TextStyles.font14WhiteRegular,
+                style: AppTextStyles.font14WhiteRegular,
               ),
               selected: selectedPlayersIndex == index,
               onSelected: (_) {
                 widget.onSelected(players[index]);
                 setPlayersIndex(index);
               },
-              selectedColor: ColorsManager.purple,
-            );
-          }),
+              selectedColor: AppColors.purple,
+            )),
         ),
       ],
     );
-  }
 }

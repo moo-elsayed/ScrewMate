@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:skru_mate/core/theming/colors.dart';
+import 'package:skru_mate/core/theming/app_colors.dart';
 
 class CustomTextFormField extends StatelessWidget {
   const CustomTextFormField({
@@ -39,17 +39,16 @@ class CustomTextFormField extends StatelessWidget {
   final Color? cursorColor;
 
   @override
-  Widget build(BuildContext context) {
-    return TextFormField(
+  Widget build(BuildContext context) => TextFormField(
       controller: controller,
       validator: validator,
       inputFormatters: inputFormatters,
       maxLength: maxLength,
       obscureText: isObscureText ?? false,
-      cursorColor: cursorColor ?? ColorsManager.purple,
+      cursorColor: cursorColor ?? AppColors.purple,
       keyboardType: keyboardType,
       style: GoogleFonts.lato(),
-      cursorErrorColor: cursorColor ?? ColorsManager.purple,
+      cursorErrorColor: cursorColor ?? AppColors.purple,
       focusNode: focusNode,
       decoration: InputDecoration(
         isDense: true,
@@ -70,12 +69,9 @@ class CustomTextFormField extends StatelessWidget {
         fillColor: fillColor,
       ),
     );
-  }
 
-  OutlineInputBorder buildOutlineInputBorder([Color? color]) {
-    return OutlineInputBorder(
+  OutlineInputBorder buildOutlineInputBorder([Color? color]) => OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(color: color ?? ColorsManager.purple, width: 1.3),
+      borderSide: BorderSide(color: color ?? AppColors.purple, width: 1.3),
     );
-  }
 }

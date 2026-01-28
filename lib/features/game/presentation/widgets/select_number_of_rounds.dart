@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import '../../../../core/theming/colors.dart';
-import '../../../../core/theming/styles.dart';
+import '../../../../core/theming/app_colors.dart';
+import '../../../../core/theming/app_text_styles.dart';
 
 class SelectNumberOfRounds extends StatefulWidget {
   const SelectNumberOfRounds({super.key, required this.onSelected});
@@ -23,36 +23,32 @@ class _SelectNumberOfRoundsState extends State<SelectNumberOfRounds> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  Widget build(BuildContext context) => Column(
       children: [
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: Text(
             'Select the number of rounds:',
-            style: TextStyles.font18WhiteBold,
+            style: AppTextStyles.font18WhiteBold,
           ),
         ),
         Gap(16.h),
         Wrap(
           spacing: 8.h,
           runSpacing: 4.h,
-          children: List.generate(rounds.length, (index) {
-            return ChoiceChip(
+          children: List.generate(rounds.length, (index) => ChoiceChip(
               label: Text(
                 rounds[index].toString(),
-                style: TextStyles.font14WhiteRegular,
+                style: AppTextStyles.font14WhiteRegular,
               ),
               selected: selectedRoundsIndex == index,
               onSelected: (_) {
                 widget.onSelected(rounds[index]);
                 setRoundsIndex(index);
               },
-              selectedColor: ColorsManager.purple,
-            );
-          }),
+              selectedColor: AppColors.purple,
+            )),
         ),
       ],
     );
-  }
 }

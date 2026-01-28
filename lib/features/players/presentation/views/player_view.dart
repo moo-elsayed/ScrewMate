@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
-import 'package:skru_mate/core/theming/styles.dart';
+import 'package:skru_mate/core/theming/app_text_styles.dart';
 import 'package:skru_mate/core/widgets/custom_app_bar.dart';
 import 'package:skru_mate/core/widgets/custom_toast.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
@@ -31,91 +31,91 @@ class _PlayerViewState extends State<PlayerView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<PlayersCubit, PlayersStates>(
-      listener: (context, state) {
-        if (state is DeletePlayerSuccess) {
-          context.read<PlayersCubit>().getAllPlayers();
-          showCustomToast(
-            context: context,
-            message: '${widget.playerDetailsArgs.player.name} deleted',
-            contentType: ContentType.success,
-          );
-          context.pop();
-        } else if (state is UpdatePlayerStatsSuccess) {
-          context.read<PlayersCubit>().getAllPlayers();
-          Future.delayed(
-            const Duration(milliseconds: 500),
-            () => showCustomToast(
+  Widget build(BuildContext context) =>
+      BlocConsumer<PlayersCubit, PlayersStates>(
+        listener: (context, state) {
+          if (state is DeletePlayerSuccess) {
+            context.read<PlayersCubit>().getAllPlayers();
+            showCustomToast(
               context: context,
-              message: 'name changed to $playerName',
+              message: '${widget.playerDetailsArgs.player.name} deleted',
               contentType: ContentType.success,
-            ),
-          );
-        }
-      },
-      builder: (context, state) => Scaffold(
-        appBar: CustomAppBar(
-          text: playerName,
-          centerTitle: false,
-          actions: [
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, color: Colors.white),
-              onSelected: (value) {
-                if (value == 'edit') {
-                  showCupertinoDialog(
-                    context: context,
-                    builder: (context) => GestureDetector(
-                      onTap: () => context.pop(),
-                      child: EditPlayerNameDialog(
-                        onNameChanged: (String name) {
-                          playerName = name;
-                        },
-                        player: widget.playerDetailsArgs.player.copyWith(
-                          name: playerName,
+            );
+            context.pop();
+          } else if (state is UpdatePlayerStatsSuccess) {
+            context.read<PlayersCubit>().getAllPlayers();
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (context.mounted) {
+                showCustomToast(
+                  context: context,
+                  message: 'name changed to $playerName',
+                  contentType: ContentType.success,
+                );
+              }
+            });
+          }
+        },
+        builder: (context, state) => Scaffold(
+          appBar: CustomAppBar(
+            text: playerName,
+            centerTitle: false,
+            actions: [
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, color: Colors.white),
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (context) => GestureDetector(
+                        onTap: () => context.pop(),
+                        child: EditPlayerNameDialog(
+                          onNameChanged: (String name) {
+                            playerName = name;
+                          },
+                          player: widget.playerDetailsArgs.player.copyWith(
+                            name: playerName,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                } else if (value == 'delete') {
-                  showCupertinoDialog(
-                    context: context,
-                    builder: (context) => ConfirmationDialog(
-                      name: widget.playerDetailsArgs.player.name,
-                      onDelete: () {
-                        context.read<PlayersCubit>().deletePlayer(
-                          id: widget.playerDetailsArgs.player.id!,
-                        );
-                        context.pop();
-                      },
-                    ),
-                  );
-                }
-              },
-              position: PopupMenuPosition.under,
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 'edit',
-                  child: Text('Edit', style: TextStyles.font14WhiteRegular),
-                ),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Text(
-                    'Delete',
-                    style: TextStyles.font14WhiteRegular.copyWith(
-                      color: Colors.red,
+                    );
+                  } else if (value == 'delete') {
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (context) => ConfirmationDialog(
+                        name: widget.playerDetailsArgs.player.name,
+                        onDelete: () {
+                          context.read<PlayersCubit>().deletePlayer(
+                            id: widget.playerDetailsArgs.player.id!,
+                          );
+                          context.pop();
+                        },
+                      ),
+                    );
+                  }
+                },
+                position: PopupMenuPosition.under,
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Text('Edit', style: AppTextStyles.font14WhiteRegular),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text(
+                      'Delete',
+                      style: AppTextStyles.font14WhiteRegular.copyWith(
+                        color: Colors.red,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
+          body: PlayerViewBody(
+            playerDetailsArgs: widget.playerDetailsArgs,
+            playerName: playerName,
+          ),
         ),
-        body: PlayerViewBody(
-          playerDetailsArgs: widget.playerDetailsArgs,
-          playerName: playerName,
-        ),
-      ),
-    );
-  }
+      );
 }

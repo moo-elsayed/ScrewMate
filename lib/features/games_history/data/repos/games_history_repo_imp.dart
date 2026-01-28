@@ -6,9 +6,9 @@ import '../../domain/repos/games_history_repo.dart';
 import '../data_sources/games_history_local_data_source.dart';
 
 class GamesHistoryRepoImp implements GamesHistoryRepo {
-  final GamesHistoryLocalDataSource gamesLocalDataSource;
 
   GamesHistoryRepoImp({required this.gamesLocalDataSource});
+  final GamesHistoryLocalDataSource gamesLocalDataSource;
 
   @override
   Future<Either<Failure, List<GameModel>>> getAllGames() async {

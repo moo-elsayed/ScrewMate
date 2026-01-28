@@ -12,27 +12,26 @@ class GameView extends StatelessWidget {
   final GameArgs gameArgs;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        leading: GestureDetector(
-          onTap: () {
-            showLeaveTheGameConfirmation(context);
-          },
-          child: const Icon(Icons.arrow_back, color: Colors.white),
-        ),
-        text: 'Current Game',
-      ),
-      body: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
+  Widget build(BuildContext context) => Scaffold(
+    resizeToAvoidBottomInset: false,
+    appBar: CustomAppBar(
+      leading: GestureDetector(
+        onTap: () {
           showLeaveTheGameConfirmation(context);
         },
-        child: GameViewBody(gameArgs: gameArgs),
+        child: const Icon(Icons.arrow_back, color: Colors.white),
       ),
-    );
-  }
+      text: 'Current Game',
+    ),
+    body: PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        showLeaveTheGameConfirmation(context);
+      },
+      child: GameViewBody(gameArgs: gameArgs),
+    ),
+  );
 
   void showLeaveTheGameConfirmation(BuildContext context) {
     showCupertinoDialog(

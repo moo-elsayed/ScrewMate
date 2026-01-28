@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/helpers/functions.dart';
-import '../../../../core/theming/colors.dart';
-import '../../../../core/theming/styles.dart';
+import '../../../../core/theming/app_colors.dart';
+import '../../../../core/theming/app_text_styles.dart';
 
 class CustomPlayerStatItem extends StatelessWidget {
   const CustomPlayerStatItem({
@@ -19,11 +19,10 @@ class CustomPlayerStatItem extends StatelessWidget {
   final int rank;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       padding: EdgeInsets.all(12.r),
       decoration: BoxDecoration(
-        color: ColorsManager.appbarColor,
+        color: AppColors.appbarColor,
         borderRadius: BorderRadius.circular(14.r),
       ),
       child: Column(
@@ -33,7 +32,7 @@ class CustomPlayerStatItem extends StatelessWidget {
             children: [
               Icon(Icons.bar_chart_rounded, color: Colors.white70, size: 16.sp),
               Gap(6.w),
-              Text(title, style: TextStyles.font14White70Medium),
+              Text(title, style: AppTextStyles.font14White70Medium),
             ],
           ),
           const Spacer(),
@@ -49,16 +48,15 @@ class CustomPlayerStatItem extends StatelessWidget {
                 ),
                 child: Text(
                   'Rank #$rank',
-                  style: TextStyles.font12SemiBold.copyWith(
+                  style: AppTextStyles.font12SemiBold.copyWith(
                     color: getRankColor(rank),
                   ),
                 ),
               ),
-              Text(value, style: TextStyles.font20WhiteBold),
+              Text(value, style: AppTextStyles.font20WhiteBold),
             ],
           ),
         ],
       ),
     );
-  }
 }

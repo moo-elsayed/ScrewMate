@@ -1,5 +1,5 @@
 class Routes {
-  static const String homeView = '/';
+  static const String homeView = '/home';
   static const String addPlayersView = '/addPlayers';
   static const String topPlayersView = '/topPlayers';
   static const String playerView = '/player';

@@ -14,52 +14,44 @@ import '../../features/games_history/data/models/game_result_view_args.dart';
 import '../../features/players/data/models/player_details_args.dart';
 
 class AppRouter {
-  Route generateRoute(RouteSettings settings) {
+  Route? generateRoute(RouteSettings settings) {
     //this arguments to be passed in any screen like this ( arguments as ClassName )
     final arguments = settings.arguments;
 
     switch (settings.name) {
       case Routes.homeView:
-        return CupertinoPageRoute(builder: (context) => const HomeView());
+        return _navigate(const HomeView());
       case Routes.addPlayersView:
         final args = arguments as AddPlayersArgs;
-        return CupertinoPageRoute(
-          builder: (context) => AddPlayersView(
+        return _navigate(
+          AddPlayersView(
             roundsCount: args.roundsCount,
             playersCount: args.playersCount,
           ),
         );
       case Routes.topPlayersView:
-        return CupertinoPageRoute(
-          builder: (context) => const TopPlayersView(),
-        );
+        return _navigate(const TopPlayersView());
       case Routes.playerView:
         final args = arguments as PlayerDetailsArgs;
-        return CupertinoPageRoute(
-          builder: (context) => PlayerView(playerDetailsArgs: args),
-        );
+        return _navigate(PlayerView(playerDetailsArgs: args));
       case Routes.previousGamesView:
-        return CupertinoPageRoute(
-          builder: (context) => const PreviousGamesView(),
-        );
+        return _navigate(const PreviousGamesView());
       case Routes.gameView:
         final args = arguments as GameArgs;
-        return CupertinoPageRoute(
-          builder: (context) => GameView(gameArgs: args),
-        );
+        return _navigate(GameView(gameArgs: args));
       case Routes.gameResultView:
         final args = arguments as GameResultViewArgs;
-        return CupertinoPageRoute(
-          builder: (context) => GameResultView(gameResultViewArgs: args),
-        );
+        return _navigate(GameResultView(gameResultViewArgs: args));
       default:
-        return CupertinoPageRoute(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: Text('No route defined for this ${settings.name}'),
-            ),
-          ),
-        );
+        return null;
     }
   }
+
+  PageRouteBuilder<dynamic> _navigate(Widget view) => PageRouteBuilder(
+    pageBuilder: (_, __, ___) => view,
+    transitionsBuilder: (_, animation, __, child) => FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+      child: child,
+    ),
+  );
 }

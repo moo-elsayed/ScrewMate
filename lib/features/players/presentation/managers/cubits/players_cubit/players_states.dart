@@ -10,15 +10,15 @@ class StripeInitial extends PlayersStates {}
 class GetAllPlayersLoading extends PlayersStates {}
 
 class GetAllPlayersSuccess extends PlayersStates {
-  final List<PlayerModel> players;
 
   GetAllPlayersSuccess({required this.players});
+  final List<PlayerModel> players;
 }
 
 class GetAllPlayersFailure extends PlayersStates {
-  final String errorMessage;
 
   GetAllPlayersFailure({required this.errorMessage});
+  final String errorMessage;
 }
 
 // updatePlayerStats
@@ -28,9 +28,9 @@ class UpdatePlayerStatsLoading extends PlayersStates {}
 class UpdatePlayerStatsSuccess extends PlayersStates {}
 
 class UpdatePlayerStatsFailure extends PlayersStates {
-  final String errorMessage;
 
   UpdatePlayerStatsFailure({required this.errorMessage});
+  final String errorMessage;
 }
 
 // getPlayerById
@@ -38,15 +38,15 @@ class UpdatePlayerStatsFailure extends PlayersStates {
 class GetPlayerByIdLoading extends PlayersStates {}
 
 class GetPlayerByIdSuccess extends PlayersStates {
-  final PlayerModel player;
 
   GetPlayerByIdSuccess({required this.player});
+  final PlayerModel player;
 }
 
 class GetPlayerByIdFailure extends PlayersStates {
-  final String errorMessage;
 
   GetPlayerByIdFailure({required this.errorMessage});
+  final String errorMessage;
 }
 
 // deletePlayer
@@ -56,9 +56,9 @@ class DeletePlayerLoading extends PlayersStates {}
 class DeletePlayerSuccess extends PlayersStates {}
 
 class DeletePlayerFailure extends PlayersStates {
-  final String errorMessage;
 
   DeletePlayerFailure({required this.errorMessage});
+  final String errorMessage;
 }
 
 // getPlayerGamesStates
@@ -66,15 +66,15 @@ class DeletePlayerFailure extends PlayersStates {
 class GetPlayerGamesStatesLoading extends PlayersStates {}
 
 class GetPlayerGamesStatesSuccess extends PlayersStates {
-  final List<PlayerGameStatsModel> playerGameStatsList;
 
   GetPlayerGamesStatesSuccess({required this.playerGameStatsList});
+  final List<PlayerGameStatsModel> playerGameStatsList;
 }
 
 class GetPlayerGamesStatesFailure extends PlayersStates {
-  final String errorMessage;
 
   GetPlayerGamesStatesFailure({required this.errorMessage});
+  final String errorMessage;
 }
 
 class ReverseListSuccess extends PlayersStates {}

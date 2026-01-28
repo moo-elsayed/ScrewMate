@@ -7,8 +7,8 @@ import 'package:skru_mate/core/helpers/extentions.dart';
 import '../../../../core/database/shared_models/player_model.dart';
 import '../../../../core/helpers/functions.dart';
 import '../../../../core/routing/routes.dart';
-import '../../../../core/theming/colors.dart';
-import '../../../../core/theming/styles.dart';
+import '../../../../core/theming/app_colors.dart';
+import '../../../../core/theming/app_text_styles.dart';
 import '../../../games_history/data/models/game_result_view_args.dart';
 import '../../data/models/player_games_states_model.dart';
 
@@ -25,13 +25,12 @@ class PreviousGamesForPlayerListView extends StatelessWidget {
   final bool showAll;
 
   @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
+  Widget build(BuildContext context) => ListView.separated(
       itemCount: showAll
           ? playerGameStatsList.length
           : min(playerGameStatsList.length, 5),
       separatorBuilder: (_, __) =>
-          Divider(color: ColorsManager.purple, height: 0.h),
+          Divider(color: AppColors.purple, height: 0.h),
       itemBuilder: (context, index) {
         final playerGameStatsModel = playerGameStatsList[index];
 
@@ -49,10 +48,10 @@ class PreviousGamesForPlayerListView extends StatelessWidget {
               ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text('Game #${playerGameStatsModel.gameId}'),
-                    titleTextStyle: TextStyles.font15WhiteBold,
+                    titleTextStyle: AppTextStyles.font15WhiteBold,
                     trailing: Text(
                       'Rank #${playerGameStatsModel.rank}',
-                      style: TextStyles.font14WhiteBold.copyWith(
+                      style: AppTextStyles.font14WhiteBold.copyWith(
                         color: getRankColor(playerGameStatsModel.rank),
                       ),
                     ),
@@ -63,5 +62,4 @@ class PreviousGamesForPlayerListView extends StatelessWidget {
         );
       },
     );
-  }
 }

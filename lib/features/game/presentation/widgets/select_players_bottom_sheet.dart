@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:skru_mate/core/widgets/bottom_sheet_handle.dart';
 import '../../../../core/database/shared_models/player_model.dart';
-import '../../../../core/theming/styles.dart';
+import '../../../../core/theming/app_text_styles.dart';
 import '../../../../core/widgets/custom_toast.dart';
 
 class SelectPlayersBottomSheet extends StatefulWidget {
@@ -35,8 +35,7 @@ class _SelectPlayersBottomSheetState extends State<SelectPlayersBottomSheet> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
+  Widget build(BuildContext context) => Padding(
       padding: EdgeInsets.only(top: 12.h, left: 8.w, right: 8.w),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -48,13 +47,13 @@ class _SelectPlayersBottomSheetState extends State<SelectPlayersBottomSheet> {
                   child: Center(
                     child: Text(
                       'There are no players yet',
-                      style: TextStyles.font16WhiteRegular,
+                      style: AppTextStyles.font16WhiteRegular,
                     ),
                   ),
                 )
               : Column(
                   children: [
-                    Text('Select Players', style: TextStyles.font18WhiteBold),
+                    Text('Select Players', style: AppTextStyles.font18WhiteBold),
                     Gap(16.h),
                     SizedBox(
                       height: min(400.h, widget.players.length * 60.h),
@@ -76,7 +75,7 @@ class _SelectPlayersBottomSheetState extends State<SelectPlayersBottomSheet> {
                               ),
                               title: Text(
                                 player.name,
-                                style: TextStyles.font16WhiteRegular,
+                                style: AppTextStyles.font16WhiteRegular,
                               ),
                               value: isSelected,
                               activeColor: Colors.purple,
@@ -132,5 +131,4 @@ class _SelectPlayersBottomSheetState extends State<SelectPlayersBottomSheet> {
         ],
       ),
     );
-  }
 }

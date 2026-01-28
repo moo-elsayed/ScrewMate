@@ -3,11 +3,11 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class AppDatabase {
-  static final AppDatabase _instance = AppDatabase._internal();
-
   factory AppDatabase() => _instance;
 
   AppDatabase._internal();
+
+  static final AppDatabase _instance = AppDatabase._internal();
 
   static Database? _database;
 

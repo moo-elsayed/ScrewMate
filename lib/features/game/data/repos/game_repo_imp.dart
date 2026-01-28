@@ -10,9 +10,9 @@ import 'package:skru_mate/features/game/domain/repos/game_repo.dart';
 import '../../../../core/database/shared_models/player_model.dart';
 
 class GameRepoImp implements GameRepo {
-  final GameLocalDataSource gameLocalDataSource;
 
   GameRepoImp({required this.gameLocalDataSource});
+  final GameLocalDataSource gameLocalDataSource;
 
   @override
   Future<Either<Failure, int>> insertGame({required GameModel game}) async {
@@ -56,7 +56,7 @@ class GameRepoImp implements GameRepo {
     required List<RoundModel> rounds,
   }) async {
     try {
-      List<int> roundsIds = await gameLocalDataSource.insertRounds(
+      final List<int> roundsIds = await gameLocalDataSource.insertRounds(
         rounds: rounds,
       );
       return Right(roundsIds);

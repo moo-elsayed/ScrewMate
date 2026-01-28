@@ -9,10 +9,8 @@ class GameResultView extends StatelessWidget {
   final GameResultViewArgs gameResultViewArgs;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: CustomAppBar(text: 'Game #${gameResultViewArgs.gameId}'),
       body: GameResultViewBody(gameResultViewArgs: gameResultViewArgs),
     );
-  }
 }

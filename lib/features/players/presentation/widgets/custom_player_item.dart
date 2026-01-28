@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:skru_mate/core/theming/styles.dart';
+import 'package:skru_mate/core/theming/app_text_styles.dart';
 import '../../../../core/database/shared_models/player_model.dart';
-import '../../../../core/theming/colors.dart';
+import '../../../../core/theming/app_colors.dart';
 
 class CustomPlayerItem extends StatelessWidget {
   const CustomPlayerItem({
@@ -29,19 +29,14 @@ class CustomPlayerItem extends StatelessWidget {
     switch (selectedSortIndex) {
       case 0:
         trailingText = '${player.gamesPlayed} games';
-        break;
       case 1:
         trailingText = '${player.wins} wins';
-        break;
       case 2:
         trailingText = '${player.roundWins} rounds';
-        break;
       case 3:
         trailingText = '${(player.winRate).toStringAsFixed(1)}% win rate';
-        break;
       case 4:
         trailingText = '${player.losses} losses';
-        break;
       default:
         trailingText = '';
     }
@@ -49,22 +44,16 @@ class CustomPlayerItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(
-          top: index != 1 ? 12.h : 0.h,
-          right: 12.w,
-          left: 12.w,
-          bottom: marginToBottom ? 12.h : 0.h,
-        ),
         padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
         decoration: BoxDecoration(
-          color: ColorsManager.appbarColor,
+          color: AppColors.appbarColor,
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(child: Text('#$rank  ${player.name}',style: TextStyles.font14WhiteBold)),
-            Text(trailingText, style: TextStyles.font12White70Medium),
+            Expanded(child: Text('#$rank  ${player.name}',style: AppTextStyles.font14WhiteBold)),
+            Text(trailingText, style: AppTextStyles.font12White70Medium),
           ],
         ),
       ),

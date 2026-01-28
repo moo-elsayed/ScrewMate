@@ -5,8 +5,7 @@ class BottomSheetHandle extends StatelessWidget {
   const BottomSheetHandle({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       margin: EdgeInsets.only(bottom: 10.h),
       width: 40.w,
       height: 4.h,
@@ -15,5 +14,4 @@ class BottomSheetHandle extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
     );
-  }
 }

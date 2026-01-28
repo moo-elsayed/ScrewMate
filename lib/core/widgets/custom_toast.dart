@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:skru_mate/core/theming/styles.dart';
+import 'package:skru_mate/core/theming/app_text_styles.dart';
 
 enum ContentType { success, failure, warning }
 
@@ -16,21 +16,18 @@ void showCustomToast({
     case ContentType.success:
       bgColor = Colors.green;
       icon = Icons.check_circle;
-      break;
     case ContentType.failure:
       bgColor = Colors.red;
       icon = Icons.error;
-      break;
     case ContentType.warning:
       bgColor = Colors.orange;
       icon = Icons.warning;
-      break;
   }
 
   final fToast = FToast();
   fToast.init(context);
 
-  Widget toast = Container(
+  final Widget toast = Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
@@ -48,7 +45,7 @@ void showCustomToast({
           child: Text(
             message,
             overflow: TextOverflow.ellipsis,
-            style: TextStyles.font14WhiteRegular,
+            style: AppTextStyles.font14WhiteRegular,
           ),
         ),
       ],

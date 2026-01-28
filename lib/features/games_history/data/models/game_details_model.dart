@@ -4,10 +4,6 @@ import '../../../../core/database/shared_models/game_model.dart';
 import '../../../../core/database/shared_models/game_player_model.dart';
 
 class GameDetailsModel {
-  final GameModel game;
-  final List<GamePlayerModel> players;
-  final List<RoundModel> rounds;
-  final Map<int, List<RoundScoreModel>> roundScoresByRoundId;
 
   GameDetailsModel({
     required this.game,
@@ -15,4 +11,8 @@ class GameDetailsModel {
     required this.rounds,
     required this.roundScoresByRoundId,
   });
+  final GameModel game;
+  final List<GamePlayerModel> players;
+  final List<RoundModel> rounds;
+  final Map<int, List<RoundScoreModel>> roundScoresByRoundId;
 }

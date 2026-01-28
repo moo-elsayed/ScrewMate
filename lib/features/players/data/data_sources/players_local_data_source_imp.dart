@@ -5,9 +5,9 @@ import '../../../../core/database/database_constants.dart';
 import '../../../../core/database/shared_models/player_model.dart';
 
 class PlayerLocalDataSourceImp implements PlayerLocalDataSource {
-  final Future<Database> appDatabase;
 
   PlayerLocalDataSourceImp({required this.appDatabase});
+  final Future<Database> appDatabase;
 
   @override
   Future<void> deletePlayer({required int id}) async {
