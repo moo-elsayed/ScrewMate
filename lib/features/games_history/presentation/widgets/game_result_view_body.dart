@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,9 +8,10 @@ import 'package:gap/gap.dart';
 import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import 'package:skru_mate/core/database/shared_models/game_player_model.dart';
 import 'package:skru_mate/core/database/shared_models/round_model.dart';
-import 'package:skru_mate/features/games_history/data/models/game_details_model.dart';
+import 'package:skru_mate/core/helpers/functions.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_states.dart';
+import 'package:skru_mate/features/games_history/presentation/widgets/winner_card.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
 import '../../../../core/theming/app_colors.dart';
 import '../../../../core/theming/app_text_styles.dart';
@@ -31,176 +33,192 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
   late List<RoundModel> rounds;
   late Map<int, List<RoundScoreModel>> r;
   late Map<int, String> playerNamesById;
-  List<int> playersScores = [];
+
+  late ConfettiController _confettiController;
+
+  Map<int, List<GamePlayerModel>> rankedPlayers = {};
 
   @override
   void initState() {
     super.initState();
-    final GameResultViewArgs gameResultViewArgs = widget.gameResultViewArgs;
-    context.read<GamesHistoryCubit>().getGameDetails(
-      gameId: gameResultViewArgs.gameId,
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 3),
     );
-    playerNamesById = {
-      for (var p in gameResultViewArgs.allPlayersList) p.id!: p.name,
-    };
+    final args = widget.gameResultViewArgs;
+    context.read<GamesHistoryCubit>().getGameDetails(gameId: args.gameId);
+    playerNamesById = {for (var p in args.allPlayersList) p.id!: p.name};
   }
 
   @override
-  Widget build(BuildContext context) =>
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
+  }
+
+  void _processRankings() {
+    rankedPlayers.clear();
+    if (players.isEmpty) return;
+
+    players.sort((a, b) => a.totalScore.compareTo(b.totalScore));
+
+    int currentRank = 1;
+    for (int i = 0; i < players.length; i++) {
+      if (i > 0 && players[i].totalScore != players[i - 1].totalScore) {
+        currentRank = i + 1;
+      }
+
+      if (!rankedPlayers.containsKey(currentRank)) {
+        rankedPlayers[currentRank] = [];
+      }
+      rankedPlayers[currentRank]!.add(players[i]);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    children: [
       BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
         listener: (context, state) {
           if (state is GetGameDetailsSuccess) {
-            final GameDetailsModel gameDetailsModel = state.gameDetails;
-            game = gameDetailsModel.game;
-            players = List.from(gameDetailsModel.players);
-            players.sort((a, b) => a.totalScore.compareTo(b.totalScore));
-            rounds = gameDetailsModel.rounds;
-            r = gameDetailsModel.roundScoresByRoundId;
-            playersScores = players.map((e) => e.totalScore).toList();
+            game = state.gameDetails.game;
+            players = List.from(state.gameDetails.players);
+            rounds = state.gameDetails.rounds;
+            r = state.gameDetails.roundScoresByRoundId;
+
+            _processRankings();
+            _confettiController.play();
           } else if (state is GetGameDetailsFailure) {
             log(state.errorMessage);
           }
         },
         builder: (context, state) {
           if (state is GetGameDetailsSuccess) {
-            final top3 = players.take(3).toList();
-            final restOfPlayers = players.skip(3).toList();
+            final winners = rankedPlayers[1] ?? [];
+
+            final restOfRanks = rankedPlayers.keys.where((k) => k != 1).toList()
+              ..sort();
 
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
+                // === Header ===
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 20.h),
                     child: Column(
                       children: [
                         Text(
-                          '🏆 GAME OVER 🏆',
+                          winners.length > 1 ? '🏆 WINNERS 🏆' : '🏆 WINNER 🏆',
                           style: AppTextStyles.font22PurpleBold.copyWith(
                             fontSize: 28.sp,
                             color: AppColors.purple,
                             letterSpacing: 2,
                           ),
                         ),
-                        Gap(24.h),
-                        if (top3.isNotEmpty)
-                          SizedBox(
-                            height: 220.h,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                if (top3.length > 1)
-                                  _buildPodiumPlayer(
-                                    player: top3[1],
-                                    rank: 2,
-                                    height: 140.h,
-                                    color: AppColors.sliver,
-                                  ),
-                                _buildPodiumPlayer(
-                                  player: top3[0],
-                                  rank: 1,
-                                  height: 180.h,
-                                  color: AppColors.gold,
-                                  isWinner: true,
+                        Gap(20.h),
+                        Wrap(
+                          spacing: 12.w,
+                          runSpacing: 12.h,
+                          alignment: WrapAlignment.center,
+                          children: winners
+                              .map(
+                                (player) => WinnerCard(
+                                  player: player,
+                                  playerName:
+                                      playerNamesById[player.playerId] ??
+                                      'Unknown',
+                                  rounds: rounds,
+                                  r: r,
                                 ),
-                                if (top3.length > 2)
-                                  _buildPodiumPlayer(
-                                    player: top3[2],
-                                    rank: 3,
-                                    height: 120.h,
-                                    color: AppColors.bronze,
-                                  ),
-                              ],
-                            ),
-                          ),
+                              )
+                              .toList(),
+                        ),
                       ],
                     ),
                   ),
                 ),
-                if (restOfPlayers.isNotEmpty)
+
+                // === فاصل ===
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 40.w,
+                      vertical: 10.h,
+                    ),
+                    child: const Divider(color: Colors.white24),
+                  ),
+                ),
+
+                // === قائمة باقي اللاعبين ===
+                if (restOfRanks.isNotEmpty)
                   SliverPadding(
-                    padding: .symmetric(horizontal: 24.w, vertical: 12.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24.w,
+                      vertical: 12.h,
+                    ),
                     sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final GamePlayerModel player = restOfPlayers[index];
-                        final int realRank = index + 4;
-                        return Padding(
-                          padding: .only(bottom: 14.h),
-                          child: CustomGamePlayerCard(
-                            playerRank: realRank,
-                            playerNamesById: playerNamesById,
-                            player: player,
-                            rounds: rounds,
-                            r: r,
-                          ),
-                        );
-                      }, childCount: restOfPlayers.length),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final flatList = <MapEntry<int, GamePlayerModel>>[];
+                          for (var rank in restOfRanks) {
+                            for (var player in rankedPlayers[rank]!) {
+                              flatList.add(MapEntry(rank, player));
+                            }
+                          }
+
+                          final rank = flatList[index].key;
+                          final player = flatList[index].value;
+
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 14.h),
+                            child: _buildStandardPlayerCard(player, rank),
+                          );
+                        },
+                        childCount: restOfRanks.fold(
+                          0,
+                          (sum, rank) => sum! + rankedPlayers[rank]!.length,
+                        ),
+                      ),
                     ),
                   ),
+
                 SliverToBoxAdapter(child: Gap(30.h)),
               ],
             );
-          } else {
-            return const Center(child: CupertinoActivityIndicator());
           }
+          return const Center(child: CupertinoActivityIndicator());
         },
-      );
+      ),
 
-  Widget _buildPodiumPlayer({
-    required GamePlayerModel player,
-    required int rank,
-    required double height,
-    required Color color,
-    bool isWinner = false,
-  }) => Padding(
-    padding: .symmetric(horizontal: 8.w),
-    child: Column(
-      mainAxisAlignment: .end,
-      children: [
-        Text(
-          playerNamesById[player.playerId] ?? 'Unknown',
-          style: AppTextStyles.font14WhiteBold.copyWith(
-            color: isWinner ? Colors.amber : Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+      // Confetti Overlay
+      Align(
+        alignment: Alignment.topCenter,
+        child: ConfettiWidget(
+          confettiController: _confettiController,
+          blastDirectionality: BlastDirectionality.explosive,
+          shouldLoop: false,
+          colors: [
+            Colors.green,
+            Colors.blue,
+            Colors.pink,
+            Colors.orange,
+            Colors.purple,
+            AppColors.gold,
+          ],
+          numberOfParticles: 30,
+          gravity: 0.3,
         ),
-        Text(
-          '${player.totalScore} pts',
-          style: AppTextStyles.font12WhiteMedium.copyWith(
-            color: Colors.white70,
-          ),
-        ),
-        Gap(8.h),
-        Container(
-          width: isWinner ? 90.w : 75.w,
-          height: height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                color.withValues(alpha: 0.8),
-                color.withValues(alpha: 0.3),
-              ],
-            ),
-            borderRadius: .only(
-              topLeft: .circular(12.r),
-              topRight: .circular(12.r),
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (isWinner)
-                Icon(Icons.emoji_events, color: Colors.white, size: 30.sp),
-              Text('$rank', style: AppTextStyles.font36WhiteBold),
-            ],
-          ),
-        ),
-      ],
-    ),
+      ),
+    ],
   );
+
+  Widget _buildStandardPlayerCard(GamePlayerModel player, int rank) =>
+      CustomGamePlayerCard(
+        playerRank: rank,
+        playerNamesById: playerNamesById,
+        player: player,
+        rounds: rounds,
+        r: r,
+        rankColor: getRankColor(rank),
+      );
 }

@@ -77,7 +77,7 @@ class _PlayerViewBodyState extends State<PlayerViewBody> {
                         GestureDetector(
                           onTap: () {
                             if (playerGameStatsList.length > 5) {
-                              showAllGames(context);
+                              _showAllGames(context);
                             }
                           },
                           behavior: HitTestBehavior.opaque,
@@ -122,7 +122,7 @@ class _PlayerViewBodyState extends State<PlayerViewBody> {
       ),
     );
 
-  void showAllGames(BuildContext context) {
+  void _showAllGames(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: const Color(0xff1E1E1E),

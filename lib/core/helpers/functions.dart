@@ -10,9 +10,9 @@ String formatDate(String rawDate) {
 }
 
 Color getRankColor(int? rank) => rank == 1
-      ? AppColors.gold
-      : rank == 2
-      ? AppColors.sliver
-      : rank == 3
-      ? AppColors.bronze
-      : Colors.brown;
+    ? AppColors.gold
+    : rank == 2
+    ? AppColors.sliver
+    : rank == 3
+    ? AppColors.bronze
+    : AppColors.unranked;

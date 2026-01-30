@@ -7,6 +7,7 @@ import 'package:gap/gap.dart';
 import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
+import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/app_colors.dart';
 import 'package:skru_mate/core/theming/app_text_styles.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
@@ -15,6 +16,7 @@ import 'package:skru_mate/core/widgets/custom_toast.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_cubit.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
 import 'package:skru_mate/features/game/presentation/widgets/custom_player_card.dart';
+import 'package:skru_mate/features/games_history/data/models/game_result_view_args.dart';
 import '../../../../core/database/shared_models/game_player_model.dart';
 import '../../../../core/database/shared_models/round_model.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
@@ -217,8 +219,14 @@ class _GameViewBodyState extends State<GameViewBody> {
           await Future.delayed(const Duration(milliseconds: 500));
 
           if (context.mounted) {
-            context.pop();
-            context.pop();
+            context.pushReplacementNamed(
+              Routes.gameResultView,
+              arguments: GameResultViewArgs(
+                gameId: gameId,
+                allPlayersList: widget.gameArgs.players,
+                fromHistory: false,
+              ),
+            );
           }
         } else if (state is InsertGameFailure) {
           log(state.errorMessage);
@@ -240,7 +248,10 @@ class _GameViewBodyState extends State<GameViewBody> {
                 CustomHeader(title: 'Round $round', lineWidth: 65.w),
                 Row(
                   children: [
-                    Text('Double Round', style: AppTextStyles.font14WhiteRegular),
+                    Text(
+                      'Double Round',
+                      style: AppTextStyles.font14WhiteRegular,
+                    ),
                     SizedBox(width: 8.w),
                     Switch(
                       value: isDoubleRound,
@@ -325,13 +336,12 @@ class _GameViewBodyState extends State<GameViewBody> {
                 final int numberOfPlayedRounds = !areWeAddScoreToAnyPlayer()
                     ? round - 1
                     : round;
-                if (numberOfPlayedRounds != widget.gameArgs.roundsCount &&
-                    numberOfPlayedRounds != 0) {
+                if (areWeAddScoreToAllPlayers() || !areWeAddScoreToAnyPlayer()) {
                   showCupertinoDialog(
                     context: context,
                     builder: (context) => ConfirmationDialog(
                       fullText:
-                          'Are you sure you want to finish the game after round $numberOfPlayedRounds?',
+                          'Are you sure you want to end the game? You will be taken to the results screen.',
                       delete: false,
                       textOkButton: 'Finish',
                       onDelete: () {
@@ -350,27 +360,17 @@ class _GameViewBodyState extends State<GameViewBody> {
                     ),
                   );
                 } else {
-                  if (!areWeAddScoreToAllPlayers()) {
-                    showCustomToast(
-                      context: context,
-                      message: 'Add Score to all players first!',
-                      contentType: ContentType.failure,
-                    );
-                    return;
-                  }
-                  final winnersIds = getWinnersIds();
-                  log(winnersIds);
-                  final game = GameModel(
-                    date: DateTime.now().toIso8601String(),
-                    roundsCount: numberOfPlayedRounds,
-                    winnersId: winnersIds,
-                    // because of NOT NULL condition in database
-                    winnerName: '',
+                  showCustomToast(
+                    context: context,
+                    message: 'Add Score to all players first!',
+                    contentType: ContentType.failure,
                   );
-                  gameCubit.insertGame(game: game);
+                  return;
                 }
               },
-              label: 'Finish Game',
+              label: round < widget.gameArgs.roundsCount
+                  ? 'Finish Game'
+                  : 'Finish & View Results',
             ),
           ),
 
