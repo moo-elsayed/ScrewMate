@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/theming/app_text_styles.dart';
 import 'package:skru_mate/core/widgets/custom_app_bar.dart';
-import 'package:skru_mate/core/widgets/custom_toast.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_states.dart';
 import 'package:skru_mate/features/players/presentation/widgets/edit_player_name_dialog.dart';
 import 'package:skru_mate/features/players/presentation/widgets/player_view_body.dart';
-import '../../data/models/player_details_args.dart';
+
+import '../../../../core/widgets/app_toasts.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
+import '../../data/models/player_details_args.dart';
 
 class PlayerView extends StatefulWidget {
   const PlayerView({super.key, required this.playerDetailsArgs});
@@ -36,20 +37,20 @@ class _PlayerViewState extends State<PlayerView> {
         listener: (context, state) {
           if (state is DeletePlayerSuccess) {
             context.read<PlayersCubit>().getAllPlayers();
-            showCustomToast(
+            AppToast.show(
               context: context,
-              message: '${widget.playerDetailsArgs.player.name} deleted',
-              contentType: ContentType.success,
+              title: '${widget.playerDetailsArgs.player.name} deleted',
+              type: .success,
             );
             context.pop();
           } else if (state is UpdatePlayerStatsSuccess) {
             context.read<PlayersCubit>().getAllPlayers();
             Future.delayed(const Duration(milliseconds: 500), () {
               if (context.mounted) {
-                showCustomToast(
+                AppToast.show(
                   context: context,
-                  message: 'name changed to $playerName',
-                  contentType: ContentType.success,
+                  title: 'name changed to $playerName',
+                  type: .success,
                 );
               }
             });
@@ -97,7 +98,10 @@ class _PlayerViewState extends State<PlayerView> {
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     value: 'edit',
-                    child: Text('Edit', style: AppTextStyles.font14WhiteRegular),
+                    child: Text(
+                      'Edit',
+                      style: AppTextStyles.font14WhiteRegular,
+                    ),
                   ),
                   PopupMenuItem(
                     value: 'delete',

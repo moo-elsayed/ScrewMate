@@ -13,7 +13,7 @@ import 'package:skru_mate/features/games_history/presentation/managers/cubits/ga
 import '../../../../core/database/shared_models/game_model.dart';
 import '../../../../core/database/shared_models/player_model.dart';
 import '../../../../core/theming/app_text_styles.dart';
-import '../../../../core/widgets/custom_toast.dart';
+import '../../../../core/widgets/app_toasts.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'custom_previous_games_item.dart';
@@ -45,104 +45,105 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
   }
 
   @override
-  Widget build(BuildContext context) => BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
-      listener: (context, state) {
-        if (state is GetAllGamesSuccess) {
-          previousGames = state.games;
-          log(previousGames.toString());
-        } else if (state is GetAllPlayersSuccess) {
-          allPlayersList = state.players;
-        } else if (state is ReverseListSuccess) {
-          previousGames = previousGames.reversed.toList();
-        }
-      },
-      builder: (context, state) {
-        if (validStates.any((type) => state.runtimeType == type)) {
-          return previousGames.isEmpty
-              ? Center(
-                  child: Text(
-                    'No previous games yet',
-                    style: AppTextStyles.font16WhiteRegular,
-                  ),
-                )
-              : ListView.separated(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: previousGames.length,
-                  separatorBuilder: (_, __) => Divider(
-                    color: AppColors.purple,
-                    height: 0.h,
-                    endIndent: 12.w,
-                    indent: 12.w,
-                  ),
-                  itemBuilder: (context, index) {
-                    final game = previousGames[index];
-                    return Slidable(
-                      key: ValueKey<GameModel>(game),
-                      startActionPane: ActionPane(
-                        motion: const DrawerMotion(),
-                        extentRatio: 0.25,
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) {
-                              showCupertinoDialog(
-                                context: context,
-                                builder: (context) => ConfirmationDialog(
-                                  name: 'Game #${game.id}',
-                                  onDelete: () {
-                                    context
-                                        .read<GamesHistoryCubit>()
-                                        .deleteGame(
-                                          gameId: previousGames[index].id!,
-                                        );
-                                    previousGames.remove(game);
-                                    context.pop();
-                                    showCustomToast(
-                                      context: context,
-                                      message: 'Game #${game.id} deleted',
-                                      contentType: ContentType.success,
-                                    );
-                                    setState(() {});
-                                  },
+  Widget build(BuildContext context) =>
+      BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
+        listener: (context, state) {
+          if (state is GetAllGamesSuccess) {
+            previousGames = state.games;
+            log(previousGames.toString());
+          } else if (state is GetAllPlayersSuccess) {
+            allPlayersList = state.players;
+          } else if (state is ReverseListSuccess) {
+            previousGames = previousGames.reversed.toList();
+          }
+        },
+        builder: (context, state) {
+          if (validStates.any((type) => state.runtimeType == type)) {
+            return previousGames.isEmpty
+                ? Center(
+                    child: Text(
+                      'No previous games yet',
+                      style: AppTextStyles.font16WhiteRegular,
+                    ),
+                  )
+                : ListView.separated(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: previousGames.length,
+                    separatorBuilder: (_, __) => Divider(
+                      color: AppColors.purple,
+                      height: 0.h,
+                      endIndent: 12.w,
+                      indent: 12.w,
+                    ),
+                    itemBuilder: (context, index) {
+                      final game = previousGames[index];
+                      return Slidable(
+                        key: ValueKey<GameModel>(game),
+                        startActionPane: ActionPane(
+                          motion: const DrawerMotion(),
+                          extentRatio: 0.25,
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                showCupertinoDialog(
+                                  context: context,
+                                  builder: (context) => ConfirmationDialog(
+                                    name: 'Game #${game.id}',
+                                    onDelete: () {
+                                      context
+                                          .read<GamesHistoryCubit>()
+                                          .deleteGame(
+                                            gameId: previousGames[index].id!,
+                                          );
+                                      previousGames.remove(game);
+                                      context.pop();
+                                      AppToast.show(
+                                        context: context,
+                                        title: 'Game #${game.id} deleted',
+                                        type: .success,
+                                      );
+                                      setState(() {});
+                                    },
+                                  ),
+                                );
+                              },
+                              backgroundColor: Theme.of(
+                                context,
+                              ).scaffoldBackgroundColor,
+                              foregroundColor: Colors.red,
+                              icon: Icons.delete_outline,
+                              label: 'Delete',
+                              borderRadius: BorderRadius.circular(12.r),
+                              spacing: 6,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.w,
+                                vertical: 10.h,
+                              ),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 12.w, left: 12.w),
+                          child: CustomPreviousGamesItem(
+                            game: game,
+                            index: index,
+                            onTap: () {
+                              context.pushNamed(
+                                Routes.gameResultView,
+                                arguments: GameResultViewArgs(
+                                  gameId: game.id!,
+                                  allPlayersList: allPlayersList,
                                 ),
                               );
                             },
-                            backgroundColor: Theme.of(
-                              context,
-                            ).scaffoldBackgroundColor,
-                            foregroundColor: Colors.red,
-                            icon: Icons.delete_outline,
-                            label: 'Delete',
-                            borderRadius: BorderRadius.circular(12.r),
-                            spacing: 6,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 10.h,
-                            ),
                           ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 12.w, left: 12.w),
-                        child: CustomPreviousGamesItem(
-                          game: game,
-                          index: index,
-                          onTap: () {
-                            context.pushNamed(
-                              Routes.gameResultView,
-                              arguments: GameResultViewArgs(
-                                gameId: game.id!,
-                                allPlayersList: allPlayersList,
-                              ),
-                            );
-                          },
                         ),
-                      ),
-                    );
-                  },
-                );
-        } else {
-          return const SizedBox();
-        }
-      },
-    );
+                      );
+                    },
+                  );
+          } else {
+            return const SizedBox();
+          }
+        },
+      );
 }

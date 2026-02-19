@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
@@ -108,13 +109,23 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
                     child: Column(
                       children: [
                         Text(
-                          winners.length > 1 ? '🏆 WINNERS 🏆' : '🏆 WINNER 🏆',
-                          style: AppTextStyles.font22PurpleBold.copyWith(
-                            fontSize: 28.sp,
-                            color: AppColors.purple,
-                            letterSpacing: 2,
-                          ),
-                        ),
+                              winners.length > 1
+                                  ? '🏆 WINNERS 🏆'
+                                  : '🏆 WINNER 🏆',
+                              style: AppTextStyles.font22PurpleBold.copyWith(
+                                fontSize: 28.sp,
+                                color: AppColors.purple,
+                                letterSpacing: 2,
+                              ),
+                            )
+                            .animate() // بداية الأنيميشن
+                            .fade(duration: 600.ms)
+                            .slideY(
+                              begin: -0.5,
+                              end: 0,
+                              curve: Curves.easeOutBack,
+                            ),
+                        // بينزل من فوق مع Bounce,
                         Gap(20.h),
                         Wrap(
                           spacing: 12.w,
@@ -131,7 +142,13 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
                                   r: r,
                                 ),
                               )
-                              .toList(),
+                              .toList()
+                              .animate(interval: 200.ms)
+                              .fade(duration: 500.ms)
+                              .scale(
+                                begin: const Offset(0.8, 0.8),
+                                curve: Curves.easeOutBack,
+                              ),
                         ),
                       ],
                     ),
@@ -146,7 +163,7 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
                       vertical: 10.h,
                     ),
                     child: const Divider(color: Colors.white24),
-                  ),
+                  ).animate(delay: 800.ms).fade(duration: 400.ms),
                 ),
 
                 // === قائمة باقي اللاعبين ===
@@ -170,9 +187,18 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
                           final player = flatList[index].value;
 
                           return Padding(
-                            padding: EdgeInsets.only(bottom: 14.h),
-                            child: _buildStandardPlayerCard(player, rank),
-                          );
+                                padding: EdgeInsets.only(bottom: 14.h),
+                                child: _buildStandardPlayerCard(player, rank),
+                              )
+                              .animate(
+                                delay: (800 + (index * 100)).ms,
+                              )
+                              .fade(duration: 400.ms)
+                              .slideY(
+                                begin: 0.2,
+                                end: 0,
+                                curve: Curves.easeOutQuad,
+                              );
                         },
                         childCount: restOfRanks.fold(
                           0,

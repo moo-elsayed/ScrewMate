@@ -1,8 +1,9 @@
 import 'package:dartz/dartz.dart';
+import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/errors/failures.dart';
 import 'package:skru_mate/features/players/data/data_sources/players_local_data_source.dart';
-import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/features/players/data/models/player_games_states_model.dart';
+
 import '../../domain/repos/players_repo.dart';
 
 class PlayersRepoImp implements PlayersRepo {

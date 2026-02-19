@@ -1,5 +1,5 @@
-import '../models/game_details_model.dart';
 import '../../../../core/database/shared_models/game_model.dart';
+import '../models/game_details_model.dart';
 
 abstract class GamesHistoryLocalDataSource {
   Future<List<GameModel>> getAllGames();

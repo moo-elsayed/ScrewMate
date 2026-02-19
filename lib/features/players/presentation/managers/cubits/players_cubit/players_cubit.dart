@@ -58,7 +58,7 @@ class PlayersCubit extends Cubit<PlayersStates> {
     );
   }
 
-  reverseList() {
+  void reverseList() {
     emit(ReverseListSuccess());
   }
 }

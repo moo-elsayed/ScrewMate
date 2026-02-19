@@ -10,9 +10,9 @@ import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/app_colors.dart';
 import 'package:skru_mate/core/theming/app_text_styles.dart';
+import 'package:skru_mate/core/widgets/app_toasts.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_header.dart';
-import 'package:skru_mate/core/widgets/custom_toast.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_cubit.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
 import 'package:skru_mate/features/game/presentation/widgets/custom_player_card.dart';
@@ -41,6 +41,7 @@ class _GameViewBodyState extends State<GameViewBody> {
   bool isDoubleRound = false;
   late int minScore;
   late int maxScore;
+  late List<int> sortedIndices;
 
   @override
   void initState() {
@@ -52,6 +53,7 @@ class _GameViewBodyState extends State<GameViewBody> {
       widget.gameArgs.players.length,
       (_) => List.generate(widget.gameArgs.roundsCount, (__) => 0),
     );
+    sortedIndices = List.generate(widget.gameArgs.players.length, (i) => i);
     setAreWeAddScoreToPlayerToFalse();
     if (round == widget.gameArgs.roundsCount) isDoubleRound = true;
   }
@@ -116,15 +118,6 @@ class _GameViewBodyState extends State<GameViewBody> {
   @override
   Widget build(BuildContext context) {
     final gameCubit = context.read<GameCubit>();
-    final List<int> sortedIndices = List.generate(
-      widget.gameArgs.players.length,
-      (i) => i,
-    );
-    sortedIndices.sort((a, b) {
-      final int scoreA = getTotalScore(a);
-      final int scoreB = getTotalScore(b);
-      return scoreA.compareTo(scoreB);
-    });
     if (widget.gameArgs.players.isNotEmpty) {
       minScore = getTotalScore(0);
       maxScore = getTotalScore(0);
@@ -150,14 +143,14 @@ class _GameViewBodyState extends State<GameViewBody> {
                 ),
               )
               .toList();
-          gameCubit.insertGamePlayers(players: gamePlayers);
+          await gameCubit.insertGamePlayers(players: gamePlayers);
         } else if (state is InsertGamePlayersSuccess) {
           final List<RoundModel> rounds = List.generate(
             widget.gameArgs.roundsCount,
             (index) => RoundModel(gameId: gameId, roundNumber: round),
           );
 
-          gameCubit.insertRounds(rounds: rounds);
+          await gameCubit.insertRounds(rounds: rounds);
         } else if (state is InsertRoundsSuccess) {
           insertedRoundIds = state.roundsIds;
 
@@ -183,13 +176,17 @@ class _GameViewBodyState extends State<GameViewBody> {
             }
           }
 
-          gameCubit.insertRoundScores(scores: roundScoreModels);
+          await gameCubit.insertRoundScores(scores: roundScoreModels);
         } else if (state is InsertRoundScoresSuccess) {
-          showCustomToast(
-            context: context,
-            message: 'Game saved successfully!',
-            contentType: ContentType.success,
-          );
+          Future.delayed(const Duration(milliseconds: 600), () {
+            if (context.mounted) {
+              AppToast.show(
+                context: context,
+                title: 'Game saved successfully!',
+                type: .success,
+              );
+            }
+          });
 
           int x = 0;
 
@@ -219,7 +216,8 @@ class _GameViewBodyState extends State<GameViewBody> {
           await Future.delayed(const Duration(milliseconds: 500));
 
           if (context.mounted) {
-            context.pushReplacementNamed(
+            context.pop();
+            await context.pushReplacementNamed(
               Routes.gameResultView,
               arguments: GameResultViewArgs(
                 gameId: gameId,
@@ -258,12 +256,12 @@ class _GameViewBodyState extends State<GameViewBody> {
                       onChanged: (value) {
                         isDoubleRound = value;
                         setState(() {});
-                        showCustomToast(
+                        AppToast.show(
                           context: context,
-                          message: isDoubleRound
+                          title: isDoubleRound
                               ? 'Double round activated'
                               : 'Double round deactivated',
-                          contentType: .success,
+                          type: .success,
                         );
                       },
                       activeThumbColor: AppColors.purple,
@@ -310,8 +308,7 @@ class _GameViewBodyState extends State<GameViewBody> {
               },
             ),
           ),
-          if (MediaQuery.of(context).viewInsets.bottom == 0)
-            bottomButtons(gameCubit, context),
+          bottomButtons(gameCubit, context),
         ],
       ),
     );
@@ -336,7 +333,8 @@ class _GameViewBodyState extends State<GameViewBody> {
                 final int numberOfPlayedRounds = !areWeAddScoreToAnyPlayer()
                     ? round - 1
                     : round;
-                if (areWeAddScoreToAllPlayers() || !areWeAddScoreToAnyPlayer()) {
+                if (areWeAddScoreToAllPlayers() ||
+                    !areWeAddScoreToAnyPlayer()) {
                   showCupertinoDialog(
                     context: context,
                     builder: (context) => ConfirmationDialog(
@@ -360,10 +358,10 @@ class _GameViewBodyState extends State<GameViewBody> {
                     ),
                   );
                 } else {
-                  showCustomToast(
+                  AppToast.show(
                     context: context,
-                    message: 'Add Score to all players first!',
-                    contentType: ContentType.failure,
+                    title: 'Add Score to all players first!',
+                    type: .error,
                   );
                   return;
                 }
@@ -379,10 +377,10 @@ class _GameViewBodyState extends State<GameViewBody> {
             child: CustomButton(
               onTap: () {
                 if (!areWeAddScoreToAllPlayers()) {
-                  showCustomToast(
+                  AppToast.show(
                     context: context,
-                    message: 'Add Score to all players first!',
-                    contentType: ContentType.failure,
+                    title: 'Add Score to all players first!',
+                    type: .error,
                   );
                 } else {
                   round++;
@@ -390,6 +388,11 @@ class _GameViewBodyState extends State<GameViewBody> {
                     isDoubleRound = true;
                   }
                   setAreWeAddScoreToPlayerToFalse();
+                  sortedIndices.sort((a, b) {
+                    final int scoreA = getTotalScore(a);
+                    final int scoreB = getTotalScore(b);
+                    return scoreA.compareTo(scoreB);
+                  });
                   setState(() {});
                 }
               },

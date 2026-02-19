@@ -1,6 +1,6 @@
+import 'package:path/path.dart';
 import 'package:skru_mate/core/database/database_constants.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 class AppDatabase {
   factory AppDatabase() => _instance;

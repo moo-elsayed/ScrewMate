@@ -5,9 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/routing/routes.dart';
+import 'package:skru_mate/core/widgets/app_toasts.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_text_form_field.dart';
-import 'package:skru_mate/core/widgets/custom_toast.dart';
 import 'package:skru_mate/features/game/data/models/game_args.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_cubit.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
@@ -136,7 +136,7 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                 ),
               ),
             ),
-            Gap(16.h),
+            Gap(6.h),
             CustomButton(
               onTap: () async {
                 if (_formKey.currentState!.validate()) {
@@ -170,10 +170,10 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                         .then((result) {
                           result.fold(
                             (failure) {
-                              showCustomToast(
+                              AppToast.show(
                                 context: context,
-                                message: 'Failed to add ${newPlayer.name}',
-                                contentType: ContentType.failure,
+                                title: 'Failed to add ${newPlayer.name}',
+                                type: .error,
                               );
                             },
                             (newId) {
@@ -195,7 +195,7 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                       .toList();
 
                   if (context.mounted) {
-                    context.pushNamed(
+                    await context.pushNamed(
                       Routes.gameView,
                       arguments: GameArgs(
                         players: selectedPlayers,
@@ -207,8 +207,7 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
               },
               label: 'Start Game',
             ),
-
-            Gap(16.h),
+            Gap(6.h),
           ],
         ),
       ),

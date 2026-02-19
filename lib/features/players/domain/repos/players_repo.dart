@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/errors/failures.dart';
+
 import '../../../../core/database/shared_models/player_model.dart';
+import '../../../../core/errors/failures.dart';
 import '../../data/models/player_games_states_model.dart';
 
 abstract class PlayersRepo {

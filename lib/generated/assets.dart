@@ -3,7 +3,9 @@ class Assets {
   Assets._();
 
   static const String imagesAppIcon = 'assets/images/app_icon.png';
-  static const String imagesSplashScreen = 'assets/images/splash_screen.png';
+  static const String imagesAppIconTransparent = 'assets/images/app_icon_transparent.png';
+  static const String imagesSplashAndroid12 = 'assets/images/splash_android_12.png';
+  static const String imagesSplashAndroid12Dark = 'assets/images/splash_android_12_dark.png';
   static const String svgsCrown = 'assets/svgs/crown.svg';
 
 }
