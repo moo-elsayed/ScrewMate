@@ -1,7 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
+import 'package:skru_mate/core/widgets/theme_selection_bottom_sheet.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
-import '../widgets/drawer_body.dart';
 import '../widgets/home_view_body.dart';
 
 class HomeView extends StatelessWidget {
@@ -9,13 +10,21 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      drawer: SafeArea(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 250.w),
-          child: const Drawer(child: DrawerBody()),
+        appBar: CustomAppBar(
+          text: 'ScrewMate',
+          leading: const SizedBox.shrink(),
+          actions: [
+            IconButton(
+              icon: Icon(
+                CupertinoIcons.brightness,
+                color: context.colors.primaryLight,
+              ),
+              onPressed: () => ThemeSelectionBottomSheet.show(context),
+            ),
+          ],
         ),
-      ),
-      appBar: const CustomAppBar(),
-      body: const SafeArea(child: HomeViewBody()),
-    );
+        body: const SafeArea(
+          child: HomeViewBody(),
+        ),
+      );
 }

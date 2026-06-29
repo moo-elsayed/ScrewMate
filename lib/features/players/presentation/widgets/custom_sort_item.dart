@@ -19,23 +19,19 @@ class CustomSortItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.only(
-          left: 12.w,
-          right: marginToRight ? 12.w : 0,
-          top: 8.h,
-          // bottom: 8.h,
-        ),
-        padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 12.w),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.purple : AppColors.appbarColor,
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-        ),
-        child: Text(
-          sortOption,
-          style: AppTextStyles.font16WhiteRegular,
-        ),
+    onTap: onTap,
+    child: Container(
+      margin: EdgeInsets.only(
+        left: 16.w,
+        right: marginToRight ? 16.w : 0,
+        top: 8.h,
       ),
-    );
+      padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 12.w),
+      decoration: BoxDecoration(
+        color: isSelected ? AppColors.purple : AppColors.appbarColor,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+      ),
+      child: Text(sortOption, style: AppTextStyles.font16WhiteRegular),
+    ),
+  );
 }

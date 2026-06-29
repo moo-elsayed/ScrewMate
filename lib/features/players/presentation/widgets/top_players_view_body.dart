@@ -174,7 +174,10 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
                     child: ListView.separated(
                       itemCount: sortedPlayers.length,
                       physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 12.h,
+                      ),
                       separatorBuilder: (context, index) => Gap(12.h),
                       itemBuilder: (context, index) {
                         final PlayerModel player = sortedPlayers[index];

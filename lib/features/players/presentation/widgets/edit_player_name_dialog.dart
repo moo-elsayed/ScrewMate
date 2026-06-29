@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
-import 'package:skru_mate/core/theming/app_colors.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_text_form_field.dart';
 import '../../../../core/database/shared_models/player_model.dart';
@@ -53,78 +53,78 @@ class _EditPlayerNameDialogState extends State<EditPlayerNameDialog> {
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
+    final colors = context.colors;
     return Material(
-      color: Colors.black38,
+      color: Colors.black54,
       child: Padding(
         padding: EdgeInsetsGeometry.only(
           bottom: mediaQueryData.viewInsets.bottom,
         ),
-        child: Theme(
-          data: ThemeData.light(),
-          child: Align(
-            alignment: Alignment.center,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: mediaQueryData.size.width * 0.75,
-              ),
-              child: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                behavior: HitTestBehavior.opaque,
-                child: Container(
-                  padding: EdgeInsetsGeometry.symmetric(
-                    horizontal: 16.w,
-                    vertical: 16.h,
+        child: Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: mediaQueryData.size.width * 0.75,
+            ),
+            child: GestureDetector(
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                padding: EdgeInsetsGeometry.symmetric(
+                  horizontal: 16.w,
+                  vertical: 16.h,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16.r),
+                  color: colors.surfaceElevated,
+                  border: Border.all(
+                    color: colors.border.withValues(alpha: 0.3),
+                    width: 0.5,
                   ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadiusGeometry.circular(16.r),
-                    color: Colors.white,
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Edit Player Name',
-                          style: GoogleFonts.lato(color: Colors.black),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Edit Player Name',
+                        style: GoogleFonts.lato(color: colors.mainText),
+                      ),
+                      Gap(12.h),
+                      CustomTextFormField(
+                        controller: _controller,
+                        keyboardType: TextInputType.name,
+                        fillColor: colors.surfaceHighest,
+                        contentPadding: EdgeInsetsGeometry.symmetric(
+                          vertical: 14.h,
+                          horizontal: 16.h,
                         ),
-                        Gap(12.h),
-                        CustomTextFormField(
-                          controller: _controller,
-                          keyboardType: TextInputType.name,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsetsGeometry.symmetric(
-                            vertical: 14.h,
-                            horizontal: 16.h,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Player name is required';
-                            }
-                            return null;
-                          },
-                        ),
-                        Gap(20.h),
-                        CustomButton(
-                          onTap: () {
-                            if (_formKey.currentState!.validate()) {
-                              final name = _controller.text.trim();
-                              widget.onNameChanged(name);
-                              context.read<PlayersCubit>().updatePlayerStats(
-                                player: widget.player.copyWith(name: name),
-                              );
-                              context.pop();
-                            }
-                          },
-                          label: 'Save Name',
-                          notActiveColor: isTextEmpty
-                              ? AppColors.appbarColor
-                              : null,
-                        ),
-                      ],
-                    ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Player name is required';
+                          }
+                          return null;
+                        },
+                      ),
+                      Gap(20.h),
+                      CustomButton(
+                        onTap: () {
+                          if (_formKey.currentState!.validate()) {
+                            final name = _controller.text.trim();
+                            widget.onNameChanged(name);
+                            context.read<PlayersCubit>().updatePlayerStats(
+                              player: widget.player.copyWith(name: name),
+                            );
+                            context.pop();
+                          }
+                        },
+                        label: 'Save Name',
+                        notActiveColor: isTextEmpty
+                            ? colors.surfaceHighest
+                            : null,
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/features/game/data/models/game_args.dart';
@@ -9,18 +8,17 @@ import 'package:skru_mate/features/players/presentation/views/player_view.dart';
 import 'package:skru_mate/features/players/presentation/views/top_players_view.dart';
 import '../../features/game/data/models/add_players_args.dart';
 import '../../features/game/presentation/views/add_players_view.dart';
-import '../../features/game/presentation/views/home_view.dart';
+import '../../features/game/presentation/views/main_screen.dart';
 import '../../features/games_history/data/models/game_result_view_args.dart';
 import '../../features/players/data/models/player_details_args.dart';
 
 class AppRouter {
   Route? generateRoute(RouteSettings settings) {
-    //this arguments to be passed in any screen like this ( arguments as ClassName )
     final arguments = settings.arguments;
 
     switch (settings.name) {
-      case Routes.homeView:
-        return _navigate(const HomeView());
+      case Routes.mainScreen:
+        return _navigate(const MainScreen());
       case Routes.addPlayersView:
         final args = arguments as AddPlayersArgs;
         return _navigate(
@@ -47,11 +45,6 @@ class AppRouter {
     }
   }
 
-  PageRouteBuilder<dynamic> _navigate(Widget view) => PageRouteBuilder(
-    pageBuilder: (_, __, ___) => view,
-    transitionsBuilder: (_, animation, __, child) => FadeTransition(
-      opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
-      child: child,
-    ),
-  );
+  MaterialPageRoute<dynamic> _navigate(Widget view) =>
+      MaterialPageRoute(builder: (context) => view);
 }

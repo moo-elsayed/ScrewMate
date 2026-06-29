@@ -10,6 +10,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
   Bloc.observer = SimpleBlocObserver();
-  setupServiceLocator();
+  await setupServiceLocator();
   runApp(ScrewMate(appRouter: AppRouter()));
 }

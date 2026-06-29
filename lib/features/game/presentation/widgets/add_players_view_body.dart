@@ -60,9 +60,7 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
       }
     },
     child: GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       behavior: HitTestBehavior.opaque,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skru_mate/core/theming/app_theme.dart';
+import 'package:skru_mate/core/theming/theme_cubit.dart';
 import 'package:skru_mate/features/games_history/data/repos/games_history_repo_imp.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'core/helpers/di.dart';
@@ -39,14 +41,21 @@ class ScrewMate extends StatelessWidget {
               gamesHistoryRepo: getIt.get<GamesHistoryRepoImp>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => getIt.get<ThemeCubit>(),
+          ),
         ],
 
-        child: MaterialApp(
-          title: 'ScrewMate',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData.dark(),
-          initialRoute: Routes.homeView,
-          onGenerateRoute: appRouter.generateRoute,
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, themeMode) => MaterialApp(
+            title: 'ScrewMate',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeMode,
+            initialRoute: Routes.mainScreen,
+            onGenerateRoute: appRouter.generateRoute,
+          ),
         ),
       ),
     );

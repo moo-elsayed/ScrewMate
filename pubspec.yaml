@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.2+3
 
 environment:
-  sdk: ^3.10.8
+  sdk: ^3.12.1
 
 dependencies:
   flutter:
@@ -32,6 +32,8 @@ dependencies:
   sqflite: ^2.4.2
   path: any
   intl: ^0.20.2
+  logger: ^2.7.0
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

@@ -26,8 +26,8 @@ class PreviousGamesViewBody extends StatefulWidget {
 }
 
 class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
-  late List<GameModel> previousGames;
-  late List<PlayerModel> allPlayersList;
+  List<GameModel> previousGames = [];
+  List<PlayerModel> allPlayersList = [];
   final validStates = [
     GetAllGamesSuccess,
     GetAllPlayersSuccess,
@@ -123,7 +123,7 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
                           ],
                         ),
                         child: Padding(
-                          padding: EdgeInsets.only(right: 12.w, left: 12.w),
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: CustomPreviousGamesItem(
                             game: game,
                             index: index,

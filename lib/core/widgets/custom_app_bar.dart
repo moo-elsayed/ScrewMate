@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:skru_mate/core/theming/app_colors.dart';
-import 'package:skru_mate/core/theming/app_text_styles.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
@@ -12,7 +10,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   final String? text;
@@ -22,11 +19,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) => AppBar(
-      title: Text(text ?? 'ScrewMate', style: AppTextStyles.font22WhiteRegular),
+      title: Text(text ?? 'ScrewMate'),
       leading: leading,
       centerTitle: centerTitle,
-      backgroundColor: AppColors.appbarColor,
-      surfaceTintColor: AppColors.appbarColor,
       actions: actions,
     );
 }

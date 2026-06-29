@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
-import 'package:skru_mate/core/theming/app_colors.dart';
 import 'package:skru_mate/core/theming/app_text_styles.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_text_form_field.dart';
 import '../../../../core/database/shared_models/player_model.dart';
@@ -63,140 +63,141 @@ class _CustomScoreDialogState extends State<CustomScoreDialog> {
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQueryData = MediaQuery.of(context);
+    final colors = context.colors;
     return Material(
-      color: Colors.black38,
+      color: Colors.black54,
       child: Padding(
         padding: EdgeInsetsGeometry.only(
           bottom: mediaQueryData.viewInsets.bottom,
         ),
-        child: Theme(
-          data: ThemeData.light(),
-          child: Align(
-            alignment: Alignment.center,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: mediaQueryData.size.width * 0.75,
-              ),
-              child: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                behavior: HitTestBehavior.opaque,
-                child: Container(
-                  padding: EdgeInsetsGeometry.symmetric(
-                    horizontal: 16.w,
-                    vertical: 16.h,
+        child: Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: mediaQueryData.size.width * 0.75,
+            ),
+            child: GestureDetector(
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                padding: EdgeInsetsGeometry.symmetric(
+                  horizontal: 16.w,
+                  vertical: 16.h,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadiusGeometry.circular(16.r),
+                  color: colors.surfaceElevated,
+                  border: Border.all(
+                    color: colors.border.withValues(alpha: 0.3),
+                    width: 0.5,
                   ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadiusGeometry.circular(16.r),
-                    color: Colors.white,
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Score for ${widget.player.name} in round ${widget.round}',
-                          style: GoogleFonts.lato(color: Colors.black),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Score for ${widget.player.name} in round ${widget.round}',
+                        style: GoogleFonts.lato(color: colors.mainText),
+                      ),
+                      Gap(12.h),
+                      CustomTextFormField(
+                        controller: _controller,
+                        keyboardType: TextInputType.number,
+                        fillColor: colors.surfaceHighest,
+                        contentPadding: EdgeInsetsGeometry.symmetric(
+                          vertical: 14.h,
+                          horizontal: 16.h,
                         ),
-                        Gap(12.h),
-                        CustomTextFormField(
-                          controller: _controller,
-                          keyboardType: TextInputType.number,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsetsGeometry.symmetric(
-                            vertical: 14.h,
-                            horizontal: 16.h,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a score';
+                          }
+                          return null;
+                        },
+                      ),
+                      Gap(20.h),
+                      CustomButton(
+                        onTap: () {
+                          if (!tapOnScrew) {
+                            _controller.text = '0';
+                            setBooleansToTrue();
+                          }
+                        },
+                        notActiveColor: tapOnScrew
+                            ? colors.surfaceHighest
+                            : null,
+                        label: 'Screw (0)',
+                      ),
+                      Gap(12.h),
+                      Row(
+                        spacing: 8.w,
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              onTap: () {
+                                if (!tapOnScore2) {
+                                  if (_controller.text.isEmpty) return;
+                                  _multiplyScoreBy(2);
+                                  setBooleansToTrue();
+                                }
+                              },
+                              label: 'Score × 2',
+                              notActiveColor: tapOnScore2
+                                  ? colors.surfaceHighest
+                                  : null,
+                            ),
                           ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a score';
-                            }
-                            return null;
-                          },
-                        ),
-                        Gap(20.h),
-                        CustomButton(
-                          onTap: () {
-                            if (!tapOnScrew) {
-                              _controller.text = '0';
-                              setBooleansToTrue();
-                            }
-                          },
-                          notActiveColor: tapOnScrew
-                              ? AppColors.appbarColor
-                              : null,
-                          label: 'Screw (0)',
-                        ),
-                        Gap(12.h),
-                        Row(
-                          spacing: 8.w,
-                          children: [
+                          if (widget.isDoubleRound)
                             Expanded(
                               child: CustomButton(
                                 onTap: () {
-                                  if (!tapOnScore2) {
+                                  if (!tapOnScore4) {
                                     if (_controller.text.isEmpty) return;
-                                    _multiplyScoreBy(2);
+                                    _multiplyScoreBy(4);
                                     setBooleansToTrue();
                                   }
                                 },
-                                label: 'Score × 2',
-                                notActiveColor: tapOnScore2
-                                    ? AppColors.appbarColor
+                                label: 'Score × 4',
+                                notActiveColor: tapOnScore4
+                                    ? colors.surfaceHighest
                                     : null,
                               ),
                             ),
-                            if (widget.isDoubleRound)
-                              Expanded(
-                                child: CustomButton(
-                                  onTap: () {
-                                    if (!tapOnScore4) {
-                                      if (_controller.text.isEmpty) return;
-                                      _multiplyScoreBy(4);
-                                      setBooleansToTrue();
-                                    }
-                                  },
-                                  label: 'Score × 4',
-                                  notActiveColor: tapOnScore4
-                                      ? AppColors.appbarColor
-                                      : null,
-                                ),
-                              ),
-                          ],
-                        ),
-                        Gap(12.h),
-                        CustomButton(
-                          onTap: () {
-                            if (_formKey.currentState!.validate()) {
-                              score = int.parse(_controller.text);
-                              widget.onSave(score);
-                              context.pop();
-                            }
-                          },
-                          label: 'Save Score',
-                          notActiveColor: isTextEmpty
-                              ? AppColors.appbarColor
-                              : null,
-                        ),
-                        Gap(8.h),
-                        GestureDetector(
-                          onTap: _resetScore,
-                          child: Text(
-                            'Reset',
-                            style: AppTextStyles.font14BlackRegular.copyWith(
-                              height: 2,
-                              decorationColor: Colors.black,
-                              decoration: TextDecoration.underline,
-                            ),
+                        ],
+                      ),
+                      Gap(12.h),
+                      CustomButton(
+                        onTap: () {
+                          if (_formKey.currentState!.validate()) {
+                            score = int.parse(_controller.text);
+                            widget.onSave(score);
+                            context.pop();
+                          }
+                        },
+                        label: 'Save Score',
+                        notActiveColor: isTextEmpty
+                            ? colors.surfaceHighest
+                            : null,
+                      ),
+                      Gap(8.h),
+                      GestureDetector(
+                        onTap: _resetScore,
+                        child: Text(
+                          'Reset',
+                          style: AppTextStyles.font14Regular.copyWith(
+                            height: 2,
+                            color: colors.bodyText,
+                            decorationColor: colors.bodyText,
+                            decoration: TextDecoration.underline,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

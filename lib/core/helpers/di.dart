@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skru_mate/core/theming/theme_cubit.dart';
 import 'package:skru_mate/features/game/domain/repos/game_repo.dart';
 import '../../features/game/data/data_sources/game_local_data_source_imp.dart';
 import '../../features/game/data/repos/game_repo_imp.dart';
@@ -11,7 +13,15 @@ import '../database/app_database.dart';
 
 final getIt = GetIt.instance;
 
-void setupServiceLocator() {
+Future<void> setupServiceLocator() async {
+  // SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+  getIt.registerSingleton<SharedPreferences>(prefs);
+
+  // Theme
+  getIt.registerSingleton<ThemeCubit>(ThemeCubit(prefs));
+
+  // Game
   getIt.registerSingleton<GameRepo>(
     GameRepoImp(
       gameLocalDataSource: GameLocalDataSourceImp(
@@ -19,6 +29,8 @@ void setupServiceLocator() {
       ),
     ),
   );
+
+  // Players
   getIt.registerSingleton<PlayersRepo>(
     PlayersRepoImp(
       playerLocalDataSource: PlayerLocalDataSourceImp(
@@ -26,6 +38,8 @@ void setupServiceLocator() {
       ),
     ),
   );
+
+  // Games History
   getIt.registerSingleton<GamesHistoryRepoImp>(
     GamesHistoryRepoImp(
       gamesLocalDataSource: GamesHistoryLocalDataSourceImpl(
