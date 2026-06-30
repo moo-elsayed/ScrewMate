@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +8,7 @@ import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/app_colors.dart';
 import 'package:skru_mate/features/games_history/data/models/game_result_view_args.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_states.dart';
+import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
 import '../../../../core/database/shared_models/game_model.dart';
 import '../../../../core/database/shared_models/player_model.dart';
 import '../../../../core/theming/app_text_styles.dart';
@@ -50,7 +49,6 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
         listener: (context, state) {
           if (state is GetAllGamesSuccess) {
             previousGames = state.games;
-            log(previousGames.toString());
           } else if (state is GetAllPlayersSuccess) {
             allPlayersList = state.players;
           } else if (state is ReverseListSuccess) {
@@ -68,6 +66,7 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
                   )
                 : ListView.separated(
                     physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.only(top: 8.h, bottom: 75.h),
                     itemCount: previousGames.length,
                     separatorBuilder: (_, __) => Divider(
                       color: AppColors.purple,
@@ -89,20 +88,24 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
                                   context: context,
                                   builder: (context) => ConfirmationDialog(
                                     name: 'Game #${game.id}',
-                                    onDelete: () {
-                                      context
-                                          .read<GamesHistoryCubit>()
-                                          .deleteGame(
-                                            gameId: previousGames[index].id!,
-                                          );
-                                      previousGames.remove(game);
+                                    onDelete: () async {
+                                      final gameId = previousGames[index].id!;
+                                      final gamesHistoryCubit = context.read<GamesHistoryCubit>();
+                                      final playersCubit = context.read<PlayersCubit>();
+
                                       context.pop();
-                                      AppToast.show(
-                                        context: context,
-                                        title: 'Game #${game.id} deleted',
-                                        type: .success,
-                                      );
-                                      setState(() {});
+
+                                      await gamesHistoryCubit.deleteGame(gameId: gameId);
+                                      await gamesHistoryCubit.getAllGames();
+                                      await playersCubit.getAllPlayers();
+
+                                      if (context.mounted) {
+                                        AppToast.show(
+                                          context: context,
+                                          title: 'Game #$gameId deleted',
+                                          type: .success,
+                                        );
+                                      }
                                     },
                                   ),
                                 );
@@ -114,10 +117,10 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
                               icon: Icons.delete_outline,
                               label: 'Delete',
                               borderRadius: BorderRadius.circular(12.r),
-                              spacing: 6,
+                              spacing: 3,
                               padding: EdgeInsets.symmetric(
-                                horizontal: 12.w,
-                                vertical: 10.h,
+                                horizontal: 3.w,
+                                vertical: 3.h,
                               ),
                             ),
                           ],
@@ -126,6 +129,8 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: CustomPreviousGamesItem(
                             game: game,
+                            isFirst: index == 0,
+                            isLast: index == previousGames.length - 1,
                             index: index,
                             onTap: () {
                               context.pushNamed(

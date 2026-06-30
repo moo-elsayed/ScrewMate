@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/core/widgets/confirmation_dialog.dart';
 import 'package:skru_mate/core/widgets/custom_app_bar.dart';
 import 'package:skru_mate/features/game/data/models/game_args.dart';
@@ -19,7 +20,7 @@ class GameView extends StatelessWidget {
         onTap: () {
           showLeaveTheGameConfirmation(context);
         },
-        child: const Icon(Icons.arrow_back, color: Colors.white),
+        child: Icon(Icons.arrow_back, color: context.colors.mainText),
       ),
       text: 'Current Game',
     ),

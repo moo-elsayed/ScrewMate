@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/theming/app_colors.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 
 class CustomScoreButton extends StatelessWidget {
   const CustomScoreButton({super.key, this.onTap, this.icon});
@@ -9,20 +9,36 @@ class CustomScoreButton extends StatelessWidget {
   final IconData? icon;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final isEdit = icon != null;
+
+    return GestureDetector(
       onTap: onTap,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 32.sp,
+        height: 32.sp,
+        decoration: BoxDecoration(
+          color: isEdit ? colors.surfaceHighest : colors.primary,
           shape: BoxShape.circle,
+          boxShadow: isEdit
+              ? null
+              : [
+                  BoxShadow(
+                    color: colors.primary.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
         ),
-        margin: EdgeInsets.only(left: 4.w),
-        padding: EdgeInsets.all(icon != null ? 4.r : 0),
+        margin: EdgeInsets.only(left: 8.w),
         child: Icon(
           icon ?? Icons.add,
-          color: AppColors.purple.withValues(alpha: 0.9),
-          size: icon != null ? 16 : 22,
+          color: isEdit ? colors.mainText : Colors.white,
+          size: isEdit ? 14.sp : 18.sp,
         ),
       ),
     );
+  }
 }

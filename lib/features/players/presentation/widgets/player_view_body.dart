@@ -5,11 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/database/shared_models/player_model.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/features/players/data/models/player_games_states_model.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_states.dart';
 import 'package:skru_mate/features/players/presentation/widgets/all_previous_games_for_player_bottom_sheet.dart';
 import 'package:skru_mate/features/players/presentation/widgets/player_stats_grid_view.dart';
+import 'package:skru_mate/features/players/presentation/widgets/player_view_header.dart';
+import 'package:skru_mate/features/players/presentation/widgets/player_win_loss_bar.dart';
 import 'package:skru_mate/features/players/presentation/widgets/previous_games_for_player_list_view.dart';
 import '../../data/models/player_details_args.dart';
 
@@ -41,99 +44,130 @@ class _PlayerViewBodyState extends State<PlayerViewBody> {
   @override
   void initState() {
     super.initState();
-
     final PlayerDetailsArgs playerDetailsArgs = widget.playerDetailsArgs;
-
     players = playerDetailsArgs.playersList;
     context.read<PlayersCubit>().getPlayerGameStats(
       playerDetailsArgs.player.id!,
     );
+    playerGameStatsList = [];
   }
 
   @override
-  Widget build(BuildContext context) => Padding(
-      padding: EdgeInsets.only(top: 16.h, right: 12.w, left: 12.w),
-      child: Column(
-        children: [
-          PlayerStatsGridView(playerDetailsArgs: widget.playerDetailsArgs),
-          BlocConsumer<PlayersCubit, PlayersStates>(
-            listener: (context, state) {
-              if (state is GetPlayerGamesStatesSuccess) {
-                playerGameStatsList = state.playerGameStatsList;
-              } else if (state is GetAllPlayersSuccess) {
-                players = state.players;
-              }
-            },
-            builder: (context, state) {
-              if (validStates.any((type) => state.runtimeType == type) &&
-                  playerGameStatsList.isNotEmpty) {
-                return Expanded(
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final PlayerModel player = widget.playerDetailsArgs.player;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: BlocConsumer<PlayersCubit, PlayersStates>(
+        listener: (context, state) {
+          if (state is GetPlayerGamesStatesSuccess) {
+            playerGameStatsList = state.playerGameStatsList;
+          } else if (state is GetAllPlayersSuccess) {
+            players = state.players;
+          }
+        },
+        builder: (context, state) {
+          final hasGames = playerGameStatsList.isNotEmpty;
+
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              // 1. Player Header
+              SliverToBoxAdapter(
+                child: PlayerViewHeader(
+                  player: player,
+                  playerName: widget.playerName,
+                ),
+              ),
+
+              // 2. Win/Loss Split Bar
+              SliverToBoxAdapter(
+                child: PlayerWinLossBar(player: player),
+              ),
+
+              SliverToBoxAdapter(child: Gap(8.h)),
+
+              // 3. Stats Grid
+              SliverToBoxAdapter(
+                child: PlayerStatsGridView(playerDetailsArgs: widget.playerDetailsArgs),
+              ),
+
+              // 4. Previous Games Section Header
+              if (hasGames)
+                SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Gap(48.w),
-                        GestureDetector(
-                          onTap: () {
-                            if (playerGameStatsList.length > 5) {
-                              _showAllGames(context);
-                            }
-                          },
-                          behavior: HitTestBehavior.opaque,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Previous Games for ${widget.playerName}',
-                                style: GoogleFonts.lato(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              if (playerGameStatsList.length > 5)
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 1.h),
-                                  child: Icon(
-                                    CupertinoIcons.chevron_right,
-                                    size: 18.r,
-                                    color: Colors.white,
+                    padding: EdgeInsets.only(top: 24.h, bottom: 8.h, left: 4.w, right: 4.w),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (playerGameStatsList.length > 5) {
+                          _showAllGames(context);
+                        }
+                      },
+                      behavior: HitTestBehavior.opaque,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Previous Games',
+                            style: GoogleFonts.lato(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w900,
+                              color: colors.mainText,
+                            ),
+                          ),
+                          if (playerGameStatsList.length > 5)
+                            Row(
+                              children: [
+                                Text(
+                                  'See All (${playerGameStatsList.length})',
+                                  style: GoogleFonts.lato(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: colors.primary,
                                   ),
                                 ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: PreviousGamesForPlayerListView(
-                            playerGameStatsList: playerGameStatsList,
-                            players: players,
-                          ),
-                        ),
-                      ],
+                                Gap(4.w),
+                                Icon(
+                                  CupertinoIcons.chevron_right,
+                                  size: 14.r,
+                                  color: colors.primary,
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                );
-              } else {
-                return const SizedBox();
-              }
-            },
-          ),
-        ],
+                ),
+
+              // 5. Previous Games List
+              if (hasGames)
+                SliverToBoxAdapter(
+                  child: PreviousGamesForPlayerListView(
+                    playerGameStatsList: playerGameStatsList,
+                    players: players,
+                  ),
+                ),
+
+              SliverToBoxAdapter(child: Gap(30.h)),
+            ],
+          );
+        },
       ),
     );
+  }
 
   void _showAllGames(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xff1E1E1E),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-      ),
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       isScrollControlled: true,
       builder: (_) => AllPreviousGamesForPlayerBottomSheet(
-          playerGameStatsList: playerGameStatsList,
-          players: players,
-        ),
+        playerGameStatsList: playerGameStatsList,
+        players: players,
+      ),
     );
   }
 }

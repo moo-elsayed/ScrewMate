@@ -42,10 +42,11 @@ class _HomeViewBodyState extends State<HomeViewBody> {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Gap(8.h),
             Text(
               'Ready for a match?',
               style: GoogleFonts.lato(
@@ -57,10 +58,7 @@ class _HomeViewBodyState extends State<HomeViewBody> {
             Gap(4.h),
             Text(
               'Set up your game rules and start playing.',
-              style: GoogleFonts.lato(
-                fontSize: 13.sp,
-                color: colors.bodyText,
-              ),
+              style: GoogleFonts.lato(fontSize: 13.sp, color: colors.bodyText),
             ),
             Gap(20.h),
             const HomeStatsCard(),

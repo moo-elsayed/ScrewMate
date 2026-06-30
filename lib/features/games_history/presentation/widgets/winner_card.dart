@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/database/shared_models/game_player_model.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 import '../../../../core/database/shared_models/round_model.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
-import '../../../../core/theming/app_colors.dart';
-import '../../../../core/theming/app_text_styles.dart';
 
 class WinnerCard extends StatelessWidget {
   const WinnerCard({
@@ -24,81 +24,97 @@ class WinnerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-    onTap: () => _showPlayerDetailsDialog(context, player),
-    child: Container(
-      width: 140.w,
-      padding: .all(16.r),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.gold.withValues(alpha: 0.9),
-            AppColors.gold.withValues(alpha: 0.4),
+        onTap: () => _showPlayerDetailsDialog(context, player),
+        child: Container(
+        width: 140.w,
+        padding: EdgeInsets.all(16.r),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF1C40F), // Rich Gold
+              Color(0xFFF39C12), // Dark Gold
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: const Color(0xFFFEE382), width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFF39C12).withValues(alpha: 0.35),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: Colors.amberAccent, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.amber.withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        child: Column(
+          children: [
+            Icon(Icons.emoji_events_rounded, color: Colors.white, size: 40.sp),
+            Gap(8.h),
+            Text(
+              playerName,
+              style: GoogleFonts.lato(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: [
+                  const Shadow(
+                    blurRadius: 4,
+                    color: Colors.black38,
+                    offset: Offset(0, 2),
+                  )
+                ],
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+            Gap(6.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+              decoration: BoxDecoration(
+                color: Colors.black26,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Text(
+                '${player.totalScore} pts',
+                style: GoogleFonts.lato(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-      child: Column(
-        children: [
-          Icon(Icons.emoji_events_rounded, color: Colors.white, size: 40.sp),
-          Gap(8.h),
-          Text(
-            playerName,
-            style: AppTextStyles.font18WhiteBold.copyWith(
-              color: Colors.white,
-              shadows: [const Shadow(blurRadius: 2, color: Colors.black45)],
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-          ),
-          Gap(4.h),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-            decoration: BoxDecoration(
-              color: Colors.black26,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Text(
-              '${player.totalScore} pts',
-              style: AppTextStyles.font14WhiteBold,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+    );
 
   void _showPlayerDetailsDialog(BuildContext context, GamePlayerModel player) {
+    final colors = context.colors;
     showCupertinoDialog(
       context: context,
       barrierDismissible: true,
       builder: (context) => Dialog(
-        backgroundColor: AppColors.roundDetailsForPlayerColor,
-        shape: RoundedRectangleBorder(borderRadius: .circular(16.r)),
+        backgroundColor: colors.surfaceElevated,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         child: Padding(
-          padding: .all(20.r),
+          padding: EdgeInsets.all(20.r),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 playerName != 'Unknown' ? playerName : 'Player Details',
-                style: AppTextStyles.font18WhiteBold.copyWith(
-                  color: AppColors.purple,
+                style: GoogleFonts.lato(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                  color: colors.primary,
                 ),
               ),
               Gap(16.h),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
                 child: Row(
                   children: List.generate(rounds.length, (i) {
                     final scoresInRound = r[rounds[i].id] ?? [];
@@ -114,25 +130,31 @@ class WinnerCard extends StatelessWidget {
                       margin: EdgeInsets.only(right: 8.w),
                       padding: EdgeInsets.symmetric(
                         horizontal: 10.w,
-                        vertical: 8.h,
+                        vertical: 6.h,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(color: Colors.white12),
+                        color: colors.surfaceHighest,
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: colors.border.withValues(alpha: 0.5)),
                       ),
                       child: Column(
                         spacing: 4.h,
                         children: [
                           Text(
                             'R${i + 1}',
-                            style: AppTextStyles.font12WhiteMedium.copyWith(
-                              color: Colors.grey,
+                            style: GoogleFonts.lato(
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w600,
+                              color: colors.subText,
                             ),
                           ),
                           Text(
                             '${scoreForThisPlayer.score}',
-                            style: AppTextStyles.font14WhiteBold,
+                            style: GoogleFonts.lato(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                              color: colors.mainText,
+                            ),
                           ),
                         ],
                       ),
@@ -141,19 +163,25 @@ class WinnerCard extends StatelessWidget {
                 ),
               ),
               Gap(20.h),
-              const Divider(color: Colors.white24),
+              Divider(color: colors.border.withValues(alpha: 0.5)),
               Gap(10.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Total Score: ',
-                    style: AppTextStyles.font14WhiteRegular,
+                    style: GoogleFonts.lato(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                      color: colors.subText,
+                    ),
                   ),
                   Text(
                     '${player.totalScore}',
-                    style: AppTextStyles.font20WhiteBold.copyWith(
-                      color: AppColors.purple,
+                    style: GoogleFonts.lato(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.w900,
+                      color: colors.primary,
                     ),
                   ),
                 ],

@@ -27,7 +27,7 @@ class HomeStatsCard extends StatelessWidget {
               builder: (context, state) => HomeStatItem(
                 icon: Icons.sports_esports_outlined,
                 title: 'Games Played',
-                value: state is GetAllGamesSuccess ? state.games.length.toString() : '0',
+                value: context.read<GamesHistoryCubit>().allGames.length.toString(),
               ),
             ),
           ),
@@ -41,7 +41,7 @@ class HomeStatsCard extends StatelessWidget {
               builder: (context, state) => HomeStatItem(
                 icon: Icons.people_outline,
                 title: 'Total Players',
-                value: state is GetAllPlayersSuccess ? state.players.length.toString() : '0',
+                value: context.read<PlayersCubit>().allPlayers.length.toString(),
               ),
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:skru_mate/core/theming/app_text_styles.dart';
-import '../../../../core/theming/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 
 class CustomSortItem extends StatelessWidget {
   const CustomSortItem({
@@ -18,20 +18,43 @@ class CustomSortItem extends StatelessWidget {
   final bool marginToRight;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      margin: EdgeInsets.only(
-        left: 16.w,
-        right: marginToRight ? 16.w : 0,
-        top: 8.h,
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: EdgeInsets.only(
+          left: 12.w,
+          right: marginToRight ? 12.w : 0,
+        ),
+        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
+        decoration: BoxDecoration(
+          color: isSelected ? colors.primary : colors.surfaceElevated,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(
+            color: isSelected ? colors.primary : colors.border.withValues(alpha: 0.4),
+            width: 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: colors.primary.withValues(alpha: 0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  )
+                ]
+              : null,
+        ),
+        child: Text(
+          sortOption,
+          style: GoogleFonts.lato(
+            fontSize: 14.sp,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+            color: isSelected ? Colors.white : colors.subText,
+          ),
+        ),
       ),
-      padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 12.w),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.purple : AppColors.appbarColor,
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-      ),
-      child: Text(sortOption, style: AppTextStyles.font16WhiteRegular),
-    ),
-  );
+    );
+  }
 }

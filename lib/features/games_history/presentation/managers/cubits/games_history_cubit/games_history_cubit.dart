@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import '../../../../../players/domain/repos/players_repo.dart';
 import '../../../../domain/repos/games_history_repo.dart';
 import 'games_history_states.dart';
@@ -10,12 +11,17 @@ class GamesHistoryCubit extends Cubit<GamesHistoryStates> {
   final GamesHistoryRepo gamesHistoryRepo;
   final PlayersRepo playersRepo;
 
+  List<GameModel> allGames = [];
+
   Future<void> getAllGames() async {
     emit(GetAllGamesLoading());
     final result = await gamesHistoryRepo.getAllGames();
     result.fold(
       (failure) => emit(GetAllGamesFailure(errorMessage: failure.errorMessage)),
-      (games) => emit(GetAllGamesSuccess(games: games)),
+      (games) {
+        allGames = games;
+        emit(GetAllGamesSuccess(games: games));
+      },
     );
   }
 

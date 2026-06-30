@@ -41,10 +41,19 @@ class ThemeSelectionBottomSheet extends StatelessWidget {
           ),
         ],
       ),
-      padding: EdgeInsets.all(16.h),
+      padding: EdgeInsets.fromLTRB(16.h, 10.h, 16.h, 16.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Container(
+            width: 36.w,
+            height: 4.h,
+            decoration: BoxDecoration(
+              color: colors.border.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(2.r),
+            ),
+          ),
+          Gap(12.h),
           Text(
             'App Theme',
             style: GoogleFonts.lato(

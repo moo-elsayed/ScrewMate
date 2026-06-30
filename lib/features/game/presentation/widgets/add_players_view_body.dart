@@ -12,6 +12,7 @@ import 'package:skru_mate/features/game/data/models/game_args.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_cubit.dart';
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
 import 'package:skru_mate/features/game/presentation/widgets/select_players_bottom_sheet.dart';
+import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
 import '../../../../core/database/shared_models/player_model.dart';
 import '../../../../core/theming/app_text_styles.dart';
 
@@ -182,6 +183,12 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                         });
                   }
 
+                  if (newNames.isNotEmpty) {
+                    if (context.mounted) {
+                      await context.read<PlayersCubit>().getAllPlayers();
+                    }
+                  }
+
                   final selectedPlayers = names
                       .map(
                         (name) => playersList.firstWhere(
@@ -219,10 +226,8 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
   }) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xff1E1E1E),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-      ),
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       isScrollControlled: true,
       builder: (_) => SelectPlayersBottomSheet(
         players: players,

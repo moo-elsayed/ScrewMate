@@ -7,13 +7,18 @@ class PlayersCubit extends Cubit<PlayersStates> {
   PlayersCubit({required this.playersRepo}) : super(StripeInitial());
   final PlayersRepo playersRepo;
 
+  List<PlayerModel> allPlayers = [];
+
   Future getAllPlayers() async {
     emit(GetAllPlayersLoading());
     final result = await playersRepo.getAllPlayers();
     result.fold(
       (failure) =>
           emit(GetAllPlayersFailure(errorMessage: failure.errorMessage)),
-      (players) => emit(GetAllPlayersSuccess(players: players)),
+      (players) {
+        allPlayers = players;
+        emit(GetAllPlayersSuccess(players: players));
+      },
     );
   }
 

@@ -21,7 +21,78 @@ class AppDatabase {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, fileName);
 
-    return await openDatabase(path, version: 4, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 5,
+      onCreate: _onCreate,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 4) {
+          try {
+            await db.execute(
+              'ALTER TABLE ${DatabaseConstants.playersTable} ADD COLUMN losses INTEGER DEFAULT 0',
+            );
+          } catch (e) {
+            // Column might already exist
+          }
+        }
+        if (oldVersion < 5) {
+          await _recalculateAllPlayersLosses(db);
+        }
+      },
+    );
+  }
+
+  Future<void> _recalculateAllPlayersLosses(Database db) async {
+    try {
+      final List<Map<String, dynamic>> players = await db.query(DatabaseConstants.playersTable);
+      final Map<int, int> playerLosses = {};
+      for (var player in players) {
+        final id = player['id'] as int?;
+        if (id != null) {
+          playerLosses[id] = 0;
+        }
+      }
+
+      final List<Map<String, dynamic>> games = await db.query(DatabaseConstants.gamesTable);
+
+      for (var game in games) {
+        final gameId = game['id'] as int;
+        final List<Map<String, dynamic>> gamePlayers = await db.query(
+          DatabaseConstants.gamePlayersTable,
+          where: 'game_id = ?',
+          whereArgs: [gameId],
+        );
+
+        if (gamePlayers.isNotEmpty) {
+          int maxScore = -999999;
+          for (var gp in gamePlayers) {
+            final score = gp['total_score'] as int;
+            if (score > maxScore) {
+              maxScore = score;
+            }
+          }
+
+          for (var gp in gamePlayers) {
+            final score = gp['total_score'] as int;
+            final playerId = gp['player_id'] as int;
+            if (score == maxScore) {
+              playerLosses[playerId] = (playerLosses[playerId] ?? 0) + 1;
+            }
+          }
+        }
+      }
+
+      for (var entry in playerLosses.entries) {
+        await db.update(
+          DatabaseConstants.playersTable,
+          {'losses': entry.value},
+          where: 'id = ?',
+          whereArgs: [entry.key],
+        );
+      }
+    } catch (e) {
+      // Handle silently
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {

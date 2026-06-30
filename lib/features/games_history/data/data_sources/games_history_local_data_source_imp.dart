@@ -115,14 +115,25 @@ class GamesHistoryLocalDataSourceImpl implements GamesHistoryLocalDataSource {
       whereArgs: [gameId],
     );
 
+    // حساب أعلى سكور في الجيم ده لتحديد الخسران (صاحب المركز الأخير)
+    int maxScoreInGame = -999999;
+    for (final gp in gamePlayersResult) {
+      final int totalScore = gp['total_score'] as int;
+      if (totalScore > maxScoreInGame) {
+        maxScoreInGame = totalScore;
+      }
+    }
+
     // ==========================================================
     // خطوة 2: تعديل جدول الـ Players (خصم الإحصائيات)
     // ==========================================================
 
     for (final gp in gamePlayersResult) {
       final int playerId = gp['player_id'] as int;
+      final int totalScore = gp['total_score'] as int;
       final int roundsWonInThisGame = gp['rounds_won'] as int;
       final bool isWinner = winnersIds.contains(playerId.toString());
+      final bool isLoser = totalScore == maxScoreInGame;
 
       // هات بيانات اللاعب الأصلية الحالية
       final playerResult = await db.query(
@@ -150,8 +161,8 @@ class GamesHistoryLocalDataSourceImpl implements GamesHistoryLocalDataSource {
             ? currentWins - 1
             : currentWins;
 
-        // نقص 1 من الخسارة لو كان خسران
-        final int newLosses = (!isWinner && currentLosses > 0)
+        // نقص 1 من الخسارة لو كان خسران فعلياً في الجيم ده
+        final int newLosses = (isLoser && currentLosses > 0)
             ? currentLosses - 1
             : currentLosses;
 

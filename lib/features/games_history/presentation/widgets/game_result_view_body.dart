@@ -6,16 +6,18 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/database/shared_models/game_model.dart';
 import 'package:skru_mate/core/database/shared_models/game_player_model.dart';
 import 'package:skru_mate/core/database/shared_models/round_model.dart';
+import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/helpers/functions.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
+import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_states.dart';
 import 'package:skru_mate/features/games_history/presentation/widgets/winner_card.dart';
 import '../../../../core/database/shared_models/round_score_model.dart';
-import '../../../../core/theming/app_colors.dart';
-import '../../../../core/theming/app_text_styles.dart';
 import '../../data/models/game_result_view_args.dart';
 import 'custom_game_player_card.dart';
 
@@ -76,175 +78,191 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
   }
 
   @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
-        listener: (context, state) {
-          if (state is GetGameDetailsSuccess) {
-            game = state.gameDetails.game;
-            players = List.from(state.gameDetails.players);
-            rounds = state.gameDetails.rounds;
-            r = state.gameDetails.roundScoresByRoundId;
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Stack(
+      children: [
+        BlocConsumer<GamesHistoryCubit, GamesHistoryStates>(
+          listener: (context, state) {
+            if (state is GetGameDetailsSuccess) {
+              game = state.gameDetails.game;
+              players = List.from(state.gameDetails.players);
+              rounds = state.gameDetails.rounds;
+              r = state.gameDetails.roundScoresByRoundId;
 
-            _processRankings();
-            _confettiController.play();
-          } else if (state is GetGameDetailsFailure) {
-            log(state.errorMessage);
-          }
-        },
-        builder: (context, state) {
-          if (state is GetGameDetailsSuccess) {
-            final winners = rankedPlayers[1] ?? [];
+              _processRankings();
+              _confettiController.play();
+            } else if (state is GetGameDetailsFailure) {
+              log(state.errorMessage);
+            }
+          },
+          builder: (context, state) {
+            if (state is GetGameDetailsSuccess) {
+              final winners = rankedPlayers[1] ?? [];
 
-            final restOfRanks = rankedPlayers.keys.where((k) => k != 1).toList()
-              ..sort();
+              final restOfRanks =
+                  rankedPlayers.keys.where((k) => k != 1).toList()..sort();
 
-            return CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                // === Header ===
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.h),
-                    child: Column(
-                      children: [
-                        Text(
-                              winners.length > 1
-                                  ? '🏆 WINNERS 🏆'
-                                  : '🏆 WINNER 🏆',
-                              style: AppTextStyles.font22PurpleBold.copyWith(
-                                fontSize: 28.sp,
-                                color: AppColors.purple,
-                                letterSpacing: 2,
-                              ),
-                            )
-                            .animate() // بداية الأنيميشن
-                            .fade(duration: 600.ms)
-                            .slideY(
-                              begin: -0.5,
-                              end: 0,
-                              curve: Curves.easeOutBack,
-                            ),
-                        // بينزل من فوق مع Bounce,
-                        Gap(20.h),
-                        Wrap(
-                          spacing: 12.w,
-                          runSpacing: 12.h,
-                          alignment: WrapAlignment.center,
-                          children: winners
-                              .map(
-                                (player) => WinnerCard(
-                                  player: player,
-                                  playerName:
-                                      playerNamesById[player.playerId] ??
-                                      'Unknown',
-                                  rounds: rounds,
-                                  r: r,
+              return CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  // === Header ===
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                      child: Column(
+                        children: [
+                          Text(
+                                winners.length > 1
+                                    ? '🏆 WINNERS 🏆'
+                                    : '🏆 WINNER 🏆',
+                                style: GoogleFonts.lato(
+                                  fontSize: 28.sp,
+                                  fontWeight: FontWeight.w900,
+                                  color: colors.primary,
+                                  letterSpacing: 2,
                                 ),
                               )
-                              .toList()
-                              .animate(interval: 200.ms)
-                              .fade(duration: 500.ms)
-                              .scale(
-                                begin: const Offset(0.8, 0.8),
+                              .animate()
+                              .fade(duration: 600.ms)
+                              .slideY(
+                                begin: -0.5,
+                                end: 0,
                                 curve: Curves.easeOutBack,
                               ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // === فاصل ===
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 40.w,
-                      vertical: 10.h,
-                    ),
-                    child: const Divider(color: Colors.white24),
-                  ).animate(delay: 800.ms).fade(duration: 400.ms),
-                ),
-
-                // === قائمة باقي اللاعبين ===
-                if (restOfRanks.isNotEmpty)
-                  SliverPadding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.w,
-                      vertical: 12.h,
-                    ),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final flatList = <MapEntry<int, GamePlayerModel>>[];
-                          for (var rank in restOfRanks) {
-                            for (var player in rankedPlayers[rank]!) {
-                              flatList.add(MapEntry(rank, player));
-                            }
-                          }
-
-                          final rank = flatList[index].key;
-                          final player = flatList[index].value;
-
-                          return Padding(
-                                padding: EdgeInsets.only(bottom: 14.h),
-                                child: _buildStandardPlayerCard(player, rank),
-                              )
-                              .animate(
-                                delay: (800 + (index * 100)).ms,
-                              )
-                              .fade(duration: 400.ms)
-                              .slideY(
-                                begin: 0.2,
-                                end: 0,
-                                curve: Curves.easeOutQuad,
-                              );
-                        },
-                        childCount: restOfRanks.fold(
-                          0,
-                          (sum, rank) => sum! + rankedPlayers[rank]!.length,
-                        ),
+                          Gap(20.h),
+                          Wrap(
+                            spacing: 12.w,
+                            runSpacing: 12.h,
+                            alignment: WrapAlignment.center,
+                            children: winners
+                                .map(
+                                  (player) => WinnerCard(
+                                    player: player,
+                                    playerName:
+                                        playerNamesById[player.playerId] ??
+                                        'Unknown',
+                                    rounds: rounds,
+                                    r: r,
+                                  ),
+                                )
+                                .toList()
+                                .animate(interval: 200.ms)
+                                .fade(duration: 500.ms)
+                                .scale(
+                                  begin: const Offset(0.8, 0.8),
+                                  curve: Curves.easeOutBack,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
 
-                SliverToBoxAdapter(child: Gap(30.h)),
-              ],
-            );
-          }
-          return const Center(child: CupertinoActivityIndicator());
-        },
-      ),
+                  // === Divider ===
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 40.w,
+                        vertical: 10.h,
+                      ),
+                      child: Divider(
+                        color: colors.border.withValues(alpha: 0.4),
+                      ),
+                    ).animate(delay: 800.ms).fade(duration: 400.ms),
+                  ),
 
-      // Confetti Overlay
-      Align(
-        alignment: Alignment.topCenter,
-        child: ConfettiWidget(
-          confettiController: _confettiController,
-          blastDirectionality: BlastDirectionality.explosive,
-          shouldLoop: false,
-          colors: [
-            Colors.green,
-            Colors.blue,
-            Colors.pink,
-            Colors.orange,
-            Colors.purple,
-            AppColors.gold,
-          ],
-          numberOfParticles: 30,
-          gravity: 0.3,
+                  // === List of other players ===
+                  if (restOfRanks.isNotEmpty)
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 12.h,
+                      ),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final flatList = <MapEntry<int, GamePlayerModel>>[];
+                            for (var rank in restOfRanks) {
+                              for (var player in rankedPlayers[rank]!) {
+                                flatList.add(MapEntry(rank, player));
+                              }
+                            }
+
+                            final rank = flatList[index].key;
+                            final player = flatList[index].value;
+
+                            return Padding(
+                                  padding: EdgeInsets.only(bottom: 14.h),
+                                  child: CustomGamePlayerCard(
+                                    playerRank: rank,
+                                    playerNamesById: playerNamesById,
+                                    player: player,
+                                    rounds: rounds,
+                                    r: r,
+                                    rankColor: getRankColor(rank),
+                                  ),
+                                )
+                                .animate(delay: (800 + (index * 100)).ms)
+                                .fade(duration: 400.ms)
+                                .slideY(
+                                  begin: 0.2,
+                                  end: 0,
+                                  curve: Curves.easeOutQuad,
+                                );
+                          },
+                          childCount: restOfRanks.fold(
+                            0,
+                            (sum, rank) => sum! + rankedPlayers[rank]!.length,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  if (!widget.gameResultViewArgs.fromHistory)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24.w,
+                          vertical: 20.h,
+                        ),
+                        child: CustomButton(
+                          onTap: () {
+                            context.pop();
+                          },
+                          label: 'Back to Home',
+                        ),
+                      ),
+                    ),
+
+                  SliverToBoxAdapter(child: Gap(30.h)),
+                ],
+              );
+            }
+            return const Center(child: CupertinoActivityIndicator());
+          },
         ),
-      ),
-    ],
-  );
 
-  Widget _buildStandardPlayerCard(GamePlayerModel player, int rank) =>
-      CustomGamePlayerCard(
-        playerRank: rank,
-        playerNamesById: playerNamesById,
-        player: player,
-        rounds: rounds,
-        r: r,
-        rankColor: getRankColor(rank),
-      );
+        // Confetti Overlay
+        Align(
+          alignment: Alignment.topCenter,
+          child: ConfettiWidget(
+            confettiController: _confettiController,
+            blastDirectionality: BlastDirectionality.explosive,
+            shouldLoop: false,
+            colors: const [
+              Colors.green,
+              Colors.blue,
+              Colors.pink,
+              Colors.orange,
+              Colors.purple,
+              Color(0xFFFFD700), // Gold
+            ],
+            numberOfParticles: 30,
+            gravity: 0.3,
+          ),
+        ),
+      ],
+    );
+  }
 }
