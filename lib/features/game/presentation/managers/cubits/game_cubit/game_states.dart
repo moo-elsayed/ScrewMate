@@ -1,4 +1,4 @@
-import '../../../../../../core/database/shared_models/player_model.dart';
+import '../../../../../../core/database/shared_entities/player_entity.dart';
 
 abstract class GameStates {}
 
@@ -42,7 +42,7 @@ class GetAllPlayersLoading extends GameStates {}
 class GetAllPlayersSuccess extends GameStates {
 
   GetAllPlayersSuccess({required this.players});
-  final List<PlayerModel> players;
+  final List<PlayerEntity> players;
 }
 
 class GetAllPlayersFailure extends GameStates {

@@ -6,11 +6,10 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
-import '../../../../core/database/shared_models/player_model.dart';
-import '../../../../core/helpers/functions.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../games_history/data/models/game_result_view_args.dart';
-import '../../data/models/player_games_states_model.dart';
+import '../../domain/entities/player_game_stats_entity.dart';
 
 class PreviousGamesForPlayerListView extends StatelessWidget {
   const PreviousGamesForPlayerListView({
@@ -20,8 +19,8 @@ class PreviousGamesForPlayerListView extends StatelessWidget {
     this.showAll = false,
   });
 
-  final List<PlayerGameStatsModel> playerGameStatsList;
-  final List<PlayerModel> players;
+  final List<PlayerGameStatsEntity> playerGameStatsList;
+  final List<PlayerEntity> players;
   final bool showAll;
 
   String _formatDate(String dateStr) {
@@ -67,7 +66,7 @@ class PreviousGamesForPlayerListView extends StatelessWidget {
       itemBuilder: (context, index) {
         final playerGameStatsModel = playerGameStatsList[index];
         final rank = playerGameStatsModel.rank;
-        final rankColor = getRankColor(rank);
+        final rankColor = rank.getRankColor(context);
 
         String rankSuffix = 'th';
         if (rank == 1) {

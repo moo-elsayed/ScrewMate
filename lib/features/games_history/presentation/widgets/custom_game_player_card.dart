@@ -3,9 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
-import '../../../../core/database/shared_models/game_player_model.dart';
-import '../../../../core/database/shared_models/round_model.dart';
-import '../../../../core/database/shared_models/round_score_model.dart';
+import '../../../../core/database/shared_entities/game_player_entity.dart';
+import '../../../../core/database/shared_entities/round_entity.dart';
+import '../../../../core/database/shared_entities/round_score_entity.dart';
 
 class CustomGamePlayerCard extends StatelessWidget {
   const CustomGamePlayerCard({
@@ -20,9 +20,9 @@ class CustomGamePlayerCard extends StatelessWidget {
 
   final int playerRank;
   final Map<int, String> playerNamesById;
-  final GamePlayerModel player;
-  final List<RoundModel> rounds;
-  final Map<int, List<RoundScoreModel>> r;
+  final GamePlayerEntity player;
+  final List<RoundEntity> rounds;
+  final Map<int, List<RoundScoreEntity>> r;
   final Color rankColor;
 
   @override
@@ -38,51 +38,80 @@ class CustomGamePlayerCard extends StatelessWidget {
         : '';
 
     return Container(
-      padding: EdgeInsets.all(16.r),
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
       decoration: BoxDecoration(
+        color: isPodium
+            ? rankColor.withValues(alpha: 0.05)
+            : colors.surfaceElevated,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: isPodium ? rankColor : colors.border.withValues(alpha: 0.6),
-          width: isPodium ? 1.5 : 0.8,
+          color: isPodium
+              ? rankColor.withValues(alpha: 0.3)
+              : colors.border.withValues(alpha: 0.3),
+          width: isPodium ? 1.2 : 0.8,
         ),
-        color: colors.surfaceElevated,
-        boxShadow: isPodium
-            ? [
-                BoxShadow(
-                  color: rankColor.withValues(alpha: 0.15),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : null,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 14.h,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                playerNamesById[player.playerId] != null
-                    ? '${playerNamesById[player.playerId]}'
-                    : 'Deleted player',
-                style: GoogleFonts.lato(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: colors.mainText,
+              // Rank badge / number
+              Container(
+                width: 28.r,
+                height: 28.r,
+                decoration: BoxDecoration(
+                  color: isPodium
+                      ? rankColor.withValues(alpha: 0.15)
+                      : colors.surfaceHighest,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  '$playerRank',
+                  style: GoogleFonts.lato(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w900,
+                    color: isPodium ? rankColor : colors.subText,
+                  ),
                 ),
               ),
-              Text(
-                '${medal}Rank #$playerRank',
-                style: GoogleFonts.lato(
-                  fontSize: 16.sp,
-                  fontWeight: isPodium ? FontWeight.bold : FontWeight.w600,
-                  color: isPodium ? rankColor : colors.subText,
+              Gap(12.w),
+              Expanded(
+                child: Text(
+                  '$medal${playerNamesById[player.playerId] ?? 'Unknown'}',
+                  style: GoogleFonts.lato(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                    color: colors.mainText,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              Gap(12.w),
+              if (player.roundsWon > 0)
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8.w,
+                    vertical: 3.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.success.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    '🏆 ${player.roundsWon} rounds',
+                    style: GoogleFonts.lato(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w800,
+                      color: colors.success,
+                    ),
+                  ),
+                ),
             ],
           ),
+          Gap(10.h),
           Row(
             children: [
               Expanded(
@@ -94,7 +123,7 @@ class CustomGamePlayerCard extends StatelessWidget {
                       final scoresInRound = r[rounds[i].id] ?? [];
                       final scoreForThisPlayer = scoresInRound.firstWhere(
                         (s) => s.playerId == player.playerId,
-                        orElse: () => RoundScoreModel(
+                        orElse: () => RoundScoreEntity(
                           roundId: rounds[i].id!,
                           playerId: player.playerId,
                           score: 0,

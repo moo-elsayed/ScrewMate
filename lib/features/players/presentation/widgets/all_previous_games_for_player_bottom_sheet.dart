@@ -5,9 +5,9 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/features/players/presentation/widgets/previous_games_for_player_list_view.dart';
-import '../../../../core/database/shared_models/player_model.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 import '../../../../core/widgets/bottom_sheet_handle.dart';
-import '../../data/models/player_games_states_model.dart';
+import '../../domain/entities/player_game_stats_entity.dart';
 
 class AllPreviousGamesForPlayerBottomSheet extends StatelessWidget {
   const AllPreviousGamesForPlayerBottomSheet({
@@ -16,15 +16,31 @@ class AllPreviousGamesForPlayerBottomSheet extends StatelessWidget {
     required this.players,
   });
 
-  final List<PlayerGameStatsModel> playerGameStatsList;
-  final List<PlayerModel> players;
+  final List<PlayerGameStatsEntity> playerGameStatsList;
+  final List<PlayerEntity> players;
+
+  static void show(
+    BuildContext context, {
+    required List<PlayerGameStatsEntity> playerGameStatsList,
+    required List<PlayerEntity> players,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.5),
+      isScrollControlled: true,
+      builder: (_) => AllPreviousGamesForPlayerBottomSheet(
+        playerGameStatsList: playerGameStatsList,
+        players: players,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Container(
-      margin: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
-      padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 16.h),
+      padding: EdgeInsets.fromLTRB(8.w, 10.h, 8.w, 0.h),
       decoration: BoxDecoration(
         color: colors.scaffold,
         borderRadius: BorderRadius.circular(24.r),
@@ -37,13 +53,14 @@ class AllPreviousGamesForPlayerBottomSheet extends StatelessWidget {
             color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
-          )
+          ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const BottomSheetHandle(),
+          Gap(12.h),
           Text(
             'All Previous Games',
             style: GoogleFonts.lato(

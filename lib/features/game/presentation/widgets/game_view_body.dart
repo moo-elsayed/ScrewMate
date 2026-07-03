@@ -1,12 +1,11 @@
 import 'dart:developer';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:skru_mate/core/database/shared_models/game_model.dart';
-import 'package:skru_mate/core/database/shared_models/player_model.dart';
+import 'package:skru_mate/core/database/shared_entities/game_entity.dart';
+import 'package:skru_mate/core/database/shared_entities/player_entity.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
@@ -18,9 +17,9 @@ import 'package:skru_mate/features/game/presentation/widgets/custom_player_card.
 import 'package:skru_mate/features/games_history/data/models/game_result_view_args.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
-import '../../../../core/database/shared_models/game_player_model.dart';
-import '../../../../core/database/shared_models/round_model.dart';
-import '../../../../core/database/shared_models/round_score_model.dart';
+import '../../../../core/database/shared_entities/game_player_entity.dart';
+import '../../../../core/database/shared_entities/round_entity.dart';
+import '../../../../core/database/shared_entities/round_score_entity.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../data/models/game_args.dart';
 
@@ -105,7 +104,7 @@ class _GameViewBodyState extends State<GameViewBody> {
     return totalScores.map((s) => sorted.indexOf(s) + 1).toList()[index];
   }
 
-  int getRoundsWonByPlayer(PlayerModel player) {
+  int getRoundsWonByPlayer(PlayerEntity player) {
     final int playerIndex = widget.gameArgs.players.indexOf(player);
     int roundsWon = 0;
     final List<int> playerScores = roundScores[playerIndex];
@@ -153,9 +152,9 @@ class _GameViewBodyState extends State<GameViewBody> {
           gameId = state.gameId;
 
           int index = 0;
-          final List<GamePlayerModel> gamePlayers = widget.gameArgs.players
+          final List<GamePlayerEntity> gamePlayers = widget.gameArgs.players
               .map(
-                (player) => GamePlayerModel(
+                (player) => GamePlayerEntity(
                   gameId: gameId,
                   playerId: player.id!,
                   totalScore: getTotalScore(index++),
@@ -165,17 +164,17 @@ class _GameViewBodyState extends State<GameViewBody> {
               .toList();
           await gameCubit.insertGamePlayers(players: gamePlayers);
         } else if (state is InsertGamePlayersSuccess) {
-          final List<RoundModel> rounds = List.generate(
+          final List<RoundEntity> rounds = List.generate(
             widget.gameArgs.roundsCount,
             (index) =>
-                RoundModel(gameId: gameId, roundNumber: roundNotifier.value),
+                RoundEntity(gameId: gameId, roundNumber: roundNotifier.value),
           );
 
           await gameCubit.insertRounds(rounds: rounds);
         } else if (state is InsertRoundsSuccess) {
           insertedRoundIds = state.roundsIds;
 
-          final List<RoundScoreModel> roundScoreModels = [];
+          final List<RoundScoreEntity> roundScoreModels = [];
 
           for (
             int roundIndex = 0;
@@ -188,7 +187,7 @@ class _GameViewBodyState extends State<GameViewBody> {
               playerIndex++
             ) {
               roundScoreModels.add(
-                RoundScoreModel(
+                RoundScoreEntity(
                   roundId: insertedRoundIds[roundIndex],
                   playerId: widget.gameArgs.players[playerIndex].id!,
                   score: roundScores[playerIndex][roundIndex],
@@ -214,7 +213,7 @@ class _GameViewBodyState extends State<GameViewBody> {
           debugPrint('Min Score (Winner): $minScore');
           debugPrint('Max Score (Loser): $maxScore');
 
-          for (PlayerModel player in widget.gameArgs.players) {
+          for (PlayerEntity player in widget.gameArgs.players) {
             final int playerScore = getTotalScore(x);
             final bool winner = playerScore == minScore;
             final bool loser = playerScore == maxScore;
@@ -229,7 +228,7 @@ class _GameViewBodyState extends State<GameViewBody> {
             debugPrint('  - Is Winner: $winner (Wins: ${player.wins} -> $newWinsCount)');
             debugPrint('  - Is Loser: $loser (Losses: ${player.losses} -> $newLossesCount)');
 
-            final updatedPlayer = PlayerModel(
+            final updatedPlayer = PlayerEntity(
               id: player.id,
               name: player.name,
               gamesPlayed: player.gamesPlayed + 1,
@@ -351,7 +350,7 @@ class _GameViewBodyState extends State<GameViewBody> {
                   separatorBuilder: (context, index) => Gap(12.h),
                   itemBuilder: (context, index) {
                     final int originalIndex = sortedIndices[index];
-                    final PlayerModel player =
+                    final PlayerEntity player =
                         widget.gameArgs.players[originalIndex];
                     final int playerRank = getPlayerRank(originalIndex);
                     final bool isRank1 = playerRank == 1;
@@ -411,27 +410,25 @@ class _GameViewBodyState extends State<GameViewBody> {
                       : currentRound;
                   if (areWeAddScoreToAllPlayers() ||
                       !areWeAddScoreToAnyPlayer()) {
-                    showCupertinoDialog(
-                      context: context,
-                      builder: (context) => ConfirmationDialog(
-                        fullText:
-                            'Are you sure you want to end the game? You will be taken to the results screen.',
-                        delete: false,
-                        textOkButton: 'Finish',
-                        onDelete: () {
-                          final winnersIds = getWinnersIds();
-                          log(winnersIds);
-                          final game = GameModel(
-                            date: DateTime.now().toIso8601String(),
-                            roundsCount: numberOfPlayedRounds,
-                            winnersId: winnersIds,
-                            // because of NOT NULL condition in database
-                            winnerName: '',
-                          );
-                          gameCubit.insertGame(game: game);
-                          context.pop();
-                        },
-                      ),
+                    ConfirmationDialog.show(
+                      context,
+                      fullText:
+                          'Are you sure you want to end the game? You will be taken to the results screen.',
+                      delete: false,
+                      textOkButton: 'Finish',
+                      onDelete: () {
+                        final winnersIds = getWinnersIds();
+                        log(winnersIds);
+                        final game = GameEntity(
+                          date: DateTime.now().toIso8601String(),
+                          roundsCount: numberOfPlayedRounds,
+                          winnersId: winnersIds,
+                          // because of NOT NULL condition in database
+                          winnerName: '',
+                        );
+                        gameCubit.insertGame(game: game);
+                        context.pop();
+                      },
                     );
                   } else {
                     AppToast.show(

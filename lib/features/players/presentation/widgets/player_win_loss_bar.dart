@@ -3,8 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:skru_mate/core/database/shared_models/player_model.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 
 class PlayerWinLossBar extends StatelessWidget {
   const PlayerWinLossBar({
@@ -12,7 +12,7 @@ class PlayerWinLossBar extends StatelessWidget {
     required this.player,
   });
 
-  final PlayerModel player;
+  final PlayerEntity player;
 
   @override
   Widget build(BuildContext context) {

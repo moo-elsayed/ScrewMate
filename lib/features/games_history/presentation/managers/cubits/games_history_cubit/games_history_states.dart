@@ -1,7 +1,6 @@
-import 'package:skru_mate/core/database/shared_models/game_model.dart';
-import 'package:skru_mate/features/games_history/data/models/game_details_model.dart';
-
-import '../../../../../../core/database/shared_models/player_model.dart';
+import 'package:skru_mate/core/database/shared_entities/game_entity.dart';
+import 'package:skru_mate/core/database/shared_entities/player_entity.dart';
+import 'package:skru_mate/features/games_history/domain/entities/game_details_entity.dart';
 
 abstract class GamesHistoryStates {}
 
@@ -14,7 +13,7 @@ class GetAllGamesLoading extends GamesHistoryStates {}
 class GetAllGamesSuccess extends GamesHistoryStates {
 
   GetAllGamesSuccess({required this.games});
-  final List<GameModel> games;
+  final List<GameEntity> games;
 }
 
 class GetAllGamesFailure extends GamesHistoryStates {
@@ -30,7 +29,7 @@ class GetGameDetailsLoading extends GamesHistoryStates {}
 class GetGameDetailsSuccess extends GamesHistoryStates {
 
   GetGameDetailsSuccess({required this.gameDetails});
-  final GameDetailsModel gameDetails;
+  final GameDetailsEntity gameDetails;
 }
 
 class GetGameDetailsFailure extends GamesHistoryStates {
@@ -61,7 +60,7 @@ class GetAllPlayersLoading extends GamesHistoryStates {}
 class GetAllPlayersSuccess extends GamesHistoryStates {
 
   GetAllPlayersSuccess({required this.players});
-  final List<PlayerModel> players;
+  final List<PlayerEntity> players;
 }
 
 class GetAllPlayersFailure extends GamesHistoryStates {

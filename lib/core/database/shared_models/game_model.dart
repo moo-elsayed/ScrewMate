@@ -1,3 +1,5 @@
+import '../shared_entities/game_entity.dart';
+
 class GameModel {
   GameModel({
     this.id,
@@ -13,6 +15,22 @@ class GameModel {
     roundsCount: map['rounds_count'] as int,
     winnersId: map['winners_ids'] as String?,
     winnerName: map['winner_name'],
+  );
+
+  factory GameModel.fromEntity(GameEntity entity) => GameModel(
+    id: entity.id,
+    date: entity.date,
+    roundsCount: entity.roundsCount,
+    winnersId: entity.winnersId,
+    winnerName: entity.winnerName,
+  );
+
+  GameEntity toEntity() => GameEntity(
+    id: id,
+    date: date,
+    roundsCount: roundsCount,
+    winnersId: winnersId,
+    winnerName: winnerName,
   );
 
   final int? id;

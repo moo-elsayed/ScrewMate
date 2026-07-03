@@ -1,3 +1,5 @@
+import '../shared_entities/player_entity.dart';
+
 class PlayerModel {
   PlayerModel({
     this.id,
@@ -17,6 +19,26 @@ class PlayerModel {
     roundWins: map['round_wins'] as int,
     winRate: (map['win_rate'] as num).toDouble(),
     losses: map['losses'] as int,
+  );
+
+  factory PlayerModel.fromEntity(PlayerEntity entity) => PlayerModel(
+    id: entity.id,
+    name: entity.name,
+    gamesPlayed: entity.gamesPlayed,
+    wins: entity.wins,
+    roundWins: entity.roundWins,
+    winRate: entity.winRate,
+    losses: entity.losses,
+  );
+
+  PlayerEntity toEntity() => PlayerEntity(
+    id: id,
+    name: name,
+    gamesPlayed: gamesPlayed,
+    wins: wins,
+    roundWins: roundWins,
+    winRate: winRate,
+    losses: losses,
   );
   final int? id;
   final String name;

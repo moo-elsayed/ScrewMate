@@ -1,13 +1,12 @@
-import '../../../../core/database/shared_models/player_model.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 
 class PlayerDetailsArgs {
-
   PlayerDetailsArgs({
     required this.player,
     required this.statRanks,
     required this.playersList,
   });
-  final PlayerModel player;
+  final PlayerEntity player;
   final Map<String, int> statRanks;
-  final List<PlayerModel> playersList;
+  final List<PlayerEntity> playersList;
 }

@@ -7,17 +7,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:skru_mate/core/database/shared_models/game_model.dart';
-import 'package:skru_mate/core/database/shared_models/game_player_model.dart';
-import 'package:skru_mate/core/database/shared_models/round_model.dart';
+import 'package:skru_mate/core/database/shared_entities/game_entity.dart';
+import 'package:skru_mate/core/database/shared_entities/game_player_entity.dart';
+import 'package:skru_mate/core/database/shared_entities/round_entity.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
-import 'package:skru_mate/core/helpers/functions.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_cubit.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_states.dart';
 import 'package:skru_mate/features/games_history/presentation/widgets/winner_card.dart';
-import '../../../../core/database/shared_models/round_score_model.dart';
+import '../../../../core/database/shared_entities/round_score_entity.dart';
 import '../../data/models/game_result_view_args.dart';
 import 'custom_game_player_card.dart';
 
@@ -31,15 +30,15 @@ class GameResultViewBody extends StatefulWidget {
 }
 
 class _GameResultViewBodyState extends State<GameResultViewBody> {
-  late GameModel game;
-  late List<GamePlayerModel> players;
-  late List<RoundModel> rounds;
-  late Map<int, List<RoundScoreModel>> r;
+  late GameEntity game;
+  late List<GamePlayerEntity> players;
+  late List<RoundEntity> rounds;
+  late Map<int, List<RoundScoreEntity>> r;
   late Map<int, String> playerNamesById;
 
   late ConfettiController _confettiController;
 
-  Map<int, List<GamePlayerModel>> rankedPlayers = {};
+  Map<int, List<GamePlayerEntity>> rankedPlayers = {};
 
   @override
   void initState() {
@@ -182,7 +181,7 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            final flatList = <MapEntry<int, GamePlayerModel>>[];
+                            final flatList = <MapEntry<int, GamePlayerEntity>>[];
                             for (var rank in restOfRanks) {
                               for (var player in rankedPlayers[rank]!) {
                                 flatList.add(MapEntry(rank, player));
@@ -200,7 +199,7 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
                                     player: player,
                                     rounds: rounds,
                                     r: r,
-                                    rankColor: getRankColor(rank),
+                                    rankColor: rank.getRankColor(context),
                                   ),
                                 )
                                 .animate(delay: (800 + (index * 100)).ms)
@@ -235,7 +234,7 @@ class _GameResultViewBodyState extends State<GameResultViewBody> {
                       ),
                     ),
 
-                  SliverToBoxAdapter(child: Gap(30.h)),
+                  SliverToBoxAdapter(child: Gap(8.h)),
                 ],
               );
             }

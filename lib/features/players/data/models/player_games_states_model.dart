@@ -1,5 +1,6 @@
-class PlayerGameStatsModel {
+import '../../domain/entities/player_game_stats_entity.dart';
 
+class PlayerGameStatsModel {
   PlayerGameStatsModel({
     required this.gameId,
     required this.date,
@@ -15,6 +16,23 @@ class PlayerGameStatsModel {
       totalScore: map['total_score'],
       rank: map['rank'],
     );
+
+  factory PlayerGameStatsModel.fromEntity(PlayerGameStatsEntity entity) =>
+      PlayerGameStatsModel(
+        gameId: entity.gameId,
+        date: entity.date,
+        roundsCount: entity.roundsCount,
+        totalScore: entity.totalScore,
+        rank: entity.rank,
+      );
+
+  PlayerGameStatsEntity toEntity() => PlayerGameStatsEntity(
+        gameId: gameId,
+        date: date,
+        roundsCount: roundsCount,
+        totalScore: totalScore,
+        rank: rank,
+      );
   final int gameId;
   final String date;
   final int roundsCount;

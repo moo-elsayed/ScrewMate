@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:skru_mate/core/theming/app_text_styles.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 
 class DrawerItem extends StatelessWidget {
-
   const DrawerItem({super.key, required this.title, required this.onTap});
   final String title;
   final void Function() onTap;
@@ -10,6 +10,9 @@ class DrawerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) => GestureDetector(
       onTap: onTap,
-      child: Text(title, style: AppTextStyles.font18WhiteMedium),
+      child: Text(
+        title,
+        style: AppTextStyles.font18Medium.copyWith(color: context.colors.mainText),
+      ),
     );
 }

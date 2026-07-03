@@ -21,6 +21,8 @@ class CustomTextFormField extends StatelessWidget {
     this.focusNode,
     this.fillColor,
     this.cursorColor,
+    this.style,
+    this.textAlign,
   });
 
   final TextEditingController controller;
@@ -37,6 +39,8 @@ class CustomTextFormField extends StatelessWidget {
   final FocusNode? focusNode;
   final Color? fillColor;
   final Color? cursorColor;
+  final TextStyle? style;
+  final TextAlign? textAlign;
 
   @override
   Widget build(BuildContext context) => TextFormField(
@@ -47,7 +51,8 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: isObscureText ?? false,
       cursorColor: cursorColor ?? AppColors.purple,
       keyboardType: keyboardType,
-      style: GoogleFonts.lato(),
+      style: style ?? GoogleFonts.lato(),
+      textAlign: textAlign ?? TextAlign.start,
       cursorErrorColor: cursorColor ?? AppColors.purple,
       focusNode: focusNode,
       decoration: InputDecoration(

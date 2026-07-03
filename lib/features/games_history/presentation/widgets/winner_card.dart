@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:skru_mate/core/database/shared_models/game_player_model.dart';
+import 'package:skru_mate/core/database/shared_entities/game_player_entity.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
-import '../../../../core/database/shared_models/round_model.dart';
-import '../../../../core/database/shared_models/round_score_model.dart';
+import '../../../../core/database/shared_entities/round_entity.dart';
+import '../../../../core/database/shared_entities/round_score_entity.dart';
 
 class WinnerCard extends StatelessWidget {
   const WinnerCard({
@@ -17,10 +17,10 @@ class WinnerCard extends StatelessWidget {
     required this.r,
   });
 
-  final GamePlayerModel player;
+  final GamePlayerEntity player;
   final String playerName;
-  final List<RoundModel> rounds;
-  final Map<int, List<RoundScoreModel>> r;
+  final List<RoundEntity> rounds;
+  final Map<int, List<RoundScoreEntity>> r;
 
   @override
   Widget build(BuildContext context) => GestureDetector(
@@ -38,49 +38,67 @@ class WinnerCard extends StatelessWidget {
             ],
           ),
           borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: const Color(0xFFFEE382), width: 2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFF39C12).withValues(alpha: 0.35),
+              color: const Color(0xFFF39C12).withValues(alpha: 0.3),
               blurRadius: 15,
-              offset: const Offset(0, 5),
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: Column(
           children: [
-            Icon(Icons.emoji_events_rounded, color: Colors.white, size: 40.sp),
-            Gap(8.h),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 60.r,
+                  height: 60.r,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Icon(
+                  Icons.emoji_events_rounded,
+                  size: 36.r,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+            Gap(12.h),
             Text(
-              playerName,
+              playerName != 'Unknown' ? playerName : 'Winner',
               style: GoogleFonts.lato(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w900,
                 color: Colors.white,
-                shadows: [
-                  const Shadow(
-                    blurRadius: 4,
-                    color: Colors.black38,
-                    offset: Offset(0, 2),
-                  )
-                ],
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),
+            Gap(4.h),
+            Text(
+              '${player.totalScore} pts',
+              style: GoogleFonts.lato(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
             Gap(6.h),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
               decoration: BoxDecoration(
-                color: Colors.black26,
+                color: Colors.white.withValues(alpha: 0.25),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Text(
-                '${player.totalScore} pts',
+                '1st Place',
                 style: GoogleFonts.lato(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w800,
                   color: Colors.white,
                 ),
               ),
@@ -90,7 +108,7 @@ class WinnerCard extends StatelessWidget {
       ),
     );
 
-  void _showPlayerDetailsDialog(BuildContext context, GamePlayerModel player) {
+  void _showPlayerDetailsDialog(BuildContext context, GamePlayerEntity player) {
     final colors = context.colors;
     showCupertinoDialog(
       context: context,
@@ -120,7 +138,7 @@ class WinnerCard extends StatelessWidget {
                     final scoresInRound = r[rounds[i].id] ?? [];
                     final scoreForThisPlayer = scoresInRound.firstWhere(
                       (s) => s.playerId == player.playerId,
-                      orElse: () => RoundScoreModel(
+                      orElse: () => RoundScoreEntity(
                         roundId: rounds[i].id!,
                         playerId: player.playerId,
                         score: 0,

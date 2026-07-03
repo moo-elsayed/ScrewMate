@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,9 +8,10 @@ import 'package:skru_mate/core/theming/app_colors.dart';
 import 'package:skru_mate/features/games_history/data/models/game_result_view_args.dart';
 import 'package:skru_mate/features/games_history/presentation/managers/cubits/games_history_cubit/games_history_states.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
-import '../../../../core/database/shared_models/game_model.dart';
-import '../../../../core/database/shared_models/player_model.dart';
+import '../../../../core/database/shared_entities/game_entity.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/theming/colors_manager.dart';
 import '../../../../core/widgets/app_toasts.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../managers/cubits/games_history_cubit/games_history_cubit.dart';
@@ -25,8 +25,8 @@ class PreviousGamesViewBody extends StatefulWidget {
 }
 
 class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
-  List<GameModel> previousGames = [];
-  List<PlayerModel> allPlayersList = [];
+  List<GameEntity> previousGames = [];
+  List<PlayerEntity> allPlayersList = [];
   final validStates = [
     GetAllGamesSuccess,
     GetAllPlayersSuccess,
@@ -56,58 +56,62 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
           }
         },
         builder: (context, state) {
+          final colors = context.colors;
           if (validStates.any((type) => state.runtimeType == type)) {
             return previousGames.isEmpty
                 ? Center(
                     child: Text(
                       'No previous games yet',
-                      style: AppTextStyles.font16WhiteRegular,
+                      style: AppTextStyles.font16Regular.copyWith(color: colors.mainText),
                     ),
                   )
                 : ListView.separated(
                     physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(top: 8.h, bottom: 75.h),
-                    itemCount: previousGames.length,
-                    separatorBuilder: (_, __) => Divider(
-                      color: AppColors.purple,
-                      height: 0.h,
-                      endIndent: 12.w,
-                      indent: 12.w,
+                    padding: EdgeInsets.only(
+                      top: 8.h,
+                      bottom: 75.h,
+                      left: 16.w,
+                      right: 16.w,
                     ),
+                    itemCount: previousGames.length,
+                    separatorBuilder: (_, __) =>
+                        Divider(color: AppColors.purple, height: 0.h),
                     itemBuilder: (context, index) {
                       final game = previousGames[index];
                       return Slidable(
-                        key: ValueKey<GameModel>(game),
+                        key: ValueKey<GameEntity>(game),
                         startActionPane: ActionPane(
                           motion: const DrawerMotion(),
                           extentRatio: 0.25,
                           children: [
                             SlidableAction(
-                              onPressed: (context) {
-                                showCupertinoDialog(
-                                  context: context,
-                                  builder: (context) => ConfirmationDialog(
-                                    name: 'Game #${game.id}',
-                                    onDelete: () async {
-                                      final gameId = previousGames[index].id!;
-                                      final gamesHistoryCubit = context.read<GamesHistoryCubit>();
-                                      final playersCubit = context.read<PlayersCubit>();
+                              onPressed: (actionContext) {
+                                final gamesHistoryCubit = context
+                                    .read<GamesHistoryCubit>();
+                                final playersCubit = context
+                                    .read<PlayersCubit>();
+                                final gameId = game.id!;
 
-                                      context.pop();
+                                ConfirmationDialog.show(
+                                  actionContext,
+                                  name: 'Game #${game.id}',
+                                  onDelete: () async {
+                                    context.pop();
 
-                                      await gamesHistoryCubit.deleteGame(gameId: gameId);
-                                      await gamesHistoryCubit.getAllGames();
-                                      await playersCubit.getAllPlayers();
+                                    await gamesHistoryCubit.deleteGame(
+                                      gameId: gameId,
+                                    );
+                                    await gamesHistoryCubit.getAllGames();
+                                    await playersCubit.getAllPlayers();
 
-                                      if (context.mounted) {
-                                        AppToast.show(
-                                          context: context,
-                                          title: 'Game #$gameId deleted',
-                                          type: .success,
-                                        );
-                                      }
-                                    },
-                                  ),
+                                    if (context.mounted) {
+                                      AppToast.show(
+                                        context: context,
+                                        title: 'Game #$gameId deleted',
+                                        type: .success,
+                                      );
+                                    }
+                                  },
                                 );
                               },
                               backgroundColor: Theme.of(
@@ -125,23 +129,20 @@ class _PreviousGamesViewBodyState extends State<PreviousGamesViewBody> {
                             ),
                           ],
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: CustomPreviousGamesItem(
-                            game: game,
-                            isFirst: index == 0,
-                            isLast: index == previousGames.length - 1,
-                            index: index,
-                            onTap: () {
-                              context.pushNamed(
-                                Routes.gameResultView,
-                                arguments: GameResultViewArgs(
-                                  gameId: game.id!,
-                                  allPlayersList: allPlayersList,
-                                ),
-                              );
-                            },
-                          ),
+                        child: CustomPreviousGamesItem(
+                          game: game,
+                          isFirst: index == 0,
+                          isLast: index == previousGames.length - 1,
+                          index: index,
+                          onTap: () {
+                            context.pushNamed(
+                              Routes.gameResultView,
+                              arguments: GameResultViewArgs(
+                                gameId: game.id!,
+                                allPlayersList: allPlayersList,
+                              ),
+                            );
+                          },
                         ),
                       );
                     },

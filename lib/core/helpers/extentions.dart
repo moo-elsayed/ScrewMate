@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 
 import '../theming/app_colors.dart';
+import '../theming/colors_manager.dart';
 
 extension Navigation on BuildContext {
   Future<dynamic> pushNamed(String routeName, {Object? arguments}) =>
@@ -37,4 +38,16 @@ extension AppToastIconExtension on ToastificationType {
     .warning => Icons.warning_amber_rounded,
     .info => Icons.info_outline_rounded,
   };
+}
+
+extension RankColorExtension on int? {
+  Color getRankColor(BuildContext context) =>
+      getRankColorWithColors(context.colors);
+
+  Color getRankColorWithColors(ColorsManager colors) => switch (this) {
+        1 => colors.gold,
+        2 => colors.silver,
+        3 => colors.bronze,
+        _ => colors.unranked,
+      };
 }

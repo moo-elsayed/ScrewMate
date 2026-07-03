@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/routing/routes.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/core/widgets/app_toasts.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_text_form_field.dart';
@@ -13,8 +14,7 @@ import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/
 import 'package:skru_mate/features/game/presentation/managers/cubits/game_cubit/game_states.dart';
 import 'package:skru_mate/features/game/presentation/widgets/select_players_bottom_sheet.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
-import '../../../../core/database/shared_models/player_model.dart';
-import '../../../../core/theming/app_text_styles.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 
 class AddPlayersViewBody extends StatefulWidget {
   const AddPlayersViewBody({
@@ -33,7 +33,7 @@ class AddPlayersViewBody extends StatefulWidget {
 class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
   late List<TextEditingController> _controllers;
   final _formKey = GlobalKey<FormState>();
-  late final List<PlayerModel> playersList;
+  late final List<PlayerEntity> playersList;
 
   @override
   void initState() {
@@ -54,53 +54,67 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
   }
 
   @override
-  Widget build(BuildContext context) => BlocListener<GameCubit, GameStates>(
-    listener: (context, state) {
-      if (state is GetAllPlayersSuccess) {
-        playersList = state.players;
-      }
-    },
-    child: GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Gap(16.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Add players:', style: AppTextStyles.font18WhiteBold),
-                GestureDetector(
-                  onTap: () {
-                    _showPlayerSelectionSheet(
-                      context: context,
-                      selectedPlayers: getSelectedPlayersList(),
-                      players: playersList,
-                    );
-                  },
-                  child: Row(
-                    spacing: 3.w,
-                    children: [
-                      Text(
-                        'Select players',
-                        style: AppTextStyles.font14WhiteMedium,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 2.h),
-                        child: Icon(
-                          CupertinoIcons.chevron_right,
-                          size: 16.r,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return BlocListener<GameCubit, GameStates>(
+      listener: (context, state) {
+        if (state is GetAllPlayersSuccess) {
+          playersList = state.players;
+        }
+      },
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Gap(16.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Add players:',
+                    style: GoogleFonts.lato(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: colors.mainText,
+                    ),
                   ),
-                ),
-              ],
+                  GestureDetector(
+                    onTap: () {
+                      SelectPlayersBottomSheet.show(
+                        context,
+                        selectedPlayers: getSelectedPlayersList(),
+                        players: playersList,
+                        controllers: _controllers,
+                      );
+                    },
+                    child: Row(
+                      spacing: 3.w,
+                      children: [
+                        Text(
+                          'Select players',
+                          style: GoogleFonts.lato(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: colors.primary,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.h),
+                          child: Icon(
+                            CupertinoIcons.chevron_right,
+                            size: 16.r,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
             ),
             Gap(16.h),
             Expanded(
@@ -154,7 +168,7 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
                       .toList();
 
                   for (final name in newNames) {
-                    PlayerModel newPlayer = PlayerModel(
+                    PlayerEntity newPlayer = PlayerEntity(
                       name: name,
                       gamesPlayed: 0,
                       wins: 0,
@@ -218,29 +232,14 @@ class _AddPlayersViewBodyState extends State<AddPlayersViewBody> {
       ),
     ),
   );
+}
 
-  void _showPlayerSelectionSheet({
-    required BuildContext context,
-    required List<PlayerModel> players,
-    required List<PlayerModel> selectedPlayers,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
-      isScrollControlled: true,
-      builder: (_) => SelectPlayersBottomSheet(
-        players: players,
-        selectedPlayers: selectedPlayers,
-        controllers: _controllers,
-      ),
-    );
-  }
 
-  List<PlayerModel> getSelectedPlayersList() {
-    final List<PlayerModel> list = [];
+
+  List<PlayerEntity> getSelectedPlayersList() {
+    final List<PlayerEntity> list = [];
     bool isFound = false;
-    for (PlayerModel player in playersList) {
+    for (PlayerEntity player in playersList) {
       for (var controller in _controllers) {
         if (player.name.toLowerCase() == controller.text.toLowerCase()) {
           isFound = true;

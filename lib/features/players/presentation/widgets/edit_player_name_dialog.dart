@@ -7,7 +7,7 @@ import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/core/widgets/custom_button.dart';
 import 'package:skru_mate/core/widgets/custom_text_form_field.dart';
-import '../../../../core/database/shared_models/player_model.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 import '../managers/cubits/players_cubit/players_cubit.dart';
 
 class EditPlayerNameDialog extends StatefulWidget {
@@ -17,7 +17,7 @@ class EditPlayerNameDialog extends StatefulWidget {
     required this.onNameChanged,
   });
 
-  final PlayerModel player;
+  final PlayerEntity player;
   final Function(String) onNameChanged;
 
   @override

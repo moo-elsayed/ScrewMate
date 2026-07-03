@@ -10,7 +10,7 @@ import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/features/players/data/models/player_details_args.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_cubit.dart';
 import 'package:skru_mate/features/players/presentation/managers/cubits/players_cubit/players_states.dart';
-import '../../../../core/database/shared_models/player_model.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 import 'custom_player_item.dart';
 import 'custom_sort_item.dart';
 
@@ -22,7 +22,7 @@ class TopPlayersViewBody extends StatefulWidget {
 }
 
 class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
-  late List<PlayerModel> topPlayersList;
+  late List<PlayerEntity> topPlayersList;
 
   final List<String> sortOptions = [
     'Games Played',
@@ -43,7 +43,7 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
   int selectedSortIndex = 0;
   int lastSelectedSortIndex = -1;
 
-  late List<PlayerModel> sortedPlayers;
+  late List<PlayerEntity> sortedPlayers;
   late Map<String, Map<dynamic, int>> ranksMap;
 
   @override
@@ -71,7 +71,7 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
     }
   }
 
-  dynamic getValueBySortIndex(PlayerModel player, int index) {
+  dynamic getValueBySortIndex(PlayerEntity player, int index) {
     switch (index) {
       case 0:
         return player.gamesPlayed;
@@ -88,7 +88,7 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
     }
   }
 
-  String getValueString(PlayerModel player) {
+  String getValueString(PlayerEntity player) {
     switch (selectedSortIndex) {
       case 0:
         return '${player.gamesPlayed} games';
@@ -131,7 +131,7 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
     }
   }
 
-  Map<String, int> getStatRanks(PlayerModel player) => {
+  Map<String, int> getStatRanks(PlayerEntity player) => {
     for (int i = 0; i < sortOptions.length; i++)
       sortOptions[i]:
           ranksMap[sortOptions[i]]?[getValueBySortIndex(player, i)] ?? 0,
@@ -146,7 +146,7 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
           sortedPlayers = sortedPlayers.reversed.toList();
         } else if (state is GetAllPlayersSuccess) {
           topPlayersList = state.players;
-          sortedPlayers = List<PlayerModel>.from(topPlayersList);
+          sortedPlayers = List<PlayerEntity>.from(topPlayersList);
           sortedPlayers.sort((a, b) => b.gamesPlayed.compareTo(a.gamesPlayed));
           calculateRanks();
         }
@@ -200,7 +200,7 @@ class _TopPlayersViewBodyState extends State<TopPlayersViewBody> {
                         itemCount: sortedPlayers.length,
                         separatorBuilder: (context, index) => Gap(8.h),
                         itemBuilder: (context, index) {
-                          final PlayerModel player = sortedPlayers[index];
+                          final PlayerEntity player = sortedPlayers[index];
                           final playerStatValue = getValueBySortIndex(
                             player,
                             selectedSortIndex,

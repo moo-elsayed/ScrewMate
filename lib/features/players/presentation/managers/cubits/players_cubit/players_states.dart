@@ -1,5 +1,5 @@
-import '../../../../../../core/database/shared_models/player_model.dart';
-import '../../../../data/models/player_games_states_model.dart';
+import '../../../../../../core/database/shared_entities/player_entity.dart';
+import '../../../../domain/entities/player_game_stats_entity.dart';
 
 abstract class PlayersStates {}
 
@@ -12,7 +12,7 @@ class GetAllPlayersLoading extends PlayersStates {}
 class GetAllPlayersSuccess extends PlayersStates {
 
   GetAllPlayersSuccess({required this.players});
-  final List<PlayerModel> players;
+  final List<PlayerEntity> players;
 }
 
 class GetAllPlayersFailure extends PlayersStates {
@@ -40,7 +40,7 @@ class GetPlayerByIdLoading extends PlayersStates {}
 class GetPlayerByIdSuccess extends PlayersStates {
 
   GetPlayerByIdSuccess({required this.player});
-  final PlayerModel player;
+  final PlayerEntity player;
 }
 
 class GetPlayerByIdFailure extends PlayersStates {
@@ -68,7 +68,7 @@ class GetPlayerGamesStatesLoading extends PlayersStates {}
 class GetPlayerGamesStatesSuccess extends PlayersStates {
 
   GetPlayerGamesStatesSuccess({required this.playerGameStatsList});
-  final List<PlayerGameStatsModel> playerGameStatsList;
+  final List<PlayerGameStatsEntity> playerGameStatsList;
 }
 
 class GetPlayerGamesStatesFailure extends PlayersStates {

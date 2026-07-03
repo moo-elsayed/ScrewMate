@@ -1,5 +1,6 @@
-class RoundScoreModel {
+import '../shared_entities/round_score_entity.dart';
 
+class RoundScoreModel {
   RoundScoreModel({
     this.id,
     required this.roundId,
@@ -13,6 +14,20 @@ class RoundScoreModel {
       playerId: map['player_id'],
       score: map['score'],
     );
+
+  factory RoundScoreModel.fromEntity(RoundScoreEntity entity) => RoundScoreModel(
+        id: entity.id,
+        roundId: entity.roundId,
+        playerId: entity.playerId,
+        score: entity.score,
+      );
+
+  RoundScoreEntity toEntity() => RoundScoreEntity(
+        id: id,
+        roundId: roundId,
+        playerId: playerId,
+        score: score,
+      );
   final int? id;
   final int roundId;
   final int playerId;

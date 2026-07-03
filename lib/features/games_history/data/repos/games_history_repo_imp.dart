@@ -1,21 +1,20 @@
 import 'package:dartz/dartz.dart';
-import 'package:skru_mate/core/database/shared_models/game_model.dart';
-import 'package:skru_mate/features/games_history/data/models/game_details_model.dart';
+import 'package:skru_mate/core/database/shared_entities/game_entity.dart';
+import 'package:skru_mate/features/games_history/domain/entities/game_details_entity.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../domain/repos/games_history_repo.dart';
 import '../data_sources/games_history_local_data_source.dart';
 
 class GamesHistoryRepoImp implements GamesHistoryRepo {
-
   GamesHistoryRepoImp({required this.gamesLocalDataSource});
   final GamesHistoryLocalDataSource gamesLocalDataSource;
 
   @override
-  Future<Either<Failure, List<GameModel>>> getAllGames() async {
+  Future<Either<Failure, List<GameEntity>>> getAllGames() async {
     try {
       final games = await gamesLocalDataSource.getAllGames();
-      return Right(games);
+      return Right(games.map((e) => e.toEntity()).toList());
     } catch (e) {
       return Left(
         DatabaseFailure(errorMessage: 'Failed to load previous games'),
@@ -24,13 +23,13 @@ class GamesHistoryRepoImp implements GamesHistoryRepo {
   }
 
   @override
-  Future<Either<Failure, GameDetailsModel>> getGameDetails({
+  Future<Either<Failure, GameDetailsEntity>> getGameDetails({
     required int gameId,
   }) async {
     try {
       final details = await gamesLocalDataSource.getGameDetails(gameId: gameId);
       if (details != null) {
-        return Right(details);
+        return Right(details.toEntity());
       } else {
         return Left(DatabaseFailure(errorMessage: 'Game not found'));
       }

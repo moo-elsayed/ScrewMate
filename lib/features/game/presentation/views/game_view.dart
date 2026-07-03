@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
@@ -35,17 +34,15 @@ class GameView extends StatelessWidget {
   );
 
   void showLeaveTheGameConfirmation(BuildContext context) {
-    showCupertinoDialog(
-      context: context,
-      builder: (context) => ConfirmationDialog(
-        delete: false,
-        fullText: 'Are you want to leave the game?',
-        textOkButton: 'Yes',
-        onDelete: () {
-          context.pop();
-          context.pop();
-        },
-      ),
+    ConfirmationDialog.show(
+      context,
+      delete: false,
+      fullText: 'Are you want to leave the game?',
+      textOkButton: 'Yes',
+      onDelete: () {
+        context.pop();
+        context.pop();
+      },
     );
   }
 }

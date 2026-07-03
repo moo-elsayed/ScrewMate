@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/core/theming/theme_cubit.dart';
+import 'package:skru_mate/core/widgets/bottom_sheet_handle.dart';
 import 'package:skru_mate/core/widgets/theme_option_item.dart';
 
 class ThemeSelectionBottomSheet extends StatelessWidget {
@@ -45,14 +46,7 @@ class ThemeSelectionBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 36.w,
-            height: 4.h,
-            decoration: BoxDecoration(
-              color: colors.border.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(2.r),
-            ),
-          ),
+          const BottomSheetHandle(),
           Gap(12.h),
           Text(
             'App Theme',

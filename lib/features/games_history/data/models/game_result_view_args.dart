@@ -1,4 +1,4 @@
-import 'package:skru_mate/core/database/shared_models/player_model.dart';
+import 'package:skru_mate/core/database/shared_entities/player_entity.dart';
 
 class GameResultViewArgs {
   GameResultViewArgs({
@@ -9,5 +9,5 @@ class GameResultViewArgs {
 
   final int gameId;
   final bool fromHistory;
-  final List<PlayerModel> allPlayersList;
+  final List<PlayerEntity> allPlayersList;
 }

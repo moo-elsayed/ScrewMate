@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../theming/app_decorations.dart';
 import '../theming/colors_manager.dart';
 
-/// A premium button with gradient, press animation, and haptic feedback.
 class CustomButton extends StatefulWidget {
   const CustomButton({
     super.key,
@@ -14,12 +12,18 @@ class CustomButton extends StatefulWidget {
     required this.label,
     this.notActiveColor,
     this.icon,
+    this.backgroundColor,
+    this.textColor,
+    this.gradient,
   });
 
   final VoidCallback onTap;
   final String label;
   final Color? notActiveColor;
   final IconData? icon;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final Gradient? gradient;
 
   @override
   State<CustomButton> createState() => _CustomButtonState();
@@ -37,9 +41,10 @@ class _CustomButtonState extends State<CustomButton>
       vsync: this,
       duration: const Duration(milliseconds: 120),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -64,26 +69,41 @@ class _CustomButtonState extends State<CustomButton>
       onTapCancel: () => _controller.reverse(),
       child: AnimatedBuilder(
         animation: _scaleAnimation,
-        builder: (context, child) => Transform.scale(
-          scale: _scaleAnimation.value,
-          child: child,
-        ),
+        builder: (context, child) =>
+            Transform.scale(scale: _scaleAnimation.value, child: child),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(vertical: 14.h),
+          padding: EdgeInsets.symmetric(vertical: 12.h),
           width: double.infinity,
           decoration: BoxDecoration(
-            gradient: _isActive ? AppDecorations.primaryGradient : null,
-            color: _isActive ? null : widget.notActiveColor ?? colors.surfaceHighest,
+            gradient: _isActive
+                ? (widget.backgroundColor != null
+                      ? null
+                      : widget.gradient ?? AppDecorations.primaryGradient)
+                : null,
+            color: _isActive
+                ? widget.backgroundColor
+                : widget.notActiveColor ?? colors.surfaceHighest,
             borderRadius: BorderRadius.circular(14.r),
-            boxShadow: _isActive ? AppDecorations.primaryGlow(opacity: 0.2) : null,
+            boxShadow:
+                _isActive &&
+                    widget.backgroundColor == null &&
+                    widget.gradient == null
+                ? AppDecorations.primaryGlow(opacity: 0.2)
+                : null,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               if (widget.icon != null) ...[
-                Icon(widget.icon, color: Colors.white, size: 18.sp),
+                Icon(
+                  widget.icon,
+                  color: _isActive
+                      ? (widget.textColor ?? Colors.white)
+                      : colors.subText,
+                  size: 18.sp,
+                ),
                 SizedBox(width: 8.w),
               ],
               Text(
@@ -93,7 +113,7 @@ class _CustomButtonState extends State<CustomButton>
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
                   color: _isActive
-                      ? Colors.white
+                      ? widget.textColor ?? Colors.white
                       : colors.subText,
                 ),
               ),

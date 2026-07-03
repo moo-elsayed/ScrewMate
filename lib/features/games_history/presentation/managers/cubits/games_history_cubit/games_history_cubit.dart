@@ -1,21 +1,29 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:skru_mate/core/database/shared_models/game_model.dart';
-import '../../../../../players/domain/repos/players_repo.dart';
-import '../../../../domain/repos/games_history_repo.dart';
+import 'package:skru_mate/core/database/shared_entities/game_entity.dart';
+import 'package:skru_mate/features/games_history/domain/use_cases/delete_game_use_case.dart';
+import 'package:skru_mate/features/games_history/domain/use_cases/get_all_games_use_case.dart';
+import 'package:skru_mate/features/games_history/domain/use_cases/get_game_details_use_case.dart';
+import 'package:skru_mate/features/players/domain/use_cases/get_all_players_use_case.dart';
 import 'games_history_states.dart';
 
 class GamesHistoryCubit extends Cubit<GamesHistoryStates> {
-  GamesHistoryCubit({required this.gamesHistoryRepo, required this.playersRepo})
-    : super(GamesHistoryInitial());
+  GamesHistoryCubit({
+    required this.getAllGamesUseCase,
+    required this.getGameDetailsUseCase,
+    required this.deleteGameUseCase,
+    required this.getAllPlayersUseCase,
+  }) : super(GamesHistoryInitial());
 
-  final GamesHistoryRepo gamesHistoryRepo;
-  final PlayersRepo playersRepo;
+  final GetAllGamesUseCase getAllGamesUseCase;
+  final GetGameDetailsUseCase getGameDetailsUseCase;
+  final DeleteGameUseCase deleteGameUseCase;
+  final GetAllPlayersUseCase getAllPlayersUseCase;
 
-  List<GameModel> allGames = [];
+  List<GameEntity> allGames = [];
 
   Future<void> getAllGames() async {
     emit(GetAllGamesLoading());
-    final result = await gamesHistoryRepo.getAllGames();
+    final result = await getAllGamesUseCase();
     result.fold(
       (failure) => emit(GetAllGamesFailure(errorMessage: failure.errorMessage)),
       (games) {
@@ -27,7 +35,7 @@ class GamesHistoryCubit extends Cubit<GamesHistoryStates> {
 
   Future<void> getGameDetails({required int gameId}) async {
     emit(GetGameDetailsLoading());
-    final result = await gamesHistoryRepo.getGameDetails(gameId: gameId);
+    final result = await getGameDetailsUseCase(gameId: gameId);
     result.fold(
       (failure) =>
           emit(GetGameDetailsFailure(errorMessage: failure.errorMessage)),
@@ -36,7 +44,7 @@ class GamesHistoryCubit extends Cubit<GamesHistoryStates> {
   }
 
   Future<void> deleteGame({required int gameId}) async =>
-      await gamesHistoryRepo.deleteGame(gameId: gameId);
+      await deleteGameUseCase(gameId: gameId);
 
   void reverseList() {
     emit(ReverseListSuccess());
@@ -45,7 +53,7 @@ class GamesHistoryCubit extends Cubit<GamesHistoryStates> {
   /// from players feature
   Future getAllPlayers() async {
     emit(GetAllPlayersLoading());
-    final result = await playersRepo.getAllPlayers();
+    final result = await getAllPlayersUseCase();
     result.fold(
       (failure) =>
           emit(GetAllPlayersFailure(errorMessage: failure.errorMessage)),

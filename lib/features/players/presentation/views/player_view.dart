@@ -83,17 +83,15 @@ class _PlayerViewState extends State<PlayerView> {
                         ),
                       );
                     } else if (value == 'delete') {
-                      showCupertinoDialog(
-                        context: context,
-                        builder: (context) => ConfirmationDialog(
-                          name: widget.playerDetailsArgs.player.name,
-                          onDelete: () {
-                            context.read<PlayersCubit>().deletePlayer(
-                              id: widget.playerDetailsArgs.player.id!,
-                            );
-                            context.pop();
-                          },
-                        ),
+                      ConfirmationDialog.show(
+                        context,
+                        name: widget.playerDetailsArgs.player.name,
+                        onDelete: () {
+                          context.read<PlayersCubit>().deletePlayer(
+                            id: widget.playerDetailsArgs.player.id!,
+                          );
+                          context.pop();
+                        },
                       );
                     }
                   },

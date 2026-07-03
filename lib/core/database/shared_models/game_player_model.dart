@@ -1,5 +1,6 @@
-class GamePlayerModel {
+import '../shared_entities/game_player_entity.dart';
 
+class GamePlayerModel {
   GamePlayerModel({
     this.id,
     required this.gameId,
@@ -15,6 +16,22 @@ class GamePlayerModel {
       totalScore: map['total_score'],
       roundsWon: map['rounds_won'],
     );
+
+  factory GamePlayerModel.fromEntity(GamePlayerEntity entity) => GamePlayerModel(
+        id: entity.id,
+        gameId: entity.gameId,
+        playerId: entity.playerId,
+        totalScore: entity.totalScore,
+        roundsWon: entity.roundsWon,
+      );
+
+  GamePlayerEntity toEntity() => GamePlayerEntity(
+        id: id,
+        gameId: gameId,
+        playerId: playerId,
+        totalScore: totalScore,
+        roundsWon: roundsWon,
+      );
   final int? id;
   final int gameId;
   final int playerId;

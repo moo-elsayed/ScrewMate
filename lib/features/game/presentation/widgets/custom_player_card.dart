@@ -1,12 +1,10 @@
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:skru_mate/core/database/shared_models/player_model.dart';
-import 'package:skru_mate/core/helpers/extentions.dart';
+import 'package:skru_mate/core/database/shared_entities/player_entity.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
 import 'package:skru_mate/generated/assets.dart';
 import 'custom_score_button.dart';
@@ -30,7 +28,7 @@ class CustomPlayerCard extends StatefulWidget {
 
   final VoidCallback dialogOnSave;
   final List<int> roundScore;
-  final PlayerModel player;
+  final PlayerEntity player;
   final bool areWeAddScoreToAllPlayers;
   final bool isRank1;
   final bool areWeAddScoreToThisPlayer;
@@ -49,7 +47,8 @@ class _CustomPlayerCardState extends State<CustomPlayerCard> {
   Widget build(BuildContext context) {
     final colors = context.colors;
 
-    final isHighlighted = !widget.areWeAddScoreToAllPlayers ||
+    final isHighlighted =
+        !widget.areWeAddScoreToAllPlayers ||
         (widget.areWeAddScoreToAllPlayers && widget.isRank1);
 
     return Stack(
@@ -62,10 +61,7 @@ class _CustomPlayerCardState extends State<CustomPlayerCard> {
             borderRadius: BorderRadius.circular(20.r),
             gradient: isHighlighted
                 ? LinearGradient(
-                    colors: [
-                      colors.primary,
-                      colors.primaryLight,
-                    ],
+                    colors: [colors.primary, colors.primaryLight],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   )
@@ -108,7 +104,10 @@ class _CustomPlayerCardState extends State<CustomPlayerCard> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 4.h,
+                    ),
                     decoration: BoxDecoration(
                       color: isHighlighted
                           ? Colors.white.withValues(alpha: 0.15)
@@ -120,7 +119,9 @@ class _CustomPlayerCardState extends State<CustomPlayerCard> {
                       style: GoogleFonts.lato(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.bold,
-                        color: isHighlighted ? Colors.white : colors.primaryLight,
+                        color: isHighlighted
+                            ? Colors.white
+                            : colors.primaryLight,
                       ),
                     ),
                   ),
@@ -238,23 +239,18 @@ class _CustomPlayerCardState extends State<CustomPlayerCard> {
   }
 
   void _showDialog(BuildContext context) {
-    showCupertinoDialog(
-      context: context,
-      builder: (context) => GestureDetector(
-        onTap: () => context.pop(),
-        child: CustomScoreDialog(
-          onSave: (int score) {
-            widget.roundScore[widget.round - 1] = score;
-            widget.dialogOnSave();
-          },
-          player: widget.player,
-          round: widget.round,
-          isDoubleRound: widget.isDoubleRound,
-          scoreOfPlayer: widget.areWeAddScoreToThisPlayer
-              ? widget.roundScore[widget.round - 1]
-              : null,
-        ),
-      ),
+    CustomScoreDialog.show(
+      context,
+      onSave: (int score) {
+        widget.roundScore[widget.round - 1] = score;
+        widget.dialogOnSave();
+      },
+      player: widget.player,
+      round: widget.round,
+      isDoubleRound: widget.isDoubleRound,
+      scoreOfPlayer: widget.areWeAddScoreToThisPlayer
+          ? widget.roundScore[widget.round - 1]
+          : null,
     );
   }
 }

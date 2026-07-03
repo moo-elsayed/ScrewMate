@@ -4,6 +4,8 @@ import 'package:gap/gap.dart';
 import 'package:skru_mate/core/helpers/extentions.dart';
 import 'package:skru_mate/core/routing/routes.dart';
 import 'package:skru_mate/core/theming/app_text_styles.dart';
+import 'package:skru_mate/core/theming/colors_manager.dart';
+
 import 'drawer_item.dart';
 
 class DrawerBody extends StatelessWidget {
@@ -17,7 +19,10 @@ class DrawerBody extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text('ScrewMate', style: AppTextStyles.font24WhiteSemibold),
+            child: Text(
+              'ScrewMate',
+              style: AppTextStyles.font24Semibold.copyWith(color: context.colors.mainText),
+            ),
           ),
           Divider(height: 64.h, indent: 10.w, endIndent: 10.w),
           Padding(

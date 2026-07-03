@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skru_mate/core/theming/colors_manager.dart';
-import '../../../../core/database/shared_models/player_model.dart';
+import '../../../../core/database/shared_entities/player_entity.dart';
 
 class CustomPlayerItem extends StatelessWidget {
   const CustomPlayerItem({
@@ -15,7 +15,7 @@ class CustomPlayerItem extends StatelessWidget {
     this.onTap,
   });
 
-  final PlayerModel player;
+  final PlayerEntity player;
   final int index;
   final int selectedSortIndex;
   final bool marginToBottom;

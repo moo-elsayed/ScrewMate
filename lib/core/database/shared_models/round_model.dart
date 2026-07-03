@@ -1,5 +1,6 @@
-class RoundModel {
+import '../shared_entities/round_entity.dart';
 
+class RoundModel {
   RoundModel({
     this.id,
     required this.gameId,
@@ -11,6 +12,18 @@ class RoundModel {
       gameId: map['game_id'],
       roundNumber: map['round_number'],
     );
+
+  factory RoundModel.fromEntity(RoundEntity entity) => RoundModel(
+        id: entity.id,
+        gameId: entity.gameId,
+        roundNumber: entity.roundNumber,
+      );
+
+  RoundEntity toEntity() => RoundEntity(
+        id: id,
+        gameId: gameId,
+        roundNumber: roundNumber,
+      );
   final int? id;
   final int gameId;
   final int roundNumber;

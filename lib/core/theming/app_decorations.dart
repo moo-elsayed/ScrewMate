@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:skru_mate/core/helpers/extentions.dart';
+
 import 'colors_manager.dart';
 
 /// Premium shared decorations for consistent visual language.
@@ -87,7 +89,7 @@ class AppDecorations {
 
   /// Rank-colored border decoration for player cards.
   static BoxDecoration rankCard(ColorsManager colors, int rank) {
-    final Color rankColor = _getRankColor(colors, rank);
+    final Color rankColor = rank.getRankColorWithColors(colors);
     return BoxDecoration(
       color: colors.surfaceElevated,
       borderRadius: BorderRadius.circular(16.r),
@@ -106,13 +108,6 @@ class AppDecorations {
           : null,
     );
   }
-
-  static Color _getRankColor(ColorsManager colors, int rank) => switch (rank) {
-    1 => colors.gold,
-    2 => colors.silver,
-    3 => colors.bronze,
-    _ => colors.unranked,
-  };
 }
 
 /// Extension for quick access to decorations via BuildContext.
